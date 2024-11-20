@@ -20,8 +20,8 @@ a unique and engaged community. Contributors and holders can collaborate to shap
 
 <pre>
 <code>
-git clone https://github.com/yilakb/rune-moon--dragone.git
-cd rune-moon--dragone
+git clone https://github.com/runemoondragon/moondragon.git
+cd moondragon
 </code>
 </pre>
 
