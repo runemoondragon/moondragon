@@ -105,7 +105,7 @@ export default function Home() {
       console.log("Auth response data:", data);
 
       if (response.ok) {
-        router.push("/secret");
+        router.push(process.env.NODE_ENV === 'production' ? '/moondragon/secret' : '/secret');
       } else {
         if (data.error === "Insufficient RUNE•MOON•DRAGON balance") {
           setVerificationMessage(
