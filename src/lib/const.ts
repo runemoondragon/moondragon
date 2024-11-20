@@ -1,0 +1,1 @@
+export const BTC_MESSAGE_TO_SIGN = "has RUNE•MOON•DRAGON"; 
