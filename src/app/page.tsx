@@ -6,6 +6,36 @@ import { useState, useEffect } from "react";
 import { fetchOrdAddress, RuneBalance } from "@/lib/runebalance";
 import { BTC_MESSAGE_TO_SIGN } from "@/lib/const";
 import { useRouter } from "next/navigation";
+import { FiCopy } from 'react-icons/fi';
+
+const truncateAddress = (address: string) => {
+  if (!address) return '';
+  const start = address.slice(0, 6);
+  const end = address.slice(-4);
+  return `${start}...${end}`;
+};
+
+const ConnectedAddressSection = ({ address }: { address: string }) => {
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(address);
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <span>Connected Address:</span>
+      <div className="flex items-center gap-2 bg-gray-800 rounded px-3 py-1">
+        <span className="text-orange-500">{truncateAddress(address)}</span>
+        <button 
+          onClick={copyToClipboard}
+          className="hover:text-orange-500 transition-colors"
+          title="Copy to clipboard"
+        >
+          <FiCopy size={16} />
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export default function Home() {
   const { address, signMessage } = useLaserEyes();
@@ -22,16 +52,16 @@ export default function Home() {
 
   useEffect(() => {
     const getRuneBalances = async () => {
-      if (address) {
-        setIsLoading(true);
-        try {
-          const balances = await fetchOrdAddress(address);
-          if (balances) {
-            setRuneBalances(balances);
-          }
-        } catch (error) {
-          console.error("Error fetching rune balances:", error);
-        }
+      if (!address) return;
+      
+      setIsLoading(true);
+      try {
+        const balances = await fetchOrdAddress(address);
+        setRuneBalances(balances || []);
+      } catch (error) {
+        console.error("Error fetching rune balances:", error);
+        setRuneBalances([]);
+      } finally {
         setIsLoading(false);
       }
     };
@@ -125,10 +155,7 @@ export default function Home() {
         <ConnectWallet />
         {address && (
           <div className="flex flex-col gap-4">
-            <p className="text-lg text-center text-black dark:text-gray-300">
-              Connected Address:{" "}
-              <span className="font-mono text-orange-400">{address}</span>
-            </p>
+            <ConnectedAddressSection address={address} />
             
             {/* Rune Balances Section */}
             <div className="mt-4">
