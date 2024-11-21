@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "walletAddress": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
+    "tokenName": "RSIC•GENESIS•RUNE",
+    "requiredBalance": 150000,
+    "associatedUrl": "https://runecoin.io/",
+    "createdAt": "2024-11-21T21:36:37.421Z"
+  }
+]

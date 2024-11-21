@@ -21,14 +21,8 @@ export const ACCESS_TOKENS: AccessToken[] = [
     "description": "Access Moon Dragon Dashboard"
   },
   {
-    "name": "DOG•GO•TO•THE•MOON",
-    "requiredBalance": 100000,
-    "dashboardPath": "/dashboards/dog-moon",
-    "description": "Access Dog Moon Dashboard"
-  },
-  {
     "name": "YOLO•MOON•RUNES",
-    "requiredBalance": 1000000,
+    "requiredBalance": 400000,
     "dashboardPath": "/dashboards/yolo-moon-runes",
     "description": "Access YOLO•MOON•RUNES Dashboard"
   },
@@ -37,5 +31,11 @@ export const ACCESS_TOKENS: AccessToken[] = [
     "requiredBalance": 100000,
     "dashboardPath": "/dashboards/maga-fight-fight",
     "description": "Access MAGA•FIGHT•FIGHT Dashboard"
+  },
+  {
+    "name": "RSIC•GENESIS•RUNE",
+    "requiredBalance": 150000,
+    "dashboardPath": "/dashboards/rsic-genesis-rune",
+    "description": "Access RSIC•GENESIS•RUNE Dashboard"
   }
 ]; 

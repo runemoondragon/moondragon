@@ -35,6 +35,7 @@ export default function Home() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationMessage, setVerificationMessage] = useState<string | JSX.Element>("");
   const [selectedToken, setSelectedToken] = useState<string | null>(null);
+  const [tokenRequirements, setTokenRequirements] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     setIsMounted(true);
@@ -59,18 +60,42 @@ export default function Home() {
     getRuneBalances();
   }, [address]);
 
-  const checkTokenAccess = (tokenName: string): boolean => {
-    const token = ACCESS_TOKENS.find(t => t.name === tokenName);
-    if (!token) return false;
+  useEffect(() => {
+    const checkAllTokens = async () => {
+      if (!runeBalances.length) return;
 
-    const runeBalance = runeBalances.find(rune => rune.name === tokenName);
-    const balance = runeBalance ? parseInt(runeBalance.balance) : 0;
-    return balance >= token.requiredBalance;
-  };
+      const requirements: Record<string, boolean> = {};
+      
+      for (const token of ACCESS_TOKENS) {
+        try {
+          // First check if it's a user-added token
+          const response = await fetch(`/api/user-token?tokenName=${token.name}`);
+          const data = await response.json();
+          
+          if (data.token) {
+            // If it's a user-added token, check against its required balance
+            const runeBalance = runeBalances.find(rune => rune.name === token.name);
+            const balance = runeBalance ? parseInt(runeBalance.balance) : 0;
+            requirements[token.name] = balance >= data.token.requiredBalance;
+          } else {
+            // If not a user-added token, check against ACCESS_TOKENS requirements
+            const runeBalance = runeBalances.find(rune => rune.name === token.name);
+            const balance = runeBalance ? parseInt(runeBalance.balance) : 0;
+            requirements[token.name] = balance >= token.requiredBalance;
+          }
+        } catch (error) {
+          console.error(`Error checking token ${token.name}:`, error);
+          requirements[token.name] = false;
+        }
+      }
 
-  const getAvailableTokens = () => {
-    return ACCESS_TOKENS.filter(token => checkTokenAccess(token.name));
-  };
+      setTokenRequirements(requirements);
+    };
+
+    if (address && runeBalances.length > 0) {
+      checkAllTokens();
+    }
+  }, [address, runeBalances]);
 
   const handleAccessAttempt = async (token: AccessToken) => {
     if (!address || !signMessage) {
@@ -82,11 +107,14 @@ export default function Home() {
     setVerificationMessage("");
     setIsVerifying(true);
 
-    const hasAccess = checkTokenAccess(token.name);
+    const hasAccess = tokenRequirements[token.name];
     if (!hasAccess) {
+      const runeBalance = runeBalances.find(rune => rune.name === token.name);
+      const balance = runeBalance ? parseInt(runeBalance.balance) : 0;
+      
       setVerificationMessage(
         <span>
-          Access Denied: Insufficient {token.name} balance. You need {token.requiredBalance.toLocaleString()} tokens.{" "}
+          Access Denied: Insufficient {token.name} balance. You need {token.requiredBalance.toLocaleString()} tokens, you have {balance.toLocaleString()}.{" "}
           <a 
             href={`https://luminex.io/rune/${encodeURIComponent(token.name)}`}
             target="_blank"
@@ -108,7 +136,6 @@ export default function Home() {
         address,
         signature,
         message: BTC_MESSAGE_TO_SIGN,
-        paymentAddress: address,
         tokenName: token.name
       };
       
@@ -192,7 +219,10 @@ export default function Home() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-64">
                     {ACCESS_TOKENS.map((token) => {
-                      const hasAccess = checkTokenAccess(token.name);
+                      const hasAccess = tokenRequirements[token.name];
+                      const runeBalance = runeBalances.find(rune => rune.name === token.name);
+                      const currentBalance = runeBalance ? parseInt(runeBalance.balance) : 0;
+                      
                       return (
                         <DropdownMenuItem
                           key={token.name}
@@ -207,6 +237,8 @@ export default function Home() {
                           <div className="font-medium">{token.name}</div>
                           <div className="text-sm text-gray-500">
                             Required: {token.requiredBalance.toLocaleString()} tokens
+                            <br />
+                            Current: {currentBalance.toLocaleString()} tokens
                           </div>
                           <div className="text-xs mt-1">
                             {hasAccess ? (

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as jose from 'jose';
-import { BTC_MESSAGE_TO_SIGN } from "@/lib/const";
+import { BTC_MESSAGE_TO_SIGN, ACCESS_TOKENS } from "@/lib/const";
 import { fetchOrdAddress } from "@/lib/runebalance";
 
 // Create a secret key for JWT signing
@@ -12,10 +12,10 @@ export const POST = async (req: NextRequest) => {
   try {
     console.log("🚀 Auth route hit - starting authentication process");
     
-    const { address, signature, message } = await req.json();
-    console.log("📝 Received payload:", { address, message, signatureLength: signature?.length });
+    const { address, signature, message, tokenName } = await req.json();
+    console.log("📝 Received payload:", { address, tokenName, signatureLength: signature?.length });
 
-    if (!address || !signature || !message) {
+    if (!address || !signature || !message || !tokenName) {
       console.log("❌ Missing required fields");
       return NextResponse.json(
         { error: "All fields are required" },
@@ -29,29 +29,38 @@ export const POST = async (req: NextRequest) => {
     
     console.log("✅ Signature check passed");
 
+    // Get token requirements
+    const token = ACCESS_TOKENS.find(t => t.name === tokenName);
+    if (!token) {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 400 });
+    }
+
     console.log("🔍 Fetching rune balances for address:", address);
     const addressOrdData = await fetchOrdAddress(address);
     console.log("📊 Received rune balances:", addressOrdData);
 
-    const found = addressOrdData?.find(
-      (runeBalance) => {
-        const isMatch = runeBalance.name === "RUNE•MOON•DRAGON" && 
-                       parseInt(runeBalance.balance) >= 1000000;
-        console.log("🎯 Rune check:", {
-          name: runeBalance.name,
-          balance: runeBalance.balance,
-          meetsRequirement: isMatch
-        });
-        return isMatch;
-      }
+    // Check for the specific token's balance
+    const tokenBalance = addressOrdData?.find(
+      (runeBalance) => runeBalance.name === tokenName
     );
 
-    if (found) {
+    const hasRequiredBalance = tokenBalance && 
+                             parseInt(tokenBalance.balance) >= token.requiredBalance;
+
+    console.log("🎯 Token check:", {
+      tokenName,
+      requiredBalance: token.requiredBalance,
+      currentBalance: tokenBalance?.balance,
+      meetsRequirement: hasRequiredBalance
+    });
+
+    if (hasRequiredBalance) {
       console.log("✨ Required balance found, generating JWT token");
       
       // Create JWT token using jose
-      const token = await new jose.SignJWT({ 
+      const jwtToken = await new jose.SignJWT({ 
         address,
+        tokenName,
         channel: "protected"
       })
         .setProtectedHeader({ alg: 'HS256' })
@@ -63,7 +72,7 @@ export const POST = async (req: NextRequest) => {
       const response = new Response(JSON.stringify({ success: true }), {
         status: 200,
         headers: {
-          "Set-Cookie": `Auth=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=7200`,
+          "Set-Cookie": `Auth=${jwtToken}; Path=/; HttpOnly; SameSite=Strict; Max-Age=7200`,
         },
       });
       
@@ -71,8 +80,11 @@ export const POST = async (req: NextRequest) => {
       return response;
     }
     
-    console.log("❌ Insufficient RUNE•MOON•DRAGON balance");
-    return NextResponse.json({ error: "Insufficient RUNE•MOON•DRAGON balance" }, { status: 403 });
+    console.log(`❌ Insufficient ${tokenName} balance`);
+    return NextResponse.json({ 
+      error: `Insufficient ${tokenName} balance. Required: ${token.requiredBalance.toLocaleString()} tokens` 
+    }, { status: 403 });
+
   } catch (error: unknown) {
     console.error("🔥 Authentication error:", error);
     return NextResponse.json({ 

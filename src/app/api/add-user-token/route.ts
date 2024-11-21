@@ -3,8 +3,10 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fetchOrdAddress } from '@/lib/runebalance';
 import { TokenAssociation } from '@/lib/types';
+import { AccessToken } from '@/lib/const';
 
 const USER_TOKENS_PATH = path.join(process.cwd(), 'data', 'user-tokens.json');
+const CONST_PATH = path.join(process.cwd(), 'src', 'lib', 'const.ts');
 
 async function ensureDataDirectory() {
   const dataDir = path.join(process.cwd(), 'data');
@@ -27,6 +29,40 @@ async function readUserTokens(): Promise<TokenAssociation[]> {
 async function writeUserTokens(tokens: TokenAssociation[]) {
   await ensureDataDirectory();
   await fs.writeFile(USER_TOKENS_PATH, JSON.stringify(tokens, null, 2));
+}
+
+async function addToAccessTokens(newToken: AccessToken) {
+  try {
+    const constFile = await fs.readFile(CONST_PATH, 'utf-8');
+    
+    // Find the ACCESS_TOKENS array in the file
+    const startIndex = constFile.indexOf('export const ACCESS_TOKENS: AccessToken[] = [');
+    const endIndex = constFile.lastIndexOf('];');
+    
+    if (startIndex === -1 || endIndex === -1) {
+      throw new Error('Could not find ACCESS_TOKENS array in const.ts');
+    }
+
+    // Parse existing tokens
+    const tokensArrayString = constFile.substring(startIndex, endIndex + 2);
+    const currentTokens = eval(tokensArrayString.split('=')[1].trim());
+
+    // Add new token
+    const updatedTokens = [...currentTokens, newToken];
+
+    // Create new file content
+    const beforeTokens = constFile.substring(0, startIndex);
+    const newTokensString = `export const ACCESS_TOKENS: AccessToken[] = ${JSON.stringify(updatedTokens, null, 2)};`;
+    const afterTokens = constFile.substring(endIndex + 2);
+
+    const newFileContent = `${beforeTokens}${newTokensString}${afterTokens}`;
+
+    // Write back to file
+    await fs.writeFile(CONST_PATH, newFileContent, 'utf-8');
+  } catch (error) {
+    console.error('Error updating ACCESS_TOKENS:', error);
+    throw error;
+  }
 }
 
 export async function POST(req: Request) {
@@ -58,7 +94,7 @@ export async function POST(req: Request) {
         }, { status: 400 });
       }
 
-      // Add new token
+      // Create new token
       const newToken: TokenAssociation = {
         walletAddress,
         tokenName: name,
@@ -67,7 +103,18 @@ export async function POST(req: Request) {
         createdAt: new Date()
       };
 
+      // Add to user tokens
       await writeUserTokens([...userTokens, newToken]);
+
+      // Add to ACCESS_TOKENS
+      const accessToken: AccessToken = {
+        name,
+        requiredBalance,
+        dashboardPath: `/dashboards/${name.toLowerCase().replace(/[•]/g, '-')}`,
+        description: `Access ${name} Dashboard`
+      };
+
+      await addToAccessTokens(accessToken);
 
       console.log('Successfully added new token:', newToken);
 
