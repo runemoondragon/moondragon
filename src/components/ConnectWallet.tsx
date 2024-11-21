@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
-import { IconType } from "react-icons";
 
 import {
   LEATHER,
@@ -16,7 +15,7 @@ import {
   WalletIcon,
   WIZZ,
   XVERSE,
-  SUPPORTED_WALLETS,
+  ProviderEnumMap,
   LaserEyesLogo,
 } from "@omnisat/lasereyes";
 
@@ -30,48 +29,47 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
-// Define the allowed wallet types
-type ValidProvider = "orange" | "magic-eden" | "unisat" | "oyl" | "phantom" | "leather" | "xverse" | "wizz" | "okx";
+// Define the wallet type that matches the LaserEyes library
+type WalletProvider = keyof typeof ProviderEnumMap;
 
-// Define your wallet configuration with the correct types
 const wallets: Array<{
-  name: ValidProvider;
-  downloadUrl?: string;
+  name: WalletProvider;
+  downloadUrl: string;
 }> = [
   {
-    name: "unisat",
+    name: UNISAT,
     downloadUrl: "https://unisat.io/download",
   },
   {
-    name: "xverse",
+    name: XVERSE,
     downloadUrl: "https://www.xverse.app/download",
   },
   {
-    name: "leather",
+    name: LEATHER,
     downloadUrl: "https://leather.io/download",
   },
   {
-    name: "okx",
+    name: OKX,
     downloadUrl: "https://www.okx.com/download",
   },
   {
-    name: "oyl",
+    name: OYL,
     downloadUrl: "https://oyl.app",
   },
   {
-    name: "magic-eden",
+    name: MAGIC_EDEN,
     downloadUrl: "https://magiceden.io/wallet",
   },
   {
-    name: "phantom",
+    name: PHANTOM,
     downloadUrl: "https://phantom.app/download",
   },
   {
-    name: "wizz",
+    name: WIZZ,
     downloadUrl: "https://www.wizz.cash/download",
   },
   {
-    name: "orange",
+    name: ORANGE,
     downloadUrl: "https://orange.xyz",
   }
 ];
@@ -92,24 +90,22 @@ export default function ConnectWallet({ className }: { className?: string }) {
     hasPhantom,
     hasWizz,
     hasOrange,
-    hasOpNet,
   } = useLaserEyes();
   const [isOpen, setIsOpen] = useState(false);
 
-  const hasWallet = {
-    unisat: hasUnisat,
-    xverse: hasXverse,
-    oyl: hasOyl,
+  const hasWallet: Record<WalletProvider, boolean> = {
+    [UNISAT]: hasUnisat,
+    [XVERSE]: hasXverse,
+    [OYL]: hasOyl,
     [MAGIC_EDEN]: hasMagicEden,
-    okx: hasOkx,
-    op_net: hasOpNet,
-    leather: hasLeather,
-    phantom: hasPhantom,
-    wizz: hasWizz,
-    orange: hasOrange,
+    [OKX]: hasOkx,
+    [LEATHER]: hasLeather,
+    [PHANTOM]: hasPhantom,
+    [WIZZ]: hasWizz,
+    [ORANGE]: hasOrange,
   };
 
-  const handleConnect = async (provider: ValidProvider) => {
+  const handleConnect = async (provider: WalletProvider) => {
     try {
       await connect(provider);
       setIsOpen(false);
@@ -174,7 +170,7 @@ export default function ConnectWallet({ className }: { className?: string }) {
                   onClick={
                     isMissingWallet
                       ? () => null
-                      : () => handleConnect(wallet.name as ValidProvider)
+                      : () => handleConnect(wallet.name)
                   }
                   variant="ghost"
                   className={cn(
