@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "deploy": "gh-pages -d out",
-    "predeploy": "next build && touch out/.nojekyll"
+    "deploy": "next build && touch out/.nojekyll && gh-pages -d out",
+    "clean": "rm -rf .next out node_modules"
   },
   "dependencies": {
     "@omnisat/lasereyes": "^0.0.126",

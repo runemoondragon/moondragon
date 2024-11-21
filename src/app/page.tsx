@@ -91,14 +91,17 @@ export default function Home() {
       
       console.log("Sending auth request with payload:", payload);
       
-      const response = await fetch("/api/auth", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: 'include',
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/api/auth`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: 'include',
+          body: JSON.stringify(payload),
+        }
+      );
 
       console.log("Auth response status:", response.status);
       const data = await response.json();

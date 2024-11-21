@@ -28,6 +28,9 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
+// Define the allowed wallet types
+type WalletProvider = "orange" | "magic-eden" | "unisat" | "oyl" | "phantom" | "leather" | "xverse" | "wizz" | "okx";
+
 export default function ConnectWallet({ className }: { className?: string }) {
   const {
     connect,
@@ -61,23 +64,12 @@ export default function ConnectWallet({ className }: { className?: string }) {
     orange: hasOrange,
   };
 
-  const handleConnect = async (
-    walletName:
-      | typeof UNISAT
-      | typeof MAGIC_EDEN
-      | typeof OYL
-      | typeof ORANGE
-      | typeof PHANTOM
-      | typeof LEATHER
-      | typeof XVERSE
-      | typeof WIZZ
-      | typeof OKX
-  ) => {
-    if (provider === walletName) {
+  const handleConnect = async (provider: WalletProvider) => {
+    if (provider === provider) {
       await disconnect();
     } else {
       setIsOpen(false);
-      await connect(walletName as never);
+      await connect(provider as never);
     }
   };
 
@@ -137,7 +129,7 @@ export default function ConnectWallet({ className }: { className?: string }) {
                   onClick={
                     isMissingWallet
                       ? () => null
-                      : () => handleConnect(wallet.name)
+                      : () => handleConnect(wallet.name as WalletProvider)
                   }
                   variant="ghost"
                   className={cn(
