@@ -7,7 +7,8 @@ import { useState, useEffect } from "react";
 import { fetchOrdAddress, RuneBalance } from "@/lib/runebalance";
 import { BTC_MESSAGE_TO_SIGN } from "@/lib/const";
 import { useRouter } from "next/navigation";
-import { FiCopy } from 'react-icons/fi';
+import { FiCopy, FiTwitter } from 'react-icons/fi';
+import Link from 'next/link';
 
 const truncateAddress = (address: string) => {
   if (!address) return '';
@@ -16,25 +17,51 @@ const truncateAddress = (address: string) => {
   return `${start}...${end}`;
 };
 
-const ConnectedAddressSection = ({ address }: { address: string }) => {
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(address);
-  };
-
+const NavBar = ({ address }: { address?: string }) => {
   return (
-    <div className="flex items-center gap-2">
-      <span>Connected Address:</span>
-      <div className="flex items-center gap-2 bg-gray-800 rounded px-3 py-1">
-        <span className="text-orange-500">{truncateAddress(address)}</span>
-        <button 
-          onClick={copyToClipboard}
-          className="hover:text-orange-500 transition-colors"
-          title="Copy to clipboard"
-        >
-          <FiCopy size={16} />
-        </button>
+    <nav className="fixed top-0 left-0 right-0 flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+      <div className="flex items-center gap-2">
+        <LaserEyesLogo width={32} color={address ? "green" : "orange"} />
+        <span className="font-bold text-xl">RuneCheck</span>
       </div>
-    </div>
+      
+      <div className="flex items-center gap-6">
+        <Link 
+          href="/support" 
+          className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+        >
+          Support
+        </Link>
+        
+        <a 
+          href="https://x.com/liquidordinals" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+        >
+          <FiTwitter size={20} />
+        </a>
+
+        {address && (
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 px-4 py-2 rounded-lg">
+            <div className="flex items-center gap-2">
+              <span className="text-gray-600 dark:text-gray-300">
+                {truncateAddress(address)}
+              </span>
+              <button 
+                onClick={() => navigator.clipboard.writeText(address)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+              >
+                <FiCopy size={16} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        <ConnectWallet />
+        <ThemeToggle />
+      </div>
+    </nav>
   );
 };
 
@@ -145,78 +172,78 @@ export default function Home() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-12 p-8 bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 dark:from-gray-900 dark:to-black text-black dark:text-white">
-      <div className="absolute top-4 right-4">
-        <ThemeToggle />
-      </div>
-      <div className="flex flex-col items-center gap-8">
-        <LaserEyesLogo color={address ? "green" : "orange"} />
-        <h1 className="text-4xl font-bold text-center bg-gradient-to-r from-orange-500 to-yellow-500 text-transparent bg-clip-text">
-          {address ? "Welcome Dragon." : "Welcome"}
-        </h1>
-      </div>
-      <div className="flex flex-col items-center gap-6">
-        <ConnectWallet />
-        {address && (
-          <div className="flex flex-col gap-4">
-            <ConnectedAddressSection address={address} />
-            
-            {/* Rune Balances Section */}
-            <div className="mt-4">
-              <h2 className="text-xl font-semibold mb-3">Your Rune Balances</h2>
-              {isLoading ? (
-                <p>Loading rune balances...</p>
-              ) : runeBalances.length > 0 ? (
-                <div className="grid gap-3">
-                  {runeBalances.map((rune, index) => (
-                    <div
-                      key={index}
-                      className="p-4 rounded-lg bg-white/10 backdrop-blur-sm"
-                    >
-                      <p className="font-semibold">{rune.name}</p>
-                      <p>Balance: {rune.balance}</p>
-                      <p>Symbol: {rune.symbol}</p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p>No rune balances found</p>
-              )}
-            </div>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 dark:from-gray-900 dark:to-black text-black dark:text-white">
+      <NavBar address={address} />
+      
+      <main className="flex flex-col items-center justify-center flex-1 p-8 mt-16">
+        <div className="flex flex-col items-center gap-8 max-w-3xl w-full">
+          <h1 className="text-5xl font-bold text-center">
+            Unlock Access with Your Rune Balance
+          </h1>
+          <p className="text-xl text-center text-gray-600 dark:text-gray-300">
+            RuneCheck verifies your wallet balance to grant exclusive access to governance, voting, and other privileges.
+          </p>
 
-            {/* Verification Section */}
-            <div className="flex flex-col items-center gap-3 mt-4">
-              <button
-                onClick={handleVerification}
-                disabled={isVerifying}
-                className={`px-6 py-2 text-white rounded-lg disabled:opacity-50 ${
-                  hasRequiredBalance 
-                    ? 'bg-orange-500 hover:bg-orange-600' 
-                    : 'bg-gray-500 hover:bg-gray-600'
-                }`}
-              >
-                {isVerifying ? "Verifying..." : "Access Dragon Dashboard"}
-              </button>
-              
-              {verificationMessage && (
-                <p className={`text-center ${
-                  typeof verificationMessage === 'string' && verificationMessage.includes('broke boy') 
-                    ? 'text-red-500 font-bold animate-bounce' 
-                    : 'text-yellow-500'
-                }`}>
-                  {verificationMessage}
-                </p>
-              )}
-              
-              {!hasRequiredBalance && !verificationMessage && (
-                <p className="text-sm text-gray-500 text-center">
-                  You need at least 1,000,000 RUNE•MOON•DRAGON tokens to access the Dragon dashboard
-                </p>
-              )}
+          {/* Rest of your content */}
+          {address && (
+            <div className="w-full">
+              {/* Rune Balances Section */}
+              <div className="mt-8">
+                <h2 className="text-xl font-semibold mb-3">Your Rune Balances</h2>
+                {isLoading ? (
+                  <p>Loading rune balances...</p>
+                ) : runeBalances.length > 0 ? (
+                  <div className="grid gap-3">
+                    {runeBalances.map((rune, index) => (
+                      <div
+                        key={index}
+                        className="p-4 rounded-lg bg-white/10 backdrop-blur-sm"
+                      >
+                        <p className="font-semibold">{rune.name}</p>
+                        <p>Balance: {rune.balance}</p>
+                        <p>Symbol: {rune.symbol}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p>No rune balances found</p>
+                )}
+              </div>
+
+              {/* Verification Section */}
+              <div className="flex flex-col items-center gap-3 mt-8">
+                <button
+                  onClick={handleVerification}
+                  disabled={isVerifying}
+                  className={`px-6 py-2 text-white rounded-lg disabled:opacity-50 ${
+                    hasRequiredBalance 
+                      ? 'bg-orange-500 hover:bg-orange-600' 
+                      : 'bg-gray-500 hover:bg-gray-600'
+                  }`}
+                >
+                  {isVerifying ? "Verifying..." : "Access Dragon Dashboard"}
+                </button>
+                
+                {verificationMessage && (
+                  <p className={`text-center ${
+                    typeof verificationMessage === 'string' && verificationMessage.includes('broke boy') 
+                      ? 'text-red-500 font-bold animate-bounce' 
+                      : 'text-yellow-500'
+                  }`}>
+                    {verificationMessage}
+                  </p>
+                )}
+                
+                {!hasRequiredBalance && !verificationMessage && (
+                  <p className="text-sm text-gray-500 text-center">
+                    You need at least 1,000,000 RUNE•MOON•DRAGON tokens to access the Dragon dashboard
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      </main>
     </div>
   );
 }

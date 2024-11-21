@@ -119,10 +119,10 @@ export default function ConnectWallet({ className }: { className?: string }) {
         <Button
           onClick={() => disconnect()}
           className={cn(
-            "mb-4 text-black dark:text-white font-bold py-6 px-12 rounded-lg",
-            "transition duration-300",
-            "bg-white dark:bg-gray-800",
-            "hover:bg-gray-900 hover:text-white dark:hover:bg-gray-700",
+            "text-black dark:text-white font-medium px-6 py-2 rounded-lg",
+            "bg-orange-100 dark:bg-orange-900/20",
+            "hover:bg-orange-200 dark:hover:bg-orange-800/30",
+            "transition-colors",
             className
           )}
         >
@@ -132,10 +132,10 @@ export default function ConnectWallet({ className }: { className?: string }) {
         <DialogTrigger asChild>
           <Button
             className={cn(
-              "mb-4 text-black dark:text-white font-bold py-6 px-12 rounded-lg",
-              "transition duration-300",
-              "bg-white dark:bg-gray-800",
-              "hover:bg-gray-900 hover:text-white dark:hover:bg-gray-700",
+              "text-white font-medium px-6 py-2 rounded-lg",
+              "bg-orange-500",
+              "hover:bg-orange-600",
+              "transition-colors",
               className
             )}
           >
