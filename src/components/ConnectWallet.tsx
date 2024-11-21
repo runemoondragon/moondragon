@@ -15,7 +15,6 @@ import {
   WalletIcon,
   WIZZ,
   XVERSE,
-  ProviderEnumMap,
   LaserEyesLogo,
 } from "@omnisat/lasereyes";
 
@@ -29,50 +28,50 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
-// Define the wallet type that matches the LaserEyes library
-type WalletProvider = keyof typeof ProviderEnumMap;
+// Define the valid wallet types as string literals
+type WalletProvider = "orange" | "magic-eden" | "unisat" | "oyl" | "phantom" | "leather" | "xverse" | "wizz" | "okx";
 
 const wallets: Array<{
   name: WalletProvider;
   downloadUrl: string;
 }> = [
   {
-    name: UNISAT,
+    name: "unisat",
     downloadUrl: "https://unisat.io/download",
   },
   {
-    name: XVERSE,
+    name: "xverse",
     downloadUrl: "https://www.xverse.app/download",
   },
   {
-    name: LEATHER,
+    name: "leather",
     downloadUrl: "https://leather.io/download",
   },
   {
-    name: OKX,
+    name: "okx",
     downloadUrl: "https://www.okx.com/download",
   },
   {
-    name: OYL,
+    name: "oyl",
     downloadUrl: "https://oyl.app",
   },
   {
-    name: MAGIC_EDEN,
+    name: "magic-eden",
     downloadUrl: "https://magiceden.io/wallet",
   },
   {
-    name: PHANTOM,
+    name: "phantom",
     downloadUrl: "https://phantom.app/download",
   },
   {
-    name: WIZZ,
+    name: "wizz",
     downloadUrl: "https://www.wizz.cash/download",
   },
   {
-    name: ORANGE,
+    name: "orange",
     downloadUrl: "https://orange.xyz",
   }
-];
+] as const;
 
 export default function ConnectWallet({ className }: { className?: string }) {
   const {
@@ -94,15 +93,15 @@ export default function ConnectWallet({ className }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const hasWallet: Record<WalletProvider, boolean> = {
-    [UNISAT]: hasUnisat,
-    [XVERSE]: hasXverse,
-    [OYL]: hasOyl,
-    [MAGIC_EDEN]: hasMagicEden,
-    [OKX]: hasOkx,
-    [LEATHER]: hasLeather,
-    [PHANTOM]: hasPhantom,
-    [WIZZ]: hasWizz,
-    [ORANGE]: hasOrange,
+    unisat: hasUnisat,
+    xverse: hasXverse,
+    oyl: hasOyl,
+    "magic-eden": hasMagicEden,
+    okx: hasOkx,
+    leather: hasLeather,
+    phantom: hasPhantom,
+    wizz: hasWizz,
+    orange: hasOrange,
   };
 
   const handleConnect = async (provider: WalletProvider) => {
@@ -170,7 +169,7 @@ export default function ConnectWallet({ className }: { className?: string }) {
                   onClick={
                     isMissingWallet
                       ? () => null
-                      : () => handleConnect(wallet.name)
+                      : () => handleConnect(wallet.name as WalletProvider)
                   }
                   variant="ghost"
                   className={cn(
@@ -216,7 +215,7 @@ export default function ConnectWallet({ className }: { className?: string }) {
                     </div>
                   ) : (
                     <a
-                      href={wallet.url}
+                      href={wallet.downloadUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-blue-500 hover:text-blue-600"

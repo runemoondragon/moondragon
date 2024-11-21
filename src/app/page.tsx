@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 import { useLaserEyes, LaserEyesLogo } from "@omnisat/lasereyes";
 import ConnectWallet from "@/components/ConnectWallet";
@@ -113,7 +114,7 @@ export default function Home() {
         if (data.error === "Insufficient RUNE•MOON•DRAGON balance") {
           setVerificationMessage(
             <span>
-              Oops, you don't have enough RUNE•MOON•DRAGON. Grab some{" "}
+              Oops, you don&apos;t have enough RUNE•MOON•DRAGON. Grab some{" "}
               <a 
                 href="https://luminex.io/rune/RUNE•MOON•DRAGON" 
                 target="_blank" 
@@ -122,7 +123,7 @@ export default function Home() {
               >
                 here
               </a>
-              ! Don't let the dragons down!
+              ! Don&apos;t let the dragons down!
             </span>
           );
         } else {
