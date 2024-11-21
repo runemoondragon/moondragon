@@ -9,6 +9,15 @@ import { BTC_MESSAGE_TO_SIGN } from "@/lib/const";
 import { useRouter } from "next/navigation";
 import { FiCopy, FiTwitter } from 'react-icons/fi';
 import Link from 'next/link';
+import { ACCESS_TOKENS } from "@/lib/const";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const truncateAddress = (address: string) => {
   if (!address) return '';
@@ -73,6 +82,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationMessage, setVerificationMessage] = useState<string | JSX.Element>("");
+  const [selectedToken, setSelectedToken] = useState<string | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -97,65 +107,77 @@ export default function Home() {
     getRuneBalances();
   }, [address]);
 
-  const handleVerification = async () => {
+  const checkTokenAccess = (tokenName: string): boolean => {
+    const token = ACCESS_TOKENS.find(t => t.name === tokenName);
+    if (!token) return false;
+
+    const runeBalance = runeBalances.find(rune => rune.name === tokenName);
+    const balance = runeBalance ? parseInt(runeBalance.balance) : 0;
+    return balance >= token.requiredBalance;
+  };
+
+  const getAvailableTokens = () => {
+    return ACCESS_TOKENS.filter(token => checkTokenAccess(token.name));
+  };
+
+  const handleAccessAttempt = async (token: AccessToken) => {
     if (!address || !signMessage) {
-      console.log("Missing address or signMessage function");
+      setVerificationMessage("Please connect your wallet first");
       return;
     }
-    
+
+    setSelectedToken(token.name);
     setVerificationMessage("");
     setIsVerifying(true);
+
+    const hasAccess = checkTokenAccess(token.name);
+    if (!hasAccess) {
+      setVerificationMessage(
+        <span>
+          Access Denied: Insufficient {token.name} balance. You need {token.requiredBalance.toLocaleString()} tokens.{" "}
+          <a 
+            href={`https://luminex.io/rune/${encodeURIComponent(token.name)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:text-blue-600 underline"
+          >
+            Get tokens
+          </a>
+        </span>
+      );
+      setIsVerifying(false);
+      return;
+    }
+
     try {
-      console.log("Attempting to sign message:", BTC_MESSAGE_TO_SIGN);
       const signature = await signMessage(BTC_MESSAGE_TO_SIGN);
-      console.log("Got signature:", signature);
       
       const payload = {
         address,
         signature,
         message: BTC_MESSAGE_TO_SIGN,
         paymentAddress: address,
+        tokenName: token.name
       };
       
-      console.log("Sending auth request with payload:", payload);
-      
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/api/auth`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: 'include',
-          body: JSON.stringify(payload),
-        }
-      );
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/api/auth`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      });
 
-      console.log("Auth response status:", response.status);
       const data = await response.json();
-      console.log("Auth response data:", data);
 
       if (response.ok) {
-        router.push(process.env.NODE_ENV === 'production' ? '/moondragon/secret' : '/secret');
+        setVerificationMessage(
+          <span className="text-green-500">
+            Access Granted: Welcome to the {token.name} Dashboard.
+          </span>
+        );
+        router.push(token.dashboardPath);
       } else {
-        if (data.error === "Insufficient RUNE•MOON•DRAGON balance") {
-          setVerificationMessage(
-            <span>
-              Oops, you don&apos;t have enough RUNE•MOON•DRAGON. Grab some{" "}
-              <a 
-                href="https://luminex.io/rune/RUNE•MOON•DRAGON" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:text-blue-600 underline"
-              >
-                here
-              </a>
-              ! Don&apos;t let the dragons down!
-            </span>
-          );
-        } else {
-          setVerificationMessage(data.error || "Verification failed");
-        }
+        setVerificationMessage(data.error || "Verification failed");
       }
     } catch (error) {
       console.error("Verification error:", error);
@@ -166,10 +188,6 @@ export default function Home() {
   };
 
   if (!isMounted) return null;
-
-  const hasRequiredBalance = runeBalances.some(
-    (rune) => rune.name === "RUNE•MOON•DRAGON" && parseInt(rune.balance) >= 1000000
-  );
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 dark:from-gray-900 dark:to-black text-black dark:text-white">
@@ -184,7 +202,6 @@ export default function Home() {
             RuneCheck verifies your wallet balance to grant exclusive access to governance, voting, and other privileges.
           </p>
 
-          {/* Rest of your content */}
           {address && (
             <div className="w-full">
               {/* Rune Balances Section */}
@@ -210,33 +227,51 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Verification Section */}
+              {/* Access Section */}
               <div className="flex flex-col items-center gap-3 mt-8">
-                <button
-                  onClick={handleVerification}
-                  disabled={isVerifying}
-                  className={`px-6 py-2 text-white rounded-lg disabled:opacity-50 ${
-                    hasRequiredBalance 
-                      ? 'bg-orange-500 hover:bg-orange-600' 
-                      : 'bg-gray-500 hover:bg-gray-600'
-                  }`}
-                >
-                  {isVerifying ? "Verifying..." : "Access Dragon Dashboard"}
-                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className="px-6 py-2 text-white bg-orange-500 hover:bg-orange-600 rounded-lg flex items-center gap-2"
+                      disabled={isVerifying}
+                    >
+                      {isVerifying ? "Verifying..." : "Access To"} <ChevronDown className="w-4 h-4" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-64">
+                    {ACCESS_TOKENS.map((token) => {
+                      const hasAccess = checkTokenAccess(token.name);
+                      return (
+                        <DropdownMenuItem
+                          key={token.name}
+                          onClick={() => handleAccessAttempt(token)}
+                          className={cn(
+                            "flex flex-col items-start gap-1 p-3",
+                            hasAccess 
+                              ? "hover:bg-green-50 dark:hover:bg-green-900/20"
+                              : "hover:bg-red-50 dark:hover:bg-red-900/20"
+                          )}
+                        >
+                          <div className="font-medium">{token.name}</div>
+                          <div className="text-sm text-gray-500">
+                            Required: {token.requiredBalance.toLocaleString()} tokens
+                          </div>
+                          <div className="text-xs mt-1">
+                            {hasAccess ? (
+                              <span className="text-green-500">✅ Requirements met</span>
+                            ) : (
+                              <span className="text-red-500">❌ Insufficient balance</span>
+                            )}
+                          </div>
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 
                 {verificationMessage && (
-                  <p className={`text-center ${
-                    typeof verificationMessage === 'string' && verificationMessage.includes('broke boy') 
-                      ? 'text-red-500 font-bold animate-bounce' 
-                      : 'text-yellow-500'
-                  }`}>
+                  <p className="text-center text-yellow-500 max-w-md">
                     {verificationMessage}
-                  </p>
-                )}
-                
-                {!hasRequiredBalance && !verificationMessage && (
-                  <p className="text-sm text-gray-500 text-center">
-                    You need at least 1,000,000 RUNE•MOON•DRAGON tokens to access the Dragon dashboard
                   </p>
                 )}
               </div>
