@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import { IconType } from "react-icons";
 
 import {
   LEATHER,
@@ -18,6 +19,7 @@ import {
   SUPPORTED_WALLETS,
   LaserEyesLogo,
 } from "@omnisat/lasereyes";
+
 import {
   Dialog,
   DialogContent,
@@ -29,7 +31,50 @@ import {
 import { cn } from "@/lib/utils";
 
 // Define the allowed wallet types
-type WalletProvider = "orange" | "magic-eden" | "unisat" | "oyl" | "phantom" | "leather" | "xverse" | "wizz" | "okx";
+type ValidProvider = "orange" | "magic-eden" | "unisat" | "oyl" | "phantom" | "leather" | "xverse" | "wizz" | "okx";
+
+// Define your wallet configuration with the correct types
+const wallets: Array<{
+  name: ValidProvider;
+  downloadUrl?: string;
+}> = [
+  {
+    name: "unisat",
+    downloadUrl: "https://unisat.io/download",
+  },
+  {
+    name: "xverse",
+    downloadUrl: "https://www.xverse.app/download",
+  },
+  {
+    name: "leather",
+    downloadUrl: "https://leather.io/download",
+  },
+  {
+    name: "okx",
+    downloadUrl: "https://www.okx.com/download",
+  },
+  {
+    name: "oyl",
+    downloadUrl: "https://oyl.app",
+  },
+  {
+    name: "magic-eden",
+    downloadUrl: "https://magiceden.io/wallet",
+  },
+  {
+    name: "phantom",
+    downloadUrl: "https://phantom.app/download",
+  },
+  {
+    name: "wizz",
+    downloadUrl: "https://www.wizz.cash/download",
+  },
+  {
+    name: "orange",
+    downloadUrl: "https://orange.xyz",
+  }
+];
 
 export default function ConnectWallet({ className }: { className?: string }) {
   const {
@@ -64,12 +109,12 @@ export default function ConnectWallet({ className }: { className?: string }) {
     orange: hasOrange,
   };
 
-  const handleConnect = async (provider: WalletProvider) => {
-    if (provider === provider) {
-      await disconnect();
-    } else {
+  const handleConnect = async (provider: ValidProvider) => {
+    try {
+      await connect(provider);
       setIsOpen(false);
-      await connect(provider as never);
+    } catch (error) {
+      console.error("Failed to connect:", error);
     }
   };
 
@@ -120,8 +165,8 @@ export default function ConnectWallet({ className }: { className?: string }) {
 
         <div className="flex-1 overflow-y-auto scrollbar-hide px-6">
           <DialogDescription className="flex flex-col gap-2 w-full">
-            {Object.values(SUPPORTED_WALLETS).map((wallet) => {
-              const isConnected = provider === wallet;
+            {wallets.map((wallet) => {
+              const isConnected = provider === wallet.name;
               const isMissingWallet = !hasWallet[wallet.name];
               return (
                 <Button
@@ -129,7 +174,7 @@ export default function ConnectWallet({ className }: { className?: string }) {
                   onClick={
                     isMissingWallet
                       ? () => null
-                      : () => handleConnect(wallet.name as WalletProvider)
+                      : () => handleConnect(wallet.name as ValidProvider)
                   }
                   variant="ghost"
                   className={cn(
