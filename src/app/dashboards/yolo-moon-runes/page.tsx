@@ -185,12 +185,54 @@ export default function YoloMoonRunesDashboard() {
   const [timeRemaining, setTimeRemaining] = useState(0);
 
   useEffect(() => {
+    const checkAdminRights = async () => {
+      if (!address) return;
+      try {
+        const response = await fetch('/api/check-admin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ address })
+        });
+        const data = await response.json();
+        setIsAdmin(data.isAdmin);
+      } catch (error) {
+        console.error('Failed to check admin rights:', error);
+        setIsAdmin(false);
+      }
+    };
+
+    const fetchActiveQuestion = async () => {
+      try {
+        const response = await fetch('/api/voting/question');
+        const data = await response.json();
+        if (response.ok && data.question) {
+          setActiveQuestion(data.question);
+          fetchResults();
+        }
+      } catch (error) {
+        console.error('Failed to fetch active question:', error);
+      }
+    };
+
+    const fetchResults = async () => {
+      if (!activeQuestion) return;
+      try {
+        const response = await fetch(`/api/voting/vote?questionId=${activeQuestion.id}`);
+        const data = await response.json();
+        if (response.ok) {
+          setResults(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch results:', error);
+      }
+    };
+
     setIsMounted(true);
     if (address) {
       checkAdminRights();
       fetchActiveQuestion();
     }
-  }, [address, checkAdminRights, fetchActiveQuestion]);
+  }, [address, activeQuestion]);
 
   useEffect(() => {
     if (isMounted && !address) {
@@ -214,48 +256,6 @@ export default function YoloMoonRunesDashboard() {
       return () => clearInterval(interval);
     }
   }, [activeQuestion, fetchResults]);
-
-  const checkAdminRights = async () => {
-    if (!address) return;
-    try {
-      const response = await fetch('/api/check-admin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ address })
-      });
-      const data = await response.json();
-      setIsAdmin(data.isAdmin);
-    } catch (error) {
-      console.error('Failed to check admin rights:', error);
-      setIsAdmin(false);
-    }
-  };
-
-  const fetchActiveQuestion = async () => {
-    try {
-      const response = await fetch('/api/voting/question');
-      const data = await response.json();
-      if (response.ok && data.question) {
-        setActiveQuestion(data.question);
-        fetchResults();
-      }
-    } catch (error) {
-      console.error('Failed to fetch active question:', error);
-    }
-  };
-
-  const fetchResults = async () => {
-    if (!activeQuestion) return;
-    try {
-      const response = await fetch(`/api/voting/vote?questionId=${activeQuestion.id}`);
-      const data = await response.json();
-      if (response.ok) {
-        setResults(data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch results:', error);
-    }
-  };
 
   const handleCreateQuestion = async (question: string, duration: number) => {
     if (!address) return;

@@ -208,47 +208,47 @@ export default function MoonDragonDashboard() {
   const [statusMessage, setStatusMessage] = useState<string>('');
 
   useEffect(() => {
+    const fetchUserToken = async () => {
+      if (!address) return;
+      try {
+        const response = await fetch(`/api/user-token?address=${address}`);
+        const data = await response.json();
+        if (response.ok && data.token) {
+          setUserToken(data.token);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user token:', error);
+      }
+    };
+
+    const checkAdminRights = async () => {
+      if (!address) return;
+      try {
+        const response = await fetch('/api/check-admin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ address })
+        });
+        const data = await response.json();
+        setIsAdmin(data.isAdmin);
+      } catch (error) {
+        console.error('Failed to check admin rights:', error);
+        setIsAdmin(false);
+      }
+    };
+
     setIsMounted(true);
     if (address) {
       checkAdminRights();
       fetchUserToken();
     }
-  }, [address, checkAdminRights, fetchUserToken]);
+  }, [address]);
 
   useEffect(() => {
     if (isMounted && !address) {
       router.push("/");
     }
   }, [address, router, isMounted]);
-
-  const fetchUserToken = async () => {
-    if (!address) return;
-    try {
-      const response = await fetch(`/api/user-token?address=${address}`);
-      const data = await response.json();
-      if (response.ok && data.token) {
-        setUserToken(data.token);
-      }
-    } catch (error) {
-      console.error('Failed to fetch user token:', error);
-    }
-  };
-
-  const checkAdminRights = async () => {
-    if (!address) return;
-    try {
-      const response = await fetch('/api/check-admin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ address })
-      });
-      const data = await response.json();
-      setIsAdmin(data.isAdmin);
-    } catch (error) {
-      console.error('Failed to check admin rights:', error);
-      setIsAdmin(false);
-    }
-  };
 
   const handleUpdateBalance = async (newBalance: number) => {
     if (!address || !userToken) return;
