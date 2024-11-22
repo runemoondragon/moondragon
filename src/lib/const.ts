@@ -26,18 +26,5 @@ export const ACCESS_TOKENS: AccessToken[] = [
     "requiredBalance": 400000,
     "dashboardPath": "/dashboards/yolo-moon-runes",
     "description": "Access YOLO•MOON•RUNES Dashboard"
-  },
-  {
-    "name": "MAGA•FIGHT•FIGHT",
-    "requiredBalance": 100000,
-    "dashboardPath": "https://lbtil.com",
-    "description": "Access MAGA•FIGHT•FIGHT",
-    "externalUrl": "https://lbtil.com"
-  },
-  {
-    "name": "RSIC•GENESIS•RUNE",
-    "requiredBalance": 150000,
-    "dashboardPath": "/dashboards/rsic-genesis-rune",
-    "description": "Access RSIC•GENESIS•RUNE Dashboard"
   }
 ]; 

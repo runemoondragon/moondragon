@@ -327,7 +327,13 @@ export default function MoonDragonDashboard() {
 
       setUserToken(null);
       setStatusMessage('Token removed successfully');
-      setTimeout(() => setStatusMessage(''), 3000);
+      
+      // Force reload to update ACCESS_TOKENS
+      if (data.requiresReload) {
+        window.location.reload();
+      } else {
+        setTimeout(() => setStatusMessage(''), 3000);
+      }
     } catch (error) {
       throw error;
     }
