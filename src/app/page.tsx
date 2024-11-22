@@ -68,27 +68,24 @@ export default function Home() {
       
       for (const token of ACCESS_TOKENS) {
         try {
-          // First check if it's a user-added token
-          const response = await fetch(`/api/user-token?tokenName=${token.name}`);
-          const data = await response.json();
-          
-          if (data.token) {
-            // If it's a user-added token, check against its required balance
-            const runeBalance = runeBalances.find(rune => rune.name === token.name);
-            const balance = runeBalance ? parseInt(runeBalance.balance) : 0;
-            requirements[token.name] = balance >= data.token.requiredBalance;
-          } else {
-            // If not a user-added token, check against ACCESS_TOKENS requirements
-            const runeBalance = runeBalances.find(rune => rune.name === token.name);
-            const balance = runeBalance ? parseInt(runeBalance.balance) : 0;
-            requirements[token.name] = balance >= token.requiredBalance;
-          }
+          const runeBalance = runeBalances.find(rune => rune.name === token.name);
+          const currentBalance = runeBalance ? parseInt(runeBalance.balance.replace(/,/g, '')) : 0;
+          const requiredBalance = token.requiredBalance;
+
+          console.log(`Checking ${token.name}:`, {
+            currentBalance,
+            requiredBalance,
+            hasEnough: currentBalance >= requiredBalance
+          });
+
+          requirements[token.name] = currentBalance >= requiredBalance;
         } catch (error) {
           console.error(`Error checking token ${token.name}:`, error);
           requirements[token.name] = false;
         }
       }
 
+      console.log('Final requirements:', requirements);
       setTokenRequirements(requirements);
     };
 
@@ -107,14 +104,20 @@ export default function Home() {
     setVerificationMessage("");
     setIsVerifying(true);
 
-    const hasAccess = tokenRequirements[token.name];
+    const runeBalance = runeBalances.find(rune => rune.name === token.name);
+    const currentBalance = runeBalance ? parseInt(runeBalance.balance.replace(/,/g, '')) : 0;
+    const hasAccess = currentBalance >= token.requiredBalance;
+
+    console.log(`Access attempt for ${token.name}:`, {
+      currentBalance,
+      requiredBalance: token.requiredBalance,
+      hasAccess
+    });
+
     if (!hasAccess) {
-      const runeBalance = runeBalances.find(rune => rune.name === token.name);
-      const balance = runeBalance ? parseInt(runeBalance.balance) : 0;
-      
       setVerificationMessage(
         <span>
-          Access Denied: Insufficient {token.name} balance. You need {token.requiredBalance.toLocaleString()} tokens, you have {balance.toLocaleString()}.{" "}
+          Access Denied: Insufficient {token.name} balance. You need {token.requiredBalance.toLocaleString()} tokens, you have {currentBalance.toLocaleString()}.{" "}
           <a 
             href={`https://luminex.io/rune/${encodeURIComponent(token.name)}`}
             target="_blank"
@@ -131,6 +134,12 @@ export default function Home() {
 
     try {
       const signature = await signMessage(BTC_MESSAGE_TO_SIGN);
+      
+      // Check if it's an external URL
+      if (token.externalUrl) {
+        window.open(token.externalUrl, '_blank');
+        return;
+      }
       
       const payload = {
         address,
@@ -219,9 +228,9 @@ export default function Home() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-64">
                     {ACCESS_TOKENS.map((token) => {
-                      const hasAccess = tokenRequirements[token.name];
                       const runeBalance = runeBalances.find(rune => rune.name === token.name);
-                      const currentBalance = runeBalance ? parseInt(runeBalance.balance) : 0;
+                      const currentBalance = runeBalance ? parseInt(runeBalance.balance.replace(/,/g, '')) : 0;
+                      const hasAccess = currentBalance >= token.requiredBalance;
                       
                       return (
                         <DropdownMenuItem
@@ -244,7 +253,7 @@ export default function Home() {
                             {hasAccess ? (
                               <span className="text-green-500">✅ Requirements met</span>
                             ) : (
-                              <span className="text-red-500">❌ Insufficient balance</span>
+                              <span className="text-red-500">❌ Insufficient balance ({currentBalance.toLocaleString()} / {token.requiredBalance.toLocaleString()})</span>
                             )}
                           </div>
                         </DropdownMenuItem>

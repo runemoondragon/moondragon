@@ -5,6 +5,7 @@ export interface AccessToken {
   requiredBalance: number;
   dashboardPath: string;
   description: string;
+  externalUrl?: string;
 }
 
 export const ACCESS_TOKENS: AccessToken[] = [
@@ -29,8 +30,9 @@ export const ACCESS_TOKENS: AccessToken[] = [
   {
     "name": "MAGA•FIGHT•FIGHT",
     "requiredBalance": 100000,
-    "dashboardPath": "/dashboards/maga-fight-fight",
-    "description": "Access MAGA•FIGHT•FIGHT Dashboard"
+    "dashboardPath": "https://lbtil.com",
+    "description": "Access MAGA•FIGHT•FIGHT",
+    "externalUrl": "https://lbtil.com"
   },
   {
     "name": "RSIC•GENESIS•RUNE",
