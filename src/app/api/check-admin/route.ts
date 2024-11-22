@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     // Check if the address has RUNE•MOON•DRAGON tokens
     const balances = await fetchOrdAddress(address);
     const moonDragonBalance = balances?.find(token => token.name === "RUNE•MOON•DRAGON");
-    const hasAccess = moonDragonBalance && parseInt(moonDragonBalance.balance) >= 2000000;
+    const hasAccess = moonDragonBalance && parseInt(moonDragonBalance.balance) >= 20000000;
 
     console.log("Has Moon Dragon access?", hasAccess);
     
