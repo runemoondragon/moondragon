@@ -3,7 +3,6 @@ import * as jose from 'jose';
 import { BTC_MESSAGE_TO_SIGN, ACCESS_TOKENS } from "@/lib/const";
 import { fetchOrdAddress } from "@/lib/runebalance";
 
-// Create a secret key for JWT signing
 const secret = new TextEncoder().encode(
   process.env.JWT_SECRET_KEY || "your-secret-key"
 );
@@ -23,74 +22,94 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
-    // Verify the signature using the address itself
-    // Note: We're not using BIP-322 verification here
-    let verified = true; // For now, we'll assume the signature is valid
-    
-    console.log("✅ Signature check passed");
-
     // Get token requirements
     const token = ACCESS_TOKENS.find(t => t.name === tokenName);
     if (!token) {
+      console.log("❌ Invalid token:", tokenName);
       return NextResponse.json({ error: 'Invalid token' }, { status: 400 });
     }
 
-    console.log("🔍 Fetching rune balances for address:", address);
-    const addressOrdData = await fetchOrdAddress(address);
-    console.log("📊 Received rune balances:", addressOrdData);
-
-    // Check for the specific token's balance
-    const tokenBalance = addressOrdData?.find(
-      (runeBalance) => runeBalance.name === tokenName
-    );
-
-    const hasRequiredBalance = tokenBalance && 
-                             parseInt(tokenBalance.balance) >= token.requiredBalance;
-
-    console.log("🎯 Token check:", {
-      tokenName,
-      requiredBalance: token.requiredBalance,
-      currentBalance: tokenBalance?.balance,
-      meetsRequirement: hasRequiredBalance
-    });
-
-    if (hasRequiredBalance) {
-      console.log("✨ Required balance found, generating JWT token");
-      
-      // Create JWT token using jose
+    // If it's an external URL token (like MAGA•FIGHT•FIGHT), handle differently
+    if (token.externalUrl) {
+      console.log("🔗 External URL token detected, skipping balance check");
       const jwtToken = await new jose.SignJWT({ 
         address,
         tokenName,
-        channel: "protected"
+        channel: "external"
       })
         .setProtectedHeader({ alg: 'HS256' })
         .setExpirationTime('2h')
         .sign(secret);
-      
-      console.log("🎟️ JWT token generated successfully");
-      
-      const response = new Response(JSON.stringify({ success: true }), {
+
+      return new Response(JSON.stringify({ success: true }), {
         status: 200,
         headers: {
           "Set-Cookie": `Auth=${jwtToken}; Path=/; HttpOnly; SameSite=Strict; Max-Age=7200`,
         },
       });
-      
-      console.log("🍪 Setting auth cookie");
-      return response;
     }
-    
-    console.log(`❌ Insufficient ${tokenName} balance`);
-    return NextResponse.json({ 
-      error: `Insufficient ${tokenName} balance. Required: ${token.requiredBalance.toLocaleString()} tokens` 
-    }, { status: 403 });
+
+    console.log("🔍 Fetching rune balances for address:", address);
+    const balances = await fetchOrdAddress(address);
+    console.log("📊 Received balances:", balances);
+
+    if (!balances || balances.length === 0) {
+      console.log("❌ No balances found for address");
+      return NextResponse.json({ 
+        error: 'No rune balances found' 
+      }, { status: 403 });
+    }
+
+    const tokenBalance = balances.find(b => b.name === tokenName);
+    console.log("🎯 Token balance found:", tokenBalance);
+
+    if (!tokenBalance) {
+      console.log(`❌ No ${tokenName} balance found`);
+      return NextResponse.json({ 
+        error: `No ${tokenName} balance found` 
+      }, { status: 403 });
+    }
+
+    const currentBalance = parseInt(tokenBalance.balance.replace(/,/g, ''));
+    const hasRequiredBalance = currentBalance >= token.requiredBalance;
+
+    console.log("💰 Balance check:", {
+      token: tokenName,
+      current: currentBalance,
+      required: token.requiredBalance,
+      hasEnough: hasRequiredBalance
+    });
+
+    if (!hasRequiredBalance) {
+      console.log(`❌ Insufficient ${tokenName} balance`);
+      return NextResponse.json({ 
+        error: `Insufficient ${tokenName} balance. Required: ${token.requiredBalance.toLocaleString()}, Current: ${currentBalance.toLocaleString()}` 
+      }, { status: 403 });
+    }
+
+    console.log("✅ Balance check passed, generating JWT");
+    const jwtToken = await new jose.SignJWT({ 
+      address,
+      tokenName,
+      channel: "protected"
+    })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setExpirationTime('2h')
+      .sign(secret);
+
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: {
+        "Set-Cookie": `Auth=${jwtToken}; Path=/; HttpOnly; SameSite=Strict; Max-Age=7200`,
+      },
+    });
 
   } catch (error: unknown) {
     console.error("🔥 Authentication error:", error);
     return NextResponse.json({ 
       error: error instanceof Error ? error.message : "Unknown error",
       details: error instanceof Error ? error.stack : undefined
-    }, { status: 400 });
+    }, { status: 500 });
   }
 };
 
