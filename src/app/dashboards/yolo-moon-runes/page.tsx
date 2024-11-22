@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useLaserEyes } from "@omnisat/lasereyes";
 import { NavBar } from "@/components/NavBar";
@@ -184,55 +184,58 @@ export default function YoloMoonRunesDashboard() {
   const [hasVoted, setHasVoted] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
 
+  // Define fetchResults using useCallback
+  const fetchResults = useCallback(async () => {
+    if (!activeQuestion) return;
+    try {
+      const response = await fetch(`/api/voting/vote?questionId=${activeQuestion.id}`);
+      const data = await response.json();
+      if (response.ok) {
+        setResults(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch results:', error);
+    }
+  }, [activeQuestion]);
+
+  // Define fetchActiveQuestion using useCallback
+  const fetchActiveQuestion = useCallback(async () => {
+    try {
+      const response = await fetch('/api/voting/question');
+      const data = await response.json();
+      if (response.ok && data.question) {
+        setActiveQuestion(data.question);
+        fetchResults();
+      }
+    } catch (error) {
+      console.error('Failed to fetch active question:', error);
+    }
+  }, [fetchResults]);
+
+  // Define checkAdminRights using useCallback
+  const checkAdminRights = useCallback(async () => {
+    if (!address) return;
+    try {
+      const response = await fetch('/api/check-admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address })
+      });
+      const data = await response.json();
+      setIsAdmin(data.isAdmin);
+    } catch (error) {
+      console.error('Failed to check admin rights:', error);
+      setIsAdmin(false);
+    }
+  }, [address]);
+
   useEffect(() => {
-    const checkAdminRights = async () => {
-      if (!address) return;
-      try {
-        const response = await fetch('/api/check-admin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ address })
-        });
-        const data = await response.json();
-        setIsAdmin(data.isAdmin);
-      } catch (error) {
-        console.error('Failed to check admin rights:', error);
-        setIsAdmin(false);
-      }
-    };
-
-    const fetchActiveQuestion = async () => {
-      try {
-        const response = await fetch('/api/voting/question');
-        const data = await response.json();
-        if (response.ok && data.question) {
-          setActiveQuestion(data.question);
-          fetchResults();
-        }
-      } catch (error) {
-        console.error('Failed to fetch active question:', error);
-      }
-    };
-
-    const fetchResults = async () => {
-      if (!activeQuestion) return;
-      try {
-        const response = await fetch(`/api/voting/vote?questionId=${activeQuestion.id}`);
-        const data = await response.json();
-        if (response.ok) {
-          setResults(data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch results:', error);
-      }
-    };
-
     setIsMounted(true);
     if (address) {
       checkAdminRights();
       fetchActiveQuestion();
     }
-  }, [address, activeQuestion]);
+  }, [address, checkAdminRights, fetchActiveQuestion]);
 
   useEffect(() => {
     if (isMounted && !address) {
