@@ -190,7 +190,7 @@ export default function YoloMoonRunesDashboard() {
       checkAdminRights();
       fetchActiveQuestion();
     }
-  }, [address]);
+  }, [address, checkAdminRights, fetchActiveQuestion]);
 
   useEffect(() => {
     if (isMounted && !address) {
@@ -213,7 +213,7 @@ export default function YoloMoonRunesDashboard() {
 
       return () => clearInterval(interval);
     }
-  }, [activeQuestion]);
+  }, [activeQuestion, fetchResults]);
 
   const checkAdminRights = async () => {
     if (!address) return;

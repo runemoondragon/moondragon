@@ -213,7 +213,7 @@ export default function MoonDragonDashboard() {
       checkAdminRights();
       fetchUserToken();
     }
-  }, [address]);
+  }, [address, checkAdminRights, fetchUserToken]);
 
   useEffect(() => {
     if (isMounted && !address) {
