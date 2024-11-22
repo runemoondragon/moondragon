@@ -26,14 +26,21 @@ export DISABLE_ESLINT_PLUGIN=true
 # Build the project
 npm run build
 
+# Copy necessary files to standalone directory
+mkdir -p .next/standalone/public
+cp -r public/* .next/standalone/public/
+cp -r .next/static .next/standalone/.next/
+mkdir -p .next/standalone/data
+cp -r data/* .next/standalone/data/ || true
+
 # Ensure proper permissions
 sudo chown -R www-data:www-data .next
 sudo chmod -R 755 .next
 
 # Ensure data directory exists with proper permissions
-mkdir -p data
-sudo chown -R www-data:www-data data
-sudo chmod -R 777 data
+mkdir -p .next/standalone/data
+sudo chown -R www-data:www-data .next/standalone/data
+sudo chmod -R 777 .next/standalone/data
 
 # Create logs directory
 mkdir -p logs

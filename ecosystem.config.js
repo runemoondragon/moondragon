@@ -1,8 +1,7 @@
 module.exports = {
   apps: [{
     name: 'runecheck',
-    script: 'npm',
-    args: 'start',
+    script: '.next/standalone/server.js',
     env: {
       NODE_ENV: 'production',
       DISABLE_ESLINT_PLUGIN: 'true',
