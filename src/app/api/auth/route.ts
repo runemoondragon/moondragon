@@ -29,26 +29,6 @@ export const POST = async (req: NextRequest) => {
       return NextResponse.json({ error: 'Invalid token' }, { status: 400 });
     }
 
-    // If it's an external URL token (like MAGA•FIGHT•FIGHT), handle differently
-    if (token.externalUrl) {
-      console.log("🔗 External URL token detected, skipping balance check");
-      const jwtToken = await new jose.SignJWT({ 
-        address,
-        tokenName,
-        channel: "external"
-      })
-        .setProtectedHeader({ alg: 'HS256' })
-        .setExpirationTime('2h')
-        .sign(secret);
-
-      return new Response(JSON.stringify({ success: true }), {
-        status: 200,
-        headers: {
-          "Set-Cookie": `Auth=${jwtToken}; Path=/; HttpOnly; SameSite=Strict; Max-Age=7200`,
-        },
-      });
-    }
-
     console.log("🔍 Fetching rune balances for address:", address);
     const balances = await fetchOrdAddress(address);
     console.log("📊 Received balances:", balances);
@@ -77,7 +57,8 @@ export const POST = async (req: NextRequest) => {
       token: tokenName,
       current: currentBalance,
       required: token.requiredBalance,
-      hasEnough: hasRequiredBalance
+      hasEnough: hasRequiredBalance,
+      isExternal: !!token.externalUrl
     });
 
     if (!hasRequiredBalance) {
@@ -87,16 +68,25 @@ export const POST = async (req: NextRequest) => {
       }, { status: 403 });
     }
 
-    console.log("✅ Balance check passed, generating JWT");
+    console.log("✅ Balance check passed, generating response");
     const jwtToken = await new jose.SignJWT({ 
       address,
       tokenName,
-      channel: "protected"
+      channel: token.externalUrl ? "external" : "protected"
     })
       .setProtectedHeader({ alg: 'HS256' })
       .setExpirationTime('2h')
       .sign(secret);
 
+    // For external URLs, return the URL directly
+    if (token.externalUrl) {
+      return NextResponse.json({ 
+        success: true,
+        externalUrl: token.externalUrl
+      });
+    }
+
+    // For internal routes, set the cookie
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: {

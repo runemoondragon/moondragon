@@ -135,12 +135,6 @@ export default function Home() {
     try {
       const signature = await signMessage(BTC_MESSAGE_TO_SIGN);
       
-      // Check if it's an external URL
-      if (token.externalUrl) {
-        window.open(token.externalUrl, '_blank');
-        return;
-      }
-      
       const payload = {
         address,
         signature,
@@ -148,7 +142,7 @@ export default function Home() {
         tokenName: token.name
       };
       
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/api/auth`, {
+      const response = await fetch('/api/auth', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',
@@ -158,6 +152,11 @@ export default function Home() {
       const data = await response.json();
 
       if (response.ok) {
+        if (data.externalUrl) {
+          window.open(data.externalUrl, '_blank');
+          return;
+        }
+
         setVerificationMessage(
           <span className="text-green-500">
             Access Granted: Welcome to the {token.name} Dashboard.
