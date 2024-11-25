@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { fetchOrdAddress } from '@/lib/runebalance';
+import { fetchOrdAddress, RuneBalance } from '@/lib/runebalance';
 
 export async function POST(req: Request) {
   try {
@@ -8,7 +8,7 @@ export async function POST(req: Request) {
 
     // Check if the address has RUNE•MOON•DRAGON tokens
     const balances = await fetchOrdAddress(address);
-    const moonDragonBalance = balances?.find(token => token.name === "RUNE•MOON•DRAGON");
+    const moonDragonBalance = balances?.find((token: RuneBalance) => token.name === "RUNE•MOON•DRAGON");
     const hasAccess = moonDragonBalance && parseInt(moonDragonBalance.balance) >= 20000000;
 
     console.log("Has Moon Dragon access?", hasAccess);
