@@ -166,7 +166,9 @@ const VotingSection = ({
               />
             </div>
             <div className="text-sm text-gray-400 mt-1">
-              {results?.yesVotes > 0 && `${results.yesVotes.toLocaleString()} votes (${results.yesVotes.toLocaleString()} YOLO)`}
+              {results?.yesVotes && results.yesVotes > 0 && 
+                `${results.yesVotes.toLocaleString()} votes (${results.yesVotes.toLocaleString()} YOLO)`
+              }
             </div>
           </div>
 
@@ -188,7 +190,9 @@ const VotingSection = ({
               />
             </div>
             <div className="text-sm text-gray-400 mt-1">
-              {results?.noVotes > 0 && `${results.noVotes.toLocaleString()} votes (${results.noVotes.toLocaleString()} YOLO)`}
+              {results?.noVotes && results.noVotes > 0 && 
+                `${results.noVotes.toLocaleString()} votes (${results.noVotes.toLocaleString()} YOLO)`
+              }
             </div>
           </div>
 

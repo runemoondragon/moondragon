@@ -78,7 +78,9 @@ export async function POST(request: Request) {
 
     // Verify token ownership and get balance
     const balances = await fetchOrdAddress(walletAddress);
-    const yoloToken = balances?.find(token => token.name === 'YOLO•MOON•RUNES');
+    const yoloToken = balances?.find((token: { name: string, balance: string }) => 
+      token.name === 'YOLO•MOON•RUNES'
+    );
     
     if (!yoloToken) {
       return NextResponse.json({ error: 'No YOLO•MOON•RUNES tokens found' }, { status: 403 });
