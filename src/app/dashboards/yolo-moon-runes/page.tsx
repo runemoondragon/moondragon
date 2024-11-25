@@ -342,7 +342,16 @@ export default function YoloMoonRunesDashboard() {
       
       initializeData();
     }
-  }, [address, isMounted, activeQuestion]);
+  }, [
+    address, 
+    isMounted, 
+    activeQuestion, 
+    checkAdminRights, 
+    checkIfVoted, 
+    fetchActiveQuestion, 
+    fetchResults, 
+    getRuneBalance
+  ]);
 
   useEffect(() => {
     if (isMounted && !address) {

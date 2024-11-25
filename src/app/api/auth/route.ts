@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as jose from 'jose';
 import { BTC_MESSAGE_TO_SIGN, ACCESS_TOKENS } from "@/lib/const";
-import { fetchOrdAddress } from "@/lib/runebalance";
+import { fetchOrdAddress, RuneBalance } from "@/lib/runebalance";
 
 const secret = new TextEncoder().encode(
   process.env.JWT_SECRET_KEY || "your-secret-key"
@@ -40,7 +40,7 @@ export const POST = async (req: NextRequest) => {
       }, { status: 403 });
     }
 
-    const tokenBalance = balances.find(b => b.name === tokenName);
+    const tokenBalance = balances.find((b: RuneBalance) => b.name === tokenName);
     console.log("🎯 Token balance found:", tokenBalance);
 
     if (!tokenBalance) {
