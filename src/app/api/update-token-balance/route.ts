@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 import { TokenAssociation } from '@/lib/types';
-import { fetchOrdAddress } from '@/lib/runebalance';
+import { fetchOrdAddress, RuneBalance } from '@/lib/runebalance';
 import { AccessToken } from '@/lib/const';
 
 const USER_TOKENS_PATH = path.join(process.cwd(), 'data', 'user-tokens.json');
@@ -65,7 +65,7 @@ export async function POST(req: Request) {
 
     // Verify RUNE•MOON•DRAGON access
     const balances = await fetchOrdAddress(walletAddress);
-    const moonDragonBalance = balances?.find(token => token.name === "RUNE•MOON•DRAGON");
+    const moonDragonBalance = balances?.find((token: RuneBalance) => token.name === "RUNE•MOON•DRAGON");
     const hasAccess = moonDragonBalance && parseInt(moonDragonBalance.balance) >= 2000000;
 
     if (!hasAccess) {
