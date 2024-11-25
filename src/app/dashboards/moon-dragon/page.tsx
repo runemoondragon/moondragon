@@ -202,7 +202,6 @@ export default function MoonDragonDashboard() {
   const { address } = useLaserEyes();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [userToken, setUserToken] = useState<TokenAssociation | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string>('');
@@ -211,36 +210,35 @@ export default function MoonDragonDashboard() {
     const fetchUserToken = async () => {
       if (!address) return;
       try {
+        console.log('Fetching token for address:', address);
         const response = await fetch(`/api/user-token?address=${address}`);
+        console.log('API Response status:', response.status);
+        
+        if (!response.ok) {
+          console.log('Response not OK, setting token to null');
+          setUserToken(null);
+          return;
+        }
+        
         const data = await response.json();
-        if (response.ok && data.token) {
+        console.log('API Response data:', data);
+        
+        if (data.token && Object.keys(data.token).length > 0) {
+          console.log('Setting valid token:', data.token);
           setUserToken(data.token);
+        } else {
+          console.log('No valid token found, setting to null');
+          setUserToken(null);
         }
       } catch (error) {
         console.error('Failed to fetch user token:', error);
-      }
-    };
-
-    const checkAdminRights = async () => {
-      if (!address) return;
-      try {
-        const response = await fetch('/api/check-admin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ address })
-        });
-        const data = await response.json();
-        setIsAdmin(data.isAdmin);
-      } catch (error) {
-        console.error('Failed to check admin rights:', error);
-        setIsAdmin(false);
+        setUserToken(null);
       }
     };
 
     setIsMounted(true);
     if (address) {
-      checkAdminRights();
-      fetchUserToken();
+      fetchUserToken().catch(console.error);
     }
   }, [address]);
 
@@ -326,14 +324,10 @@ export default function MoonDragonDashboard() {
       }
 
       setUserToken(null);
+      setIsEditing(false);
       setStatusMessage('Token removed successfully');
-      
-      // Force reload to update ACCESS_TOKENS
-      if (data.requiresReload) {
-        window.location.reload();
-      } else {
-        setTimeout(() => setStatusMessage(''), 3000);
-      }
+
+      window.location.href = window.location.href;
     } catch (error) {
       throw error;
     }
@@ -363,8 +357,8 @@ export default function MoonDragonDashboard() {
               </div>
             </div>
             
-            {/* Add Your Token Section */}
-            {!userToken && isAdmin && (
+            {/* Add Your Token Section - Show when no token exists */}
+            {!userToken && (
               <div className="p-6 rounded-lg bg-white/10 backdrop-blur-sm col-span-2">
                 <h2 className="text-xl font-semibold mb-4">Add Your Token</h2>
                 <p className="text-sm text-gray-400 mb-4">

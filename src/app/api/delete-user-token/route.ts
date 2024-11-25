@@ -25,30 +25,34 @@ async function removeFromAccessTokens(tokenName: string) {
   try {
     const constFile = await fs.readFile(CONST_PATH, 'utf-8');
     
-    // Find the ACCESS_TOKENS array in the file
-    const startIndex = constFile.indexOf('export const ACCESS_TOKENS: AccessToken[] = [');
-    const endIndex = constFile.lastIndexOf('];');
+    // Use regex to find and update the ACCESS_TOKENS array
+    const accessTokensRegex = /export const ACCESS_TOKENS: AccessToken\[] = (\[[\s\S]*?\]);/;
+    const match = constFile.match(accessTokensRegex);
     
-    if (startIndex === -1 || endIndex === -1) {
+    if (!match) {
       throw new Error('Could not find ACCESS_TOKENS array in const.ts');
     }
 
-    // Parse existing tokens
-    const tokensArrayString = constFile.substring(startIndex, endIndex + 2);
-    const currentTokens = eval(tokensArrayString.split('=')[1].trim());
+    try {
+      // Parse the existing tokens array
+      const currentTokens = JSON.parse(match[1].replace(/'/g, '"'));
+      
+      // Remove the token
+      const updatedTokens = currentTokens.filter((token: AccessToken) => token.name !== tokenName);
 
-    // Remove the token
-    const updatedTokens = currentTokens.filter((token: AccessToken) => token.name !== tokenName);
+      // Create the new file content
+      const newFileContent = constFile.replace(
+        accessTokensRegex,
+        `export const ACCESS_TOKENS: AccessToken[] = ${JSON.stringify(updatedTokens, null, 2)};`
+      );
 
-    // Create new file content
-    const beforeTokens = constFile.substring(0, startIndex);
-    const newTokensString = `export const ACCESS_TOKENS: AccessToken[] = ${JSON.stringify(updatedTokens, null, 2)};`;
-    const afterTokens = constFile.substring(endIndex + 2);
-
-    const newFileContent = `${beforeTokens}${newTokensString}${afterTokens}`;
-
-    // Write back to file
-    await fs.writeFile(CONST_PATH, newFileContent, 'utf-8');
+      // Write back to file
+      await fs.writeFile(CONST_PATH, newFileContent, 'utf-8');
+      
+    } catch (parseError) {
+      console.error('Error parsing ACCESS_TOKENS:', parseError);
+      throw new Error('Failed to parse ACCESS_TOKENS array');
+    }
   } catch (error) {
     console.error('Error updating ACCESS_TOKENS:', error);
     throw error;
@@ -59,9 +63,17 @@ export async function DELETE(req: Request) {
   try {
     const { walletAddress, tokenName } = await req.json();
 
+    if (!walletAddress || !tokenName) {
+      return NextResponse.json({ 
+        error: 'Missing required fields' 
+      }, { status: 400 });
+    }
+
     // Verify RUNE•MOON•DRAGON access
     const balances = await fetchOrdAddress(walletAddress);
-    const moonDragonBalance = balances?.find(token => token.name === "RUNE•MOON•DRAGON");
+    const moonDragonBalance = balances?.find((token: { name: string, balance: string }) => 
+      token.name === "RUNE•MOON•DRAGON"
+    );
     const hasAccess = moonDragonBalance && parseInt(moonDragonBalance.balance) >= 2000000;
 
     if (!hasAccess) {
@@ -73,22 +85,33 @@ export async function DELETE(req: Request) {
     try {
       // Update user tokens
       const userTokens = await readUserTokens();
+      
+      // Remove the token from user-tokens.json
       const updatedTokens = userTokens.filter(
         t => !(t.walletAddress === walletAddress && t.tokenName === tokenName)
       );
+      await writeUserTokens(updatedTokens);
 
-      // Remove from both files
-      await Promise.all([
-        writeUserTokens(updatedTokens),
-        removeFromAccessTokens(tokenName)
-      ]);
+      // Remove from ACCESS_TOKENS in const.ts
+      await removeFromAccessTokens(tokenName);
 
-      // Force reload the application to update the token list
-      return NextResponse.json({ 
-        success: true,
-        message: "Token deleted successfully",
-        requiresReload: true
-      });
+      // Clear any cached data
+      const headers = new Headers();
+      headers.append('Cache-Control', 'no-store, must-revalidate');
+      headers.append('Pragma', 'no-cache');
+      headers.append('Expires', '0');
+
+      return new NextResponse(
+        JSON.stringify({ 
+          success: true,
+          message: "Token deleted successfully",
+          requiresReload: true
+        }),
+        { 
+          status: 200,
+          headers
+        }
+      );
 
     } catch (fileError) {
       console.error('File operation error:', fileError);

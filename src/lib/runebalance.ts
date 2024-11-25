@@ -33,8 +33,8 @@ export const fetchOrdAddress = async (address: string) => {
   } catch (error) {
     console.error("Error fetching ord address:", error);
     console.error("Error details:", {
-      message: error.message,
-      response: error.response?.data
+      message: (error as Error).message,
+      response: (error as any).response?.data
     });
     return [];
   }

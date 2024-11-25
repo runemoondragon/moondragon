@@ -23,7 +23,7 @@ export default function UncommonGoodsDashboard() {
       setIsLoading(true);
       try {
         const balances = await fetchOrdAddress(address);
-        const uncommonGoods = balances?.find(rune => rune.name === 'UNCOMMON•GOODS') || null;
+        const uncommonGoods = balances?.find((rune: RuneBalance) => rune.name === 'UNCOMMON•GOODS') || null;
         setUncommonGoodsBalance(uncommonGoods);
       } catch (error) {
         console.error("Error fetching rune balance:", error);

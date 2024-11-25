@@ -9,23 +9,29 @@ export interface AccessToken {
 }
 
 export const ACCESS_TOKENS: AccessToken[] = [
-    {
-        "name": "RUNE•MOON•DRAGON",
-        "requiredBalance": 2000000,
-        "dashboardPath": "/dashboards/moon-dragon",
-        "description": "Access Moon Dragon Dashboard"
-      },
-    {
+  {
+    "name": "RUNE•MOON•DRAGON",
+    "requiredBalance": 2000000,
+    "dashboardPath": "/dashboards/moon-dragon",
+    "description": "Access Moon Dragon Dashboard"
+  },
+  {
     "name": "UNCOMMON•GOODS",
     "requiredBalance": 5,
     "dashboardPath": "/dashboards/uncommon-goods",
     "description": "Access Uncommon Goods Dashboard"
   },
-  
   {
     "name": "YOLO•MOON•RUNES",
     "requiredBalance": 400000,
     "dashboardPath": "/dashboards/yolo-moon-runes",
     "description": "Access YOLO•MOON•RUNES Dashboard"
+  },
+  {
+    "name": "BITCOIN•COMICS",
+    "requiredBalance": 5000,
+    "dashboardPath": "/dashboards/bitcoin-comics",
+    "description": "Access BITCOIN•COMICS Dashboard",
+    "externalUrl": "https://liquidordinals.com/"
   }
 ]; 
