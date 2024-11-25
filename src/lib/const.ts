@@ -26,12 +26,5 @@ export const ACCESS_TOKENS: AccessToken[] = [
     "requiredBalance": 400000,
     "dashboardPath": "/dashboards/yolo-moon-runes",
     "description": "Access YOLO•MOON•RUNES Dashboard"
-  },
-  {
-    "name": "BITCOIN•COMICS",
-    "requiredBalance": 5000,
-    "dashboardPath": "/dashboards/bitcoin-comics",
-    "description": "Access BITCOIN•COMICS Dashboard",
-    "externalUrl": "https://liquidordinals.com/"
   }
 ]; 

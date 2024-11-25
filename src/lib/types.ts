@@ -29,8 +29,8 @@ export interface TokenInfo {
 export interface VotingQuestion {
   id: string;
   question: string;
-  startTime: Date;
-  endTime: Date;
+  startTime: string;
+  endTime: string;
   isActive: boolean;
   createdBy: string;
 }
@@ -40,13 +40,14 @@ export interface Vote {
   walletAddress: string;
   choice: 'yes' | 'no';
   tokenBalance: number;
-  timestamp: Date;
+  timestamp: string;
 }
 
 export interface VotingResults {
   yesVotes: number;
   noVotes: number;
   totalVoters: number;
+  totalVotingPower: number;
   winner: 'yes' | 'no' | 'tie' | null;
   hasEnded: boolean;
 } 

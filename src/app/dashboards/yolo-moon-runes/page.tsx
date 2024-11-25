@@ -3,8 +3,10 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useLaserEyes } from "@omnisat/lasereyes";
 import { NavBar } from "@/components/NavBar";
-import { VotingQuestion, VotingResults } from "@/lib/types";
-import { FiClock, FiCheck, FiX, FiActivity } from 'react-icons/fi';
+import { VotingQuestion, VotingResults, Vote } from "@/lib/types";
+import { FiClock, FiCheck, FiX } from 'react-icons/fi';
+import { fetchOrdAddress } from "@/lib/runebalance";
+import { RuneBalance } from "@/lib/runebalance";
 
 // Create Question Form Component
 const CreateQuestionForm = ({ onSubmit }: { onSubmit: (question: string, duration: number) => Promise<void> }) => {
@@ -74,13 +76,15 @@ const VotingSection = ({
   onVote, 
   results, 
   hasVoted, 
-  timeRemaining 
+  timeRemaining,
+  votingPower 
 }: { 
   question: VotingQuestion;
   onVote: (choice: 'yes' | 'no') => Promise<void>;
   results: VotingResults | null;
   hasVoted: boolean;
   timeRemaining: number;
+  votingPower: number;
 }) => {
   const [isVoting, setIsVoting] = useState(false);
   const [error, setError] = useState('');
@@ -98,29 +102,32 @@ const VotingSection = ({
   };
 
   const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hours}h ${minutes}m ${secs}s`;
   };
 
   const hasEnded = timeRemaining <= 0;
 
   return (
-    <div className="p-6 rounded-lg bg-white/10 backdrop-blur-sm">
-      <div className="mb-6">
-        <h3 className="text-xl font-semibold mb-2">{question.question}</h3>
-        <div className="flex items-center gap-2 text-sm text-gray-400">
-          <FiClock className="w-4 h-4" />
-          {hasEnded ? 'Voting ended' : `Time remaining: ${formatTime(timeRemaining)}`}
-        </div>
+    <div className="p-6 rounded-lg bg-[#1a1f2e]">
+      <h3 className="text-2xl font-semibold mb-2">{question.question}</h3>
+      <div className="flex items-center gap-2 text-sm text-gray-400 mb-4">
+        <FiClock className="w-4 h-4" />
+        {hasEnded ? 'Voting ended' : formatTime(timeRemaining)}
       </div>
+
+      {hasVoted && (
+        <div className="text-red-400 mb-4">Already voted</div>
+      )}
 
       {!hasEnded && !hasVoted && (
         <div className="grid grid-cols-2 gap-4 mb-6">
           <button
             onClick={() => handleVote('yes')}
             disabled={isVoting}
-            className="p-4 rounded-lg bg-green-500/10 hover:bg-green-500/20 transition-colors flex items-center justify-center gap-2"
+            className="p-4 rounded-lg bg-green-600 hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
           >
             <FiCheck className="w-5 h-5" />
             Yes
@@ -128,7 +135,7 @@ const VotingSection = ({
           <button
             onClick={() => handleVote('no')}
             disabled={isVoting}
-            className="p-4 rounded-lg bg-red-500/10 hover:bg-red-500/20 transition-colors flex items-center justify-center gap-2"
+            className="p-4 rounded-lg bg-red-600 hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
           >
             <FiX className="w-5 h-5" />
             No
@@ -138,38 +145,59 @@ const VotingSection = ({
 
       {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
-      {(hasVoted || hasEnded) && results && (
-        <div className="space-y-4">
-          <h4 className="font-medium">Results</h4>
-          <div className="space-y-2">
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span>Yes</span>
-                <span>{((results.yesVotes / (results.yesVotes + results.noVotes)) * 100).toFixed(1)}%</span>
-              </div>
-              <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-green-500 transition-all duration-500"
-                  style={{ width: `${(results.yesVotes / (results.yesVotes + results.noVotes)) * 100}%` }}
-                />
-              </div>
+      <div className="space-y-4">
+        <h4 className="font-medium">Current Results</h4>
+        <div className="space-y-3">
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>Yes</span>
+              <span>{results?.totalVotingPower ? 
+                ((results.yesVotes / results.totalVotingPower) * 100).toFixed(1)
+                : '0'}%</span>
             </div>
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span>No</span>
-                <span>{((results.noVotes / (results.yesVotes + results.noVotes)) * 100).toFixed(1)}%</span>
-              </div>
-              <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-red-500 transition-all duration-500"
-                  style={{ width: `${(results.noVotes / (results.yesVotes + results.noVotes)) * 100}%` }}
-                />
-              </div>
+            <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-green-500 transition-all duration-500"
+                style={{ 
+                  width: results?.totalVotingPower ? 
+                    `${(results.yesVotes / results.totalVotingPower) * 100}%`
+                    : '0%'
+                }}
+              />
+            </div>
+            <div className="text-sm text-gray-400 mt-1">
+              {results?.yesVotes > 0 && `${results.yesVotes.toLocaleString()} votes (${results.yesVotes.toLocaleString()} YOLO)`}
             </div>
           </div>
-          <p className="text-sm text-gray-400">Total votes: {results.totalVoters}</p>
+
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>No</span>
+              <span>{results?.totalVotingPower ? 
+                ((results.noVotes / results.totalVotingPower) * 100).toFixed(1)
+                : '0'}%</span>
+            </div>
+            <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-red-500 transition-all duration-500"
+                style={{ 
+                  width: results?.totalVotingPower ? 
+                    `${(results.noVotes / results.totalVotingPower) * 100}%`
+                    : '0%'
+                }}
+              />
+            </div>
+            <div className="text-sm text-gray-400 mt-1">
+              {results?.noVotes > 0 && `${results.noVotes.toLocaleString()} votes (${results.noVotes.toLocaleString()} YOLO)`}
+            </div>
+          </div>
+
+          <div className="text-sm text-gray-400 mt-2">
+            <p>Total votes: {results?.totalVoters || 0}</p>
+            <p>Total voting power: {results?.totalVotingPower.toLocaleString() || '0'} YOLO</p>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };
@@ -183,34 +211,72 @@ export default function YoloMoonRunesDashboard() {
   const [results, setResults] = useState<VotingResults | null>(null);
   const [hasVoted, setHasVoted] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
+  const [votingPower, setVotingPower] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Define fetchResults using useCallback
+  // First, define checkIfVoted
+  const checkIfVoted = useCallback(async () => {
+    if (!address || !activeQuestion) return;
+    try {
+      const response = await fetch('/api/voting/vote?questionId=' + activeQuestion.id);
+      const data = await response.json();
+      
+      const userVoted = data.votes?.some((vote: Vote) => 
+        vote.walletAddress.toLowerCase() === address.toLowerCase()
+      );
+      
+      setHasVoted(userVoted);
+      
+      if (data.results) {
+        setResults(data.results);
+      }
+      
+      console.log('Vote check:', {
+        userVoted,
+        results: data.results,
+        votes: data.votes
+      });
+    } catch (error) {
+      console.error('Failed to check vote status:', error);
+    }
+  }, [address, activeQuestion]);
+
+  // Then define fetchResults
   const fetchResults = useCallback(async () => {
     if (!activeQuestion) return;
     try {
       const response = await fetch(`/api/voting/vote?questionId=${activeQuestion.id}`);
       const data = await response.json();
+      console.log('Fetched results:', data);
+      
       if (response.ok) {
-        setResults(data);
+        setResults(data.results);
+        if (address) {
+          const userVoted = data.votes?.some((vote: Vote) => 
+            vote.walletAddress.toLowerCase() === address.toLowerCase()
+          );
+          setHasVoted(userVoted);
+        }
       }
     } catch (error) {
       console.error('Failed to fetch results:', error);
     }
-  }, [activeQuestion]);
+  }, [activeQuestion, address]);
 
-  // Define fetchActiveQuestion using useCallback
+  // Finally define fetchActiveQuestion
   const fetchActiveQuestion = useCallback(async () => {
     try {
       const response = await fetch('/api/voting/question');
       const data = await response.json();
       if (response.ok && data.question) {
         setActiveQuestion(data.question);
-        fetchResults();
+        await fetchResults();
+        await checkIfVoted();
       }
     } catch (error) {
       console.error('Failed to fetch active question:', error);
     }
-  }, [fetchResults]);
+  }, [fetchResults, checkIfVoted]);
 
   // Define checkAdminRights using useCallback
   const checkAdminRights = useCallback(async () => {
@@ -229,13 +295,50 @@ export default function YoloMoonRunesDashboard() {
     }
   }, [address]);
 
+  // Replace verifyAccess with getRuneBalance
+  const getRuneBalance = useCallback(async () => {
+    if (!address) return;
+    
+    setIsLoading(true);
+    try {
+      const balances = await fetchOrdAddress(address);
+      const yoloToken = balances?.find((rune: RuneBalance) => rune.name === 'YOLO•MOON•RUNES');
+      if (yoloToken) {
+        setVotingPower(parseInt(yoloToken.balance));
+      } else {
+        router.push("/");
+      }
+    } catch (error) {
+      console.error("Error fetching rune balance:", error);
+      router.push("/");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [address, router]);
+
   useEffect(() => {
     setIsMounted(true);
-    if (address) {
-      checkAdminRights();
-      fetchActiveQuestion();
+  }, []);
+
+  useEffect(() => {
+    if (address && isMounted) {
+      const initializeData = async () => {
+        try {
+          await getRuneBalance();
+          await checkAdminRights();
+          await fetchActiveQuestion();
+          if (activeQuestion) {
+            await fetchResults();
+            await checkIfVoted();
+          }
+        } catch (error) {
+          console.error('Failed to initialize data:', error);
+        }
+      };
+      
+      initializeData();
     }
-  }, [address, checkAdminRights, fetchActiveQuestion]);
+  }, [address, isMounted, activeQuestion]);
 
   useEffect(() => {
     if (isMounted && !address) {
@@ -245,18 +348,25 @@ export default function YoloMoonRunesDashboard() {
 
   useEffect(() => {
     if (activeQuestion) {
-      const interval = setInterval(() => {
-        const now = new Date().getTime();
-        const end = new Date(activeQuestion.endTime).getTime();
-        const remaining = Math.max(0, Math.floor((end - now) / 1000));
-        setTimeRemaining(remaining);
+      const now = new Date().getTime();
+      const end = new Date(activeQuestion.endTime).getTime();
+      const remaining = Math.max(0, Math.floor((end - now) / 1000));
+      setTimeRemaining(remaining);
 
-        if (remaining === 0) {
-          fetchResults();
-        }
-      }, 1000);
+      if (remaining > 0) {
+        const interval = setInterval(() => {
+          const currentTime = new Date().getTime();
+          const newRemaining = Math.max(0, Math.floor((end - currentTime) / 1000));
+          setTimeRemaining(newRemaining);
 
-      return () => clearInterval(interval);
+          if (newRemaining === 0) {
+            clearInterval(interval);
+            fetchResults();
+          }
+        }, 1000);
+
+        return () => clearInterval(interval);
+      }
     }
   }, [activeQuestion, fetchResults]);
 
@@ -284,7 +394,7 @@ export default function YoloMoonRunesDashboard() {
   };
 
   const handleVote = async (choice: 'yes' | 'no') => {
-    if (!address || !activeQuestion) return;
+    if (!address || !activeQuestion || !votingPower) return;
     try {
       const response = await fetch('/api/voting/vote', {
         method: 'POST',
@@ -292,16 +402,18 @@ export default function YoloMoonRunesDashboard() {
         body: JSON.stringify({
           questionId: activeQuestion.id,
           walletAddress: address,
-          choice
+          choice,
+          tokenBalance: votingPower
         })
       });
 
       if (!response.ok) {
-        throw new Error('Failed to submit vote');
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to submit vote');
       }
 
       setHasVoted(true);
-      fetchResults();
+      await fetchResults();
     } catch (error) {
       throw error;
     }
@@ -319,6 +431,12 @@ export default function YoloMoonRunesDashboard() {
         <div className="w-full">
           <h1 className="text-4xl font-bold mb-8">YOLO•MOON•RUNES Dashboard</h1>
           
+          {/* Add Voting Power Display */}
+          <div className="mb-6 p-4 rounded-lg bg-white/10 backdrop-blur-sm">
+            <h2 className="text-lg text-gray-400">Your Voting Power</h2>
+            <p className="text-3xl font-bold">{votingPower.toLocaleString()} YOLO</p>
+          </div>
+          
           <div className="grid gap-6 md:grid-cols-2">
             {/* Active Question Section */}
             <div className="col-span-2">
@@ -329,10 +447,16 @@ export default function YoloMoonRunesDashboard() {
                   results={results}
                   hasVoted={hasVoted}
                   timeRemaining={timeRemaining}
+                  votingPower={votingPower}
                 />
               ) : (
                 <div className="p-6 rounded-lg bg-white/10 backdrop-blur-sm">
-                  <p className="text-gray-400">No active question at the moment.</p>
+                  <p className="text-gray-400 mb-2">No active question at the moment.</p>
+                  <p className="text-sm text-gray-500">
+                    Next voting period: <br />
+                    Start: 3:00 PM UTC (March 19, 2024)<br />
+                    End: 7:00 PM UTC (March 19, 2024)
+                  </p>
                 </div>
               )}
             </div>
