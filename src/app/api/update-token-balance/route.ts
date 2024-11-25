@@ -4,7 +4,6 @@ import path from 'path';
 import { TokenAssociation } from '@/lib/types';
 import { fetchOrdAddress } from '@/lib/runebalance';
 import { AccessToken } from '@/lib/const';
-import { RuneBalance } from '@/lib/runebalance';
 
 const USER_TOKENS_PATH = path.join(process.cwd(), 'data', 'user-tokens.json');
 const CONST_PATH = path.join(process.cwd(), 'src', 'lib', 'const.ts');
@@ -18,7 +17,7 @@ async function readUserTokens(): Promise<TokenAssociation[]> {
   }
 }
 
-async function writeUserTokens(tokens: any[]) {
+async function writeUserTokens(tokens: TokenAssociation[]) {
   await fs.writeFile(USER_TOKENS_PATH, JSON.stringify(tokens, null, 2));
 }
 
@@ -60,21 +59,19 @@ async function updateAccessTokens(tokenName: string, newBalance: number) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    const { walletAddress, tokenName, newBalance } = await request.json();
-
-    if (!walletAddress || !tokenName || newBalance === undefined) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-    }
+    const { walletAddress, tokenName, newBalance } = await req.json();
 
     // Verify RUNE•MOON•DRAGON access
     const balances = await fetchOrdAddress(walletAddress);
-    const moonDragonBalance = balances?.find((token: RuneBalance) => token.name === "RUNE•MOON•DRAGON");
+    const moonDragonBalance = balances?.find(token => token.name === "RUNE•MOON•DRAGON");
     const hasAccess = moonDragonBalance && parseInt(moonDragonBalance.balance) >= 2000000;
 
     if (!hasAccess) {
-      return NextResponse.json({ error: 'Insufficient RUNE•MOON•DRAGON balance' }, { status: 403 });
+      return NextResponse.json({ 
+        error: 'Unauthorized. You need at least 2,000,000 RUNE•MOON•DRAGON tokens.' 
+      }, { status: 401 });
     }
 
     try {

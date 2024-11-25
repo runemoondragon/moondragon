@@ -3,6 +3,7 @@ import axios from "axios";
 export interface RuneBalance {
   name: string;
   balance: string;
+  symbol: string;
 }
 
 export const fetchOrdAddress = async (address: string) => {
@@ -24,6 +25,7 @@ export const fetchOrdAddress = async (address: string) => {
     const balances = runesData.map((rune: any) => ({
       name: rune[0],
       balance: rune[1],
+      symbol: rune[2] || "⚡"
     }));
     
     console.log("Formatted balances:", balances);
