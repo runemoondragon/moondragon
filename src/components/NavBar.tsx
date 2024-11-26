@@ -17,7 +17,7 @@ export function NavBar({ address }: { address?: string }) {
     <nav className="fixed top-0 left-0 right-0 flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
       <div className="flex items-center gap-2">
         <LaserEyesLogo width={32} color={address ? "green" : "orange"} />
-        <span className="font-bold text-xl">RuneCheck</span>
+        <span className="font-bold text-xl">BitBoard</span>
       </div>
       
       <div className="flex items-center gap-6">
