@@ -39,9 +39,11 @@ echo "🔒 Setting web server permissions..."
 sudo chown -R www-data:www-data /var/www/bitboard
 sudo chmod -R 755 /var/www/bitboard
 
-# Restart the application
+# Restart the application with PM2
 echo "🔄 Restarting application..."
-pm2 restart bitboard
+pm2 delete all || true  # Delete all processes, don't fail if none exist
+pm2 start ecosystem.config.js
+pm2 save
 
 # Reload Nginx
 echo "🔄 Reloading Nginx..."
