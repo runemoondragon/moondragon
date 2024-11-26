@@ -1,59 +1,41 @@
 #!/bin/bash
 
-# Kill any process using port 3000
-sudo kill -9 $(sudo lsof -t -i:3000) 2>/dev/null || true
+# Stop execution if any command fails
+set -e
 
-# Stop any running PM2 processes
-pm2 delete runecheck 2>/dev/null || true
-
-# Navigate to project directory
-cd /root/moondragon
+echo "🚀 Starting deployment..."
 
 # Pull latest changes
-git pull
+echo "📥 Pulling latest changes..."
+git pull origin main
 
 # Install dependencies
+echo "📦 Installing dependencies..."
 npm install
 
-# Create .env.production if it doesn't exist
-if [ ! -f .env.production ]; then
-    cp .env.example .env.production
-fi
-
-# Temporarily disable ESLint warnings for deployment
-export DISABLE_ESLINT_PLUGIN=true
-
-# Build the project
+# Build the application
+echo "🔨 Building application..."
 npm run build
 
-# Copy necessary files to standalone directory
-mkdir -p .next/standalone/public
-cp -r public/* .next/standalone/public/
-cp -r .next/static .next/standalone/.next/
-mkdir -p .next/standalone/data
-cp -r data/* .next/standalone/data/ || true
+# Create directory if it doesn't exist
+echo "📁 Setting up directory..."
+sudo mkdir -p /var/www/bitboard
 
-# Ensure proper permissions
-sudo chown -R www-data:www-data .next
-sudo chmod -R 755 .next
+# Copy build files
+echo "📋 Copying build files..."
+sudo cp -r .next /var/www/bitboard/
 
-# Ensure data directory exists with proper permissions
-mkdir -p .next/standalone/data
-sudo chown -R www-data:www-data .next/standalone/data
-sudo chmod -R 777 .next/standalone/data
+# Set permissions
+echo "🔒 Setting permissions..."
+sudo chown -R www-data:www-data /var/www/bitboard
+sudo chmod -R 755 /var/www/bitboard
 
-# Create logs directory
-mkdir -p logs
-chmod 777 logs
+# Restart the application
+echo "🔄 Restarting application..."
+pm2 restart bitboard
 
-# Start with PM2 using ecosystem config
-pm2 start ecosystem.config.js
+# Reload Nginx
+echo "🔄 Reloading Nginx..."
+sudo systemctl reload nginx
 
-# Save PM2 process list
-pm2 save
-
-# Restart Nginx
-sudo systemctl restart nginx
-
-# Show logs
-pm2 logs runecheck --lines 50
+echo "✅ Deployment completed!"
