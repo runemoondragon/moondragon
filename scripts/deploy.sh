@@ -9,9 +9,18 @@ echo "🚀 Starting deployment..."
 echo "📥 Pulling latest changes..."
 git pull origin main
 
+# Fix permissions for the current user
+echo "🔒 Fixing local permissions..."
+sudo chown -R ubuntu:ubuntu .
+sudo chmod -R 755 .
+
 # Install dependencies
 echo "📦 Installing dependencies..."
 npm install
+
+# Clean .next directory if it exists
+echo "🧹 Cleaning build directory..."
+rm -rf .next
 
 # Build the application
 echo "🔨 Building application..."
@@ -25,8 +34,8 @@ sudo mkdir -p /var/www/bitboard
 echo "📋 Copying build files..."
 sudo cp -r .next /var/www/bitboard/
 
-# Set permissions
-echo "🔒 Setting permissions..."
+# Set permissions for web server
+echo "🔒 Setting web server permissions..."
 sudo chown -R www-data:www-data /var/www/bitboard
 sudo chmod -R 755 /var/www/bitboard
 
