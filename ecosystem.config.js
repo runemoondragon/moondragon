@@ -1,6 +1,6 @@
 module.exports = {
   apps: [{
-    name: 'runecheck',
+    name: 'bitboard',
     script: '.next/standalone/server.js',
     env: {
       NODE_ENV: 'production',
