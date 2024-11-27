@@ -1,5 +1,5 @@
 "use client";
-import { LaserEyesLogo } from "@omnisat/lasereyes";
+import Image from 'next/image';
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Link from 'next/link';
 import { FiCopy, FiTwitter } from 'react-icons/fi';
@@ -14,25 +14,33 @@ const truncateAddress = (address: string) => {
 
 export function NavBar({ address }: { address?: string }) {
   return (
-    <nav className="fixed top-0 left-0 right-0 flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+    <nav className="fixed top-0 left-0 right-0 flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-50">
       <div className="flex items-center gap-2">
-        <LaserEyesLogo width={32} color={address ? "green" : "orange"} />
-        <span className="font-bold text-xl">BitBoard</span>
+        <Image 
+          src="/logo.png"
+          alt="Logo"
+          width={32}
+          height={32}
+          className="w-8 h-8"
+        />
+        <Link href="/" className="font-bold text-xl hover:text-orange-500 transition-colors">
+          BitBoard
+        </Link>
       </div>
       
       <div className="flex items-center gap-6">
         <Link 
-          href="/support" 
-          className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+          href="/Docs" 
+           className="text-gray-600 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-500 transition-colors"
         >
-          Support
+          Docs
         </Link>
         
         <a 
-          href="https://x.com/liquidordinals" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+           href="https://x.com/liquidordinals" 
+           target="_blank" 
+           rel="noopener noreferrer"
+           className="text-gray-600 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-500 transition-colors"
         >
           <FiTwitter size={20} />
         </a>
