@@ -1,5 +1,4 @@
 "use client";
-import Image from 'next/image';
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Link from 'next/link';
 import { FiCopy, FiTwitter } from 'react-icons/fi';
@@ -16,13 +15,12 @@ export function NavBar({ address }: { address?: string }) {
   return (
     <nav className="fixed top-0 left-0 right-0 flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-50">
       <div className="flex items-center gap-2">
-        <Image 
+        <img 
           src="/logo.png"
           alt="BitBoard Logo"
-          width={32}
-          height={32}
+          width="32"
+          height="32"
           className="w-8 h-8"
-          priority
         />
         <Link href="/" className="font-bold text-xl hover:text-orange-500 transition-colors">
           BitBoard
