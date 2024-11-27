@@ -34,6 +34,10 @@ sudo mkdir -p /var/www/bitboard
 echo "📋 Copying build files..."
 sudo cp -r .next /var/www/bitboard/
 
+# Copy public directory contents
+echo "📋 Copying public assets..."
+sudo cp -r public/* /var/www/bitboard/public/
+
 # Set permissions for web server
 echo "🔒 Setting web server permissions..."
 sudo chown -R www-data:www-data /var/www/bitboard
