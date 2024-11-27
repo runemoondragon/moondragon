@@ -5,6 +5,7 @@ const nextConfig = {
   assetPrefix: '',
   images: {
     unoptimized: true,
+    domains: ['bitboard.me'],
   },
   async rewrites() {
     return [
