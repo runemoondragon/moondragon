@@ -16,10 +16,10 @@ export const ACCESS_TOKENS: AccessToken[] = [
     "description": "Access Moon Dragon Dashboard"
   },
   {
-    "name": "UNCOMMON•GOODS",
-    "requiredBalance": 5,
-    "dashboardPath": "/dashboards/uncommon-goods",
-    "description": "Access Uncommon Goods Dashboard"
+    "name": "DOG•GO•TO•THE•MOON",
+    "requiredBalance": 50000,
+    "dashboardPath": "/dashboards/dog-go-to-the-moon",
+    "description": "Access Dog Go To The Moon Dashboard"
   },
   {
     "name": "YOLO•MOON•RUNES",

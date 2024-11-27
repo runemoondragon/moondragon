@@ -15,15 +15,15 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 async function fetchTokenInfoFromOrdio(): Promise<TokenInfo> {
   try {
     // Fetch data from ord.io
-    const response = await fetch('https://www.ord.io/api/runes/UNCOMMONGOODS');
+    const response = await fetch('https://www.ord.io/api/runes/DOGGOTOTHEMOON');
     if (!response.ok) throw new Error('Failed to fetch from ord.io');
     
     const data = await response.json();
     
     // Transform and validate the data based on ord.io information
     const tokenInfo: TokenInfo = {
-      name: "UNCOMMON•GOODS",
-      symbol: "⧉",
+      name: "DOG•GO•TO•THE•MOON",
+      symbol: "🐕",
       totalSupply: "260,451", // Current Supply from ord.io
       maxSupply: "36,293,893", // Max Supply from ord.io
       holders: "0", // Holders count from ord.io
