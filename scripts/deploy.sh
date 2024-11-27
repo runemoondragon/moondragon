@@ -39,6 +39,12 @@ echo "🔒 Setting web server permissions..."
 sudo chown -R www-data:www-data /var/www/bitboard
 sudo chmod -R 755 /var/www/bitboard
 
+# Ensure public directory exists and is maintained during deployments
+echo "📁 Maintaining public directory..."
+sudo mkdir -p /var/www/bitboard/public
+sudo chown -R www-data:www-data /var/www/bitboard/public
+sudo chmod -R 755 /var/www/bitboard/public
+
 # Restart the application with PM2
 echo "🔄 Restarting application..."
 pm2 delete all || true  # Delete all processes, don't fail if none exist

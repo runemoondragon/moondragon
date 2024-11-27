@@ -18,10 +18,11 @@ export function NavBar({ address }: { address?: string }) {
       <div className="flex items-center gap-2">
         <Image 
           src="/logo.png"
-          alt="Logo"
+          alt="BitBoard Logo"
           width={32}
           height={32}
           className="w-8 h-8"
+          priority
         />
         <Link href="/" className="font-bold text-xl hover:text-orange-500 transition-colors">
           BitBoard
