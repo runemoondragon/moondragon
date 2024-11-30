@@ -7,6 +7,7 @@ import { TokenAssociation } from "@/lib/types";
 import { NavBar } from "@/components/NavBar";
 import { FiEdit2, FiSave, FiX, FiTrash2 } from 'react-icons/fi';
 import * as Tooltip from '@radix-ui/react-tooltip';
+import * as AlertDialog from '@radix-ui/react-alert-dialog';
 
 interface TokenDisplayProps {
   token: TokenAssociation;
@@ -35,10 +36,6 @@ const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, on
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to remove this token? This action cannot be undone.')) {
-      return;
-    }
-    
     setIsDeleting(true);
     try {
       await onDelete();
@@ -63,14 +60,63 @@ const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, on
               >
                 <FiEdit2 size={16} />
               </button>
-              <button
-                onClick={handleDelete}
-                className="p-2 hover:bg-red-700 rounded-full transition-colors"
-                title="Remove Token"
-                disabled={isDeleting}
-              >
-                <FiTrash2 size={16} className={isDeleting ? 'opacity-50' : ''} />
-              </button>
+              
+              <Tooltip.Provider>
+                <Tooltip.Root>
+                  <Tooltip.Trigger asChild>
+                    <AlertDialog.Root>
+                      <AlertDialog.Trigger asChild>
+                        <button
+                          className="p-2 hover:bg-red-700 rounded-full transition-colors"
+                          disabled={isDeleting}
+                        >
+                          <FiTrash2 size={16} className={isDeleting ? 'opacity-50' : ''} />
+                        </button>
+                      </AlertDialog.Trigger>
+                      
+                      <AlertDialog.Portal>
+                        <AlertDialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
+                        <AlertDialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] max-w-md p-6 rounded-lg bg-gray-900 border border-gray-800 shadow-xl">
+                          <AlertDialog.Title className="text-xl font-semibold mb-4">
+                            Are you sure you want to remove this token?
+                          </AlertDialog.Title>
+                          
+                          <AlertDialog.Description className="text-gray-400 mb-6">
+                            Removing this token will delete all associated data, including its dashboard, voting sessions, and settings. This action is irreversible. Please confirm if you want to proceed.
+                          </AlertDialog.Description>
+                          
+                          <div className="flex justify-end gap-3">
+                            <AlertDialog.Cancel asChild>
+                              <button className="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white transition-colors">
+                                Cancel
+                              </button>
+                            </AlertDialog.Cancel>
+                            
+                            <AlertDialog.Action asChild>
+                              <button
+                                onClick={handleDelete}
+                                disabled={isDeleting}
+                                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                {isDeleting ? 'Removing...' : 'Remove Token'}
+                              </button>
+                            </AlertDialog.Action>
+                          </div>
+                        </AlertDialog.Content>
+                      </AlertDialog.Portal>
+                    </AlertDialog.Root>
+                  </Tooltip.Trigger>
+                  <Tooltip.Portal>
+                    <Tooltip.Content
+                      className="max-w-xs px-4 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
+                      sideOffset={5}
+                    >
+                      Remove this token and all its associated data. This action is permanent.
+                      <Tooltip.Arrow className="fill-gray-900" />
+                    </Tooltip.Content>
+                  </Tooltip.Portal>
+                </Tooltip.Root>
+              </Tooltip.Provider>
             </>
           ) : (
             <div className="flex gap-2">
