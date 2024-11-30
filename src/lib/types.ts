@@ -58,3 +58,16 @@ export interface VotingResults {
   winningChoice?: 'yes' | 'no';
   hasEnded: boolean;
 }
+
+export interface VotingSession {
+  id: string;
+  question: string;
+  options: string[];
+  results?: {
+    votes: Record<string, number>;
+    votingPower: Record<string, number>;
+    totalVotes: number;
+    totalVotingPower: number;
+    winningOption?: string;
+  };
+}
