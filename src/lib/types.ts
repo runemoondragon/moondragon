@@ -33,7 +33,7 @@ export interface VotingQuestion {
   question: string;
   startTime: string;
   endTime: string;
-  status: 'active' | 'completed';
+  status: 'active' | 'completed' | 'archived';
   createdBy: string;
 }
 
