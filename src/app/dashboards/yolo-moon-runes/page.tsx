@@ -413,6 +413,7 @@ export default function YoloMoonRunesDashboard() {
   const [votingPower, setVotingPower] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const [nextSessionTime, setNextSessionTime] = useState<string | null>(null);
+  const [lastFetchTime, setLastFetchTime] = useState<number | null>(null);
 
   // First, define checkIfVoted
   const checkIfVoted = useCallback(async () => {
@@ -444,13 +445,20 @@ export default function YoloMoonRunesDashboard() {
   // Then define fetchResults
   const fetchResults = useCallback(async () => {
     if (!activeQuestion) return;
+    
+    // Add timestamp to prevent fetching too frequently
+    const now = Date.now();
+    if (lastFetchTime && now - lastFetchTime < 5000) {
+      return; // Don't fetch if less than 5 seconds passed
+    }
+    
     try {
       const response = await fetch(`/api/voting/vote?questionId=${activeQuestion.id}`);
       const data = await response.json();
-      console.log('Fetched results:', data);
       
       if (response.ok) {
         setResults(data.results);
+        setLastFetchTime(now);
         if (address) {
           const userVoted = data.votes?.some((vote: Vote) => 
             vote.walletAddress.toLowerCase() === address.toLowerCase()
@@ -461,7 +469,7 @@ export default function YoloMoonRunesDashboard() {
     } catch (error) {
       console.error('Failed to fetch results:', error);
     }
-  }, [activeQuestion, address]);
+  }, [activeQuestion?.id, address]);
 
   // Finally define fetchActiveQuestion
   const fetchActiveQuestion = useCallback(async () => {
@@ -528,6 +536,7 @@ export default function YoloMoonRunesDashboard() {
     setIsMounted(true);
   }, []);
 
+  // Initial data load
   useEffect(() => {
     if (address && isMounted) {
       const initializeData = async () => {
@@ -535,27 +544,24 @@ export default function YoloMoonRunesDashboard() {
           await getRuneBalance();
           await checkAdminRights();
           await fetchActiveQuestion();
-          if (activeQuestion) {
-            await fetchResults();
-            await checkIfVoted();
-          }
         } catch (error) {
           console.error('Failed to initialize data:', error);
         }
       };
-      
       initializeData();
     }
-  }, [
-    address, 
-    isMounted, 
-    activeQuestion, 
-    checkAdminRights, 
-    checkIfVoted, 
-    fetchActiveQuestion, 
-    fetchResults, 
-    getRuneBalance
-  ]);
+  }, [address, isMounted]); // Remove other dependencies
+
+  // Handle active question updates
+  useEffect(() => {
+    if (activeQuestion && address) {
+      const fetchQuestionData = async () => {
+        await fetchResults();
+        await checkIfVoted();
+      };
+      fetchQuestionData();
+    }
+  }, [activeQuestion?.id, address]); // Only depend on question ID and address
 
   useEffect(() => {
     if (isMounted && !address) {
@@ -564,28 +570,38 @@ export default function YoloMoonRunesDashboard() {
   }, [address, router, isMounted]);
 
   useEffect(() => {
-    if (activeQuestion) {
-      const now = new Date().getTime();
-      const end = new Date(activeQuestion.endTime).getTime();
-      const remaining = Math.max(0, Math.floor((end - now) / 1000));
-      setTimeRemaining(remaining);
+    if (!activeQuestion) return;
 
-      if (remaining > 0) {
-        const interval = setInterval(() => {
-          const currentTime = new Date().getTime();
-          const newRemaining = Math.max(0, Math.floor((end - currentTime) / 1000));
-          setTimeRemaining(newRemaining);
+    const now = new Date().getTime();
+    const end = new Date(activeQuestion.endTime).getTime();
+    const remaining = Math.max(0, Math.floor((end - now) / 1000));
+    setTimeRemaining(remaining);
 
-          if (newRemaining === 0) {
-            clearInterval(interval);
-            fetchResults();
-          }
-        }, 1000);
-
-        return () => clearInterval(interval);
+    // Only poll results every 30 seconds while voting is active
+    const resultsPollInterval = setInterval(() => {
+      if (activeQuestion.status === 'active') {
+        fetchResults();
       }
-    }
-  }, [activeQuestion, fetchResults]);
+    }, 30000);  // 30 seconds
+
+    // Update countdown every second
+    const countdownInterval = setInterval(() => {
+      const currentTime = new Date().getTime();
+      const newRemaining = Math.max(0, Math.floor((end - currentTime) / 1000));
+      setTimeRemaining(newRemaining);
+
+      if (newRemaining === 0) {
+        clearInterval(countdownInterval);
+        clearInterval(resultsPollInterval);
+        fetchResults();
+      }
+    }, 1000);
+
+    return () => {
+      clearInterval(countdownInterval);
+      clearInterval(resultsPollInterval);
+    };
+  }, [activeQuestion?.id]); // Only depend on question ID
 
   const handleCreateQuestion = async (question: string, duration: number) => {
     if (!address) return;

@@ -40,5 +40,12 @@
     "choice": "yes",
     "tokenBalance": 600000,
     "timestamp": "2024-11-30T17:20:09.195Z"
+  },
+  {
+    "questionId": "q1",
+    "walletAddress": "bc1p2ls86yhv4h0tj6zslzd2tkarje9p0j2nl360fv2sfm5ykww49zwq9w742x",
+    "choice": "yes",
+    "tokenBalance": 400000,
+    "timestamp": "2024-11-30T17:49:19.686Z"
   }
 ]

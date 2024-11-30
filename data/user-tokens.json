@@ -5,5 +5,12 @@
     "walletAddress": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
     "associatedUrl": "/dashboards/maga-fight-fight",
     "createdAt": "2024-11-30T06:10:20.103Z"
+  },
+  {
+    "tokenName": "MANIA•MANIA•MANIA",
+    "requiredBalance": 10000000,
+    "walletAddress": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
+    "associatedUrl": "/dashboards/mania-mania-mania",
+    "createdAt": "2024-11-30T20:13:29.231Z"
   }
 ]

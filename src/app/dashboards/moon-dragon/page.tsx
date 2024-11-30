@@ -6,6 +6,7 @@ import { AccessToken } from "@/lib/const";
 import { TokenAssociation } from "@/lib/types";
 import { NavBar } from "@/components/NavBar";
 import { FiEdit2, FiSave, FiX, FiTrash2 } from 'react-icons/fi';
+import * as Tooltip from '@radix-ui/react-tooltip';
 
 interface TokenDisplayProps {
   token: TokenAssociation;
@@ -14,9 +15,12 @@ interface TokenDisplayProps {
   onCancel: () => void;
   onSave: (newBalance: number) => Promise<void>;
   onDelete: () => Promise<void>;
+  onButton1Click: () => void;
+  onButton2Click: () => void;
+  onButton3Click: () => void;
 }
 
-const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete }: TokenDisplayProps) => {
+const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, onButton1Click, onButton2Click, onButton3Click }: TokenDisplayProps) => {
   const [newBalance, setNewBalance] = useState(token.requiredBalance);
   const [error, setError] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -112,6 +116,72 @@ const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete }: 
           </p>
         )}
         {error && <p className="text-sm text-red-500">{error}</p>}
+        
+        <div className="flex gap-3 mt-4">
+          <Tooltip.Provider>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <button
+                  onClick={onButton1Click}
+                  className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+                >
+                  Start New Question
+                </button>
+              </Tooltip.Trigger>
+              <Tooltip.Portal>
+                <Tooltip.Content
+                  className="max-w-xs px-4 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
+                  sideOffset={5}
+                >
+                  Create a new voting session for governance decisions. Propose questions and gather input from token holders.
+                  <Tooltip.Arrow className="fill-gray-900" />
+                </Tooltip.Content>
+              </Tooltip.Portal>
+            </Tooltip.Root>
+
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <button
+                  onClick={onButton2Click}
+                  className="flex-1 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors opacity-70 cursor-not-allowed"
+                  disabled
+                >
+                  Distribute Dividends
+                </button>
+              </Tooltip.Trigger>
+              <Tooltip.Portal>
+                <Tooltip.Content
+                  className="max-w-xs px-4 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
+                  sideOffset={5}
+                >
+                  Allocate and distribute profits or rewards to token holders based on their share of the asset. Coming Soon.
+                  <Tooltip.Arrow className="fill-gray-900" />
+                </Tooltip.Content>
+              </Tooltip.Portal>
+            </Tooltip.Root>
+
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <button
+                  onClick={onButton3Click}
+                  className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors opacity-70 cursor-not-allowed"
+                  disabled
+                >
+                  Board Actions
+                </button>
+              </Tooltip.Trigger>
+              <Tooltip.Portal>
+                <Tooltip.Content
+                  className="max-w-xs px-4 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
+                  sideOffset={5}
+                >
+                  Empower board members to execute company-level actions, such as strategic proposals or decision approvals. Coming Soon.
+                  <Tooltip.Arrow className="fill-gray-900" />
+                </Tooltip.Content>
+              </Tooltip.Portal>
+            </Tooltip.Root>
+          </Tooltip.Provider>
+        </div>
       </div>
     </div>
   );
@@ -335,6 +405,21 @@ export default function MoonDragonDashboard() {
     }
   };
 
+  const handleButton1Click = () => {
+    console.log("Button 1 clicked");
+    // Add functionality later
+  };
+
+  const handleButton2Click = () => {
+    console.log("Button 2 clicked");
+    // Add functionality later
+  };
+
+  const handleButton3Click = () => {
+    console.log("Button 3 clicked");
+    // Add functionality later
+  };
+
   if (!isMounted) {
     return null;
   }
@@ -384,6 +469,9 @@ export default function MoonDragonDashboard() {
                   onCancel={() => setIsEditing(false)}
                   onSave={handleUpdateBalance}
                   onDelete={handleDeleteToken}
+                  onButton1Click={handleButton1Click}
+                  onButton2Click={handleButton2Click}
+                  onButton3Click={handleButton3Click}
                 />
               </div>
             )}
