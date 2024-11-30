@@ -52,7 +52,7 @@ export async function GET(req: Request) {
         noVotes,
         totalVoters: questionVotes.length,
         totalVotingPower,
-        winner: yesVotes > noVotes ? 'yes' : noVotes > yesVotes ? 'no' : 'tie',
+        winningChoice: yesVotes > noVotes ? 'yes' : noVotes > yesVotes ? 'no' : undefined,
         hasEnded: false
       }
     });
@@ -65,7 +65,7 @@ export async function GET(req: Request) {
         noVotes: 0,
         totalVoters: 0,
         totalVotingPower: 0,
-        winner: null,
+        winningChoice: undefined,
         hasEnded: false
       }
     });
@@ -119,7 +119,7 @@ export async function POST(request: Request) {
       noVotes,
       totalVoters: questionVotes.length,
       totalVotingPower: yesVotes + noVotes,
-      winner: yesVotes > noVotes ? 'yes' : noVotes > yesVotes ? 'no' : 'tie',
+      winningChoice: yesVotes > noVotes ? 'yes' : noVotes > yesVotes ? 'no' : undefined,
       hasEnded: false
     };
 

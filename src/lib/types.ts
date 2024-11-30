@@ -55,4 +55,5 @@ export interface VotingResults {
   totalVoters: number;
   totalVotingPower: number;
   winningChoice?: 'yes' | 'no';
+  hasEnded: boolean;
 }
