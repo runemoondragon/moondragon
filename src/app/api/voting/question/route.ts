@@ -1,9 +1,19 @@
 import { NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { VotingQuestion, VotingQuestionsData } from '@/lib/types';
+import { VotingQuestion, VotingQuestionsData, VotingSessionStatus } from '@/lib/types';
 
 const questionsPath = path.join(process.cwd(), 'data/voting-questions.json');
+
+async function getQuestions(): Promise<VotingQuestion[]> {
+  const data = await fs.readFile(questionsPath, 'utf8');
+  const questionsData = JSON.parse(data) as VotingQuestionsData;
+  return questionsData.questions;
+}
+
+async function saveQuestions(questions: VotingQuestion[]): Promise<void> {
+  await fs.writeFile(questionsPath, JSON.stringify({ questions }, null, 2));
+}
 
 export async function GET() {
   try {
