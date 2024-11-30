@@ -26,5 +26,12 @@ export const ACCESS_TOKENS: AccessToken[] = [
     "requiredBalance": 400000,
     "dashboardPath": "/dashboards/yolo-moon-runes",
     "description": "Access YOLO•MOON•RUNES Dashboard"
+  },
+  {
+    "name": "MAGA•FIGHT•FIGHT",
+    "requiredBalance": 100000,
+    "dashboardPath": "/dashboards/maga-fight-fight",
+    "description": "Access MAGA•FIGHT•FIGHT Dashboard",
+    "externalUrl": "/dashboards/maga-fight-fight"
   }
 ]; 

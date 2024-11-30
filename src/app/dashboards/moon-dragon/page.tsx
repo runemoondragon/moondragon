@@ -106,9 +106,11 @@ const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete }: 
             Required Balance: {token.requiredBalance.toLocaleString()}
           </p>
         )}
-        <p className="text-sm text-gray-400">
-          Associated URL: <a href={token.associatedUrl} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300">{token.associatedUrl}</a>
-        </p>
+        {token.associatedUrl && (
+          <p className="text-sm text-gray-400">
+            Dashboard: <a href={token.associatedUrl} className="text-blue-400 hover:text-blue-300">View Dashboard</a>
+          </p>
+        )}
         {error && <p className="text-sm text-red-500">{error}</p>}
       </div>
     </div>
@@ -119,8 +121,7 @@ const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete }: 
 const AddTokenForm = ({ onSubmit }: { onSubmit: (data: any) => Promise<void> }) => {
   const [formData, setFormData] = useState({
     name: '',
-    requiredBalance: 0,
-    associatedUrl: ''
+    requiredBalance: 0
   });
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -135,8 +136,7 @@ const AddTokenForm = ({ onSubmit }: { onSubmit: (data: any) => Promise<void> }) 
       // Reset form on success
       setFormData({
         name: '',
-        requiredBalance: 0,
-        associatedUrl: ''
+        requiredBalance: 0
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add token');
@@ -167,18 +167,6 @@ const AddTokenForm = ({ onSubmit }: { onSubmit: (data: any) => Promise<void> }) 
           onChange={(e) => setFormData(prev => ({ ...prev, requiredBalance: parseInt(e.target.value) }))}
           className="w-full p-2 rounded-lg bg-white/10 backdrop-blur-sm border border-gray-700"
           min="0"
-          required
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium mb-1">Associated URL</label>
-        <input
-          type="url"
-          value={formData.associatedUrl}
-          onChange={(e) => setFormData(prev => ({ ...prev, associatedUrl: e.target.value }))}
-          className="w-full p-2 rounded-lg bg-white/10 backdrop-blur-sm border border-gray-700"
-          placeholder="https://example.com"
           required
         />
       </div>
@@ -281,6 +269,7 @@ export default function MoonDragonDashboard() {
     if (!address) return;
 
     try {
+      // Add the token
       const response = await fetch('/api/add-user-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -294,6 +283,19 @@ export default function MoonDragonDashboard() {
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to add token');
+      }
+
+      // Create the dashboard
+      const createDashboardResponse = await fetch('/api/create-token-dashboard', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tokenName: tokenData.name
+        })
+      });
+
+      if (!createDashboardResponse.ok) {
+        console.error('Failed to create dashboard');
       }
 
       setUserToken(data.token);

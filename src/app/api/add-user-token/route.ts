@@ -64,15 +64,26 @@ async function addToAccessTokens(newToken: AccessToken) {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    const { name, requiredBalance, associatedUrl, walletAddress } = await req.json();
+    const { name, requiredBalance, walletAddress } = await request.json();
 
-    if (!name || requiredBalance === undefined || !associatedUrl || !walletAddress) {
-      return NextResponse.json({ 
-        error: 'Missing required fields' 
-      }, { status: 400 });
+    // Validate required fields
+    if (!name || requiredBalance === undefined || !walletAddress) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
     }
+
+    // Create token data with default dashboard URL
+    const tokenData: TokenAssociation = {
+      tokenName: name,
+      requiredBalance,
+      walletAddress,
+      associatedUrl: `/dashboards/${name.toLowerCase().replace(/[•]/g, '-')}`,
+      createdAt: new Date()
+    };
 
     // Verify RUNE•MOON•DRAGON access
     const balances = await fetchOrdAddress(walletAddress);
@@ -104,17 +115,8 @@ export async function POST(req: Request) {
         }, { status: 400 });
       }
 
-      // Create new token with createdAt field
-      const newToken: TokenAssociation = {
-        tokenName: name,
-        requiredBalance,
-        associatedUrl,
-        walletAddress,
-        createdAt: new Date()
-      };
-
       // Add to user-tokens.json
-      await writeUserTokens([...userTokens, newToken]);
+      await writeUserTokens([...userTokens, tokenData]);
 
       // Add to ACCESS_TOKENS in const.ts
       const accessToken: AccessToken = {
@@ -122,7 +124,7 @@ export async function POST(req: Request) {
         requiredBalance,
         dashboardPath: `/dashboards/${name.toLowerCase().replace(/[•]/g, '-')}`,
         description: `Access ${name} Dashboard`,
-        externalUrl: associatedUrl
+        externalUrl: tokenData.associatedUrl
       };
       
       await addToAccessTokens(accessToken);
@@ -137,7 +139,7 @@ export async function POST(req: Request) {
         JSON.stringify({ 
           success: true,
           message: "Token added successfully",
-          token: newToken,
+          token: tokenData,
           requiresReload: true
         }),
         { 

@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "tokenName": "MAGA•FIGHT•FIGHT",
+    "requiredBalance": 100000,
+    "walletAddress": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
+    "associatedUrl": "/dashboards/maga-fight-fight",
+    "createdAt": "2024-11-30T06:10:20.103Z"
+  }
+]
