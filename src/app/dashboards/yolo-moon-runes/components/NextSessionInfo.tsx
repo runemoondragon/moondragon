@@ -1,7 +1,7 @@
-import { VotingSession } from '@/lib/types';
+import { VotingQuestion } from '@/lib/types';
 
 interface Props {
-  session: VotingSession;
+  session: VotingQuestion;
 }
 
 export default function NextSessionInfo({ session }: Props) {
