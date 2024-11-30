@@ -206,6 +206,102 @@ const VotingSection = ({
   );
 };
 
+// Add new CompletedVotingSection component
+const CompletedVotingSection = ({ 
+  question, 
+  results 
+}: { 
+  question: VotingQuestion;
+  results: VotingResults;
+}) => {
+  const winningPercentage = results.winningChoice === 'yes' 
+    ? (results.yesVotes / results.totalVotingPower) * 100
+    : (results.noVotes / results.totalVotingPower) * 100;
+
+  return (
+    <div className="p-6 rounded-lg bg-[#1a1f2e]">
+      <div className="mb-4">
+        <h3 className="text-2xl font-semibold mb-2">{question.question}</h3>
+        <div className="text-sm text-gray-400">
+          Voting ended {new Date(question.endTime).toLocaleDateString()}
+        </div>
+      </div>
+
+      <div className="mb-6">
+        <div className="text-xl font-medium flex items-center gap-2">
+          <span>Winner:</span>
+          <span className={`${
+            results.winningChoice === 'yes' ? 'text-green-500' : 'text-red-500'
+          }`}>
+            {results.winningChoice === 'yes' ? 'Yes' : 'No'}
+          </span>
+          <span className="text-gray-400">
+            ({winningPercentage.toFixed(1)}%)
+          </span>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <h4 className="font-medium">Final Results</h4>
+        <div className="space-y-3">
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>Yes</span>
+              <span>{results?.totalVotingPower ? 
+                ((results.yesVotes / results.totalVotingPower) * 100).toFixed(1)
+                : '0'}%</span>
+            </div>
+            <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-green-500 transition-all duration-500"
+                style={{ 
+                  width: results?.totalVotingPower ? 
+                    `${(results.yesVotes / results.totalVotingPower) * 100}%`
+                    : '0%'
+                }}
+              />
+            </div>
+            <div className="text-sm text-gray-400 mt-1">
+              {results?.yesVotes && results.yesVotes > 0 && 
+                `${results.yesVotes.toLocaleString()} votes (${results.yesVotes.toLocaleString()} YOLO)`
+              }
+            </div>
+          </div>
+
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>No</span>
+              <span>{results?.totalVotingPower ? 
+                ((results.noVotes / results.totalVotingPower) * 100).toFixed(1)
+                : '0'}%</span>
+            </div>
+            <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-red-500 transition-all duration-500"
+                style={{ 
+                  width: results?.totalVotingPower ? 
+                    `${(results.noVotes / results.totalVotingPower) * 100}%`
+                    : '0%'
+                }}
+              />
+            </div>
+            <div className="text-sm text-gray-400 mt-1">
+              {results?.noVotes && results.noVotes > 0 && 
+                `${results.noVotes.toLocaleString()} votes (${results.noVotes.toLocaleString()} YOLO)`
+              }
+            </div>
+          </div>
+
+          <div className="text-sm text-gray-400 mt-2">
+            <p>Total votes: {results?.totalVoters || 0}</p>
+            <p>Total voting power: {results?.totalVotingPower.toLocaleString() || '0'} YOLO</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function YoloMoonRunesDashboard() {
   const { address } = useLaserEyes();
   const router = useRouter();
@@ -217,6 +313,7 @@ export default function YoloMoonRunesDashboard() {
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [votingPower, setVotingPower] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [nextSessionTime, setNextSessionTime] = useState<string | null>(null);
 
   // First, define checkIfVoted
   const checkIfVoted = useCallback(async () => {
@@ -272,13 +369,21 @@ export default function YoloMoonRunesDashboard() {
     try {
       const response = await fetch('/api/voting/question');
       const data = await response.json();
+      
       if (response.ok && data.question) {
         setActiveQuestion(data.question);
         await fetchResults();
-        await checkIfVoted();
+        
+        if (data.question.status === 'active') {
+          await checkIfVoted();
+        }
+        
+        if (data.question.nextSessionStart) {
+          setNextSessionTime(data.question.nextSessionStart);
+        }
       }
     } catch (error) {
-      console.error('Failed to fetch active question:', error);
+      console.error('Failed to fetch question:', error);
     }
   }, [fetchResults, checkIfVoted]);
 
@@ -432,6 +537,29 @@ export default function YoloMoonRunesDashboard() {
     }
   };
 
+  // Add function for admins to schedule next session
+  const scheduleNextSession = async (startTime: string) => {
+    if (!isAdmin || !address) return;
+    
+    try {
+      const response = await fetch('/api/voting/schedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          adminAddress: address,
+          startTime
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setNextSessionTime(data.nextSessionStart);
+      }
+    } catch (error) {
+      console.error('Failed to schedule next session:', error);
+    }
+  };
+
   if (!isMounted) {
     return null;
   }
@@ -451,36 +579,44 @@ export default function YoloMoonRunesDashboard() {
           </div>
           
           <div className="grid gap-6 md:grid-cols-2">
-            {/* Active Question Section */}
             <div className="col-span-2">
               {activeQuestion ? (
-                <VotingSection
-                  question={activeQuestion}
-                  onVote={handleVote}
-                  results={results}
-                  hasVoted={hasVoted}
-                  timeRemaining={timeRemaining}
-                  votingPower={votingPower}
-                />
+                activeQuestion.status === 'active' ? (
+                  <VotingSection
+                    question={activeQuestion}
+                    onVote={handleVote}
+                    results={results}
+                    hasVoted={hasVoted}
+                    timeRemaining={timeRemaining}
+                    votingPower={votingPower}
+                  />
+                ) : (
+                  <CompletedVotingSection
+                    question={activeQuestion}
+                    results={results!}
+                  />
+                )
               ) : (
                 <div className="p-6 rounded-lg bg-white/10 backdrop-blur-sm">
-                  <p className="text-gray-400 mb-2">No active question at the moment.</p>
-                  <p className="text-sm text-gray-500">
-                    Next voting period: <br />
-                    Start: 3:00 PM UTC (March 19, 2024)<br />
-                    End: 7:00 PM UTC (March 19, 2024)
-                  </p>
+                  <p className="text-gray-400 mb-2">No active or completed questions.</p>
+                  {nextSessionTime && (
+                    <p className="text-sm text-gray-500">
+                      Next voting session starts: {new Date(nextSessionTime).toLocaleString()}
+                    </p>
+                  )}
                 </div>
               )}
             </div>
 
-            {/* Create Question Section (Admin Only) */}
-            {isAdmin && !activeQuestion && (
+            {/* Admin controls */}
+            {isAdmin && (
               <div className="col-span-2 md:col-span-1">
-                <div className="p-6 rounded-lg bg-white/10 backdrop-blur-sm">
-                  <h2 className="text-xl font-semibold mb-4">Create New Question</h2>
-                  <CreateQuestionForm onSubmit={handleCreateQuestion} />
-                </div>
+                {activeQuestion?.status !== 'active' && (
+                  <div className="p-6 rounded-lg bg-white/10 backdrop-blur-sm">
+                    <h2 className="text-xl font-semibold mb-4">Admin Controls</h2>
+                    <CreateQuestionForm onSubmit={handleCreateQuestion} />
+                  </div>
+                )}
               </div>
             )}
           </div>

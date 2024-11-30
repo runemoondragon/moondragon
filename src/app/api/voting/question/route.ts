@@ -1,52 +1,89 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
+import { promises as fs } from 'fs';
 import path from 'path';
-import { VotingQuestion } from '@/lib/types';
+import { VotingQuestion, VotingQuestionsData } from '@/lib/types';
 
-const QUESTIONS_PATH = path.join(process.cwd(), 'data', 'voting-questions.json');
-
-async function readQuestions(): Promise<VotingQuestion[]> {
-  try {
-    const content = await fs.readFile(QUESTIONS_PATH, 'utf-8');
-    return JSON.parse(content);
-  } catch {
-    return [];
-  }
-}
+const questionsPath = path.join(process.cwd(), 'data/voting-questions.json');
 
 export async function GET() {
   try {
-    const questions = await readQuestions();
-    const now = new Date();
+    // Read the questions file using async fs
+    const data = await fs.readFile(questionsPath, 'utf8');
+    const questionsData = JSON.parse(data) as VotingQuestionsData;
     
-    // Find active question and check time
-    const activeQuestion = questions.find(q => {
-      if (!q.isActive) return false;
+    // Check and update status for each question
+    const currentTime = new Date().getTime();
+    let hasUpdates = false;
+
+    questionsData.questions = questionsData.questions.map((question: VotingQuestion) => {
+      const endTime = new Date(question.endTime).getTime();
       
-      const startTime = new Date(q.startTime);
-      const endTime = new Date(q.endTime);
-      
-      // Convert all times to UTC timestamps for comparison
-      const nowTime = now.getTime();
-      const startTimeMs = startTime.getTime();
-      const endTimeMs = endTime.getTime();
-      
-      return q.isActive && startTimeMs <= nowTime && endTimeMs > nowTime;
+      if (currentTime > endTime && question.status === 'active') {
+        hasUpdates = true;
+        return {
+          ...question,
+          status: 'completed'
+        };
+      }
+      return question;
     });
-    
-    if (activeQuestion) {
-      return NextResponse.json({ 
-        success: true, 
-        question: activeQuestion
-      });
+
+    // Save updates if any status changed
+    if (hasUpdates) {
+      await fs.writeFile(questionsPath, JSON.stringify(questionsData, null, 2));
     }
+
+    // Find current question (either active or most recent completed)
+    let currentQuestion = questionsData.questions.find(q => q.status === 'active');
     
-    return NextResponse.json({ 
-      success: true, 
-      question: null 
-    });
+    if (!currentQuestion) {
+      const completedQuestions = questionsData.questions
+        .filter(q => q.status === 'completed')
+        .sort((a, b) => new Date(b.endTime).getTime() - new Date(a.endTime).getTime());
+      currentQuestion = completedQuestions[0];
+    }
+
+    return NextResponse.json({ question: currentQuestion || null });
+
   } catch (error) {
-    console.error('Error fetching question:', error);
-    return NextResponse.json({ error: 'Failed to fetch question' }, { status: 500 });
+    console.error('Error processing voting questions:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
-} 
+}
+
+export async function POST(request: Request) {
+  try {
+    const { question, duration, adminAddress } = await request.json();
+    
+    // Validate admin rights here...
+    
+    const questions = await getQuestions();
+    
+    // Archive any completed questions
+    const updatedQuestions = questions.map((q) => {
+      if (q.status === 'completed') {
+        return { ...q, status: 'archived' as VotingSessionStatus };
+      }
+      return q;
+    });
+
+    const startTime = new Date();
+    const endTime = new Date(startTime.getTime() + duration * 60000);
+
+    const newQuestion: VotingQuestion = {
+      id: Date.now().toString(),
+      question,
+      startTime: startTime.toISOString(),
+      endTime: endTime.toISOString(),
+      status: 'active',
+      createdBy: adminAddress
+    };
+
+    updatedQuestions.push(newQuestion);
+    await saveQuestions(updatedQuestions);
+
+    return NextResponse.json({ question: newQuestion });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to create question' }, { status: 500 });
+  }
+}

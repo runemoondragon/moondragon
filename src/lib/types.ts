@@ -26,13 +26,19 @@ export interface TokenInfo {
   };
 }
 
+export type VotingSessionStatus = 'active' | 'completed' | 'archived';
+
 export interface VotingQuestion {
   id: string;
   question: string;
   startTime: string;
   endTime: string;
-  isActive: boolean;
+  status: 'active' | 'completed';
   createdBy: string;
+}
+
+export interface VotingQuestionsData {
+  questions: VotingQuestion[];
 }
 
 export interface Vote {
@@ -48,6 +54,5 @@ export interface VotingResults {
   noVotes: number;
   totalVoters: number;
   totalVotingPower: number;
-  winner: 'yes' | 'no' | 'tie' | null;
-  hasEnded: boolean;
-} 
+  winningChoice?: 'yes' | 'no';
+}
