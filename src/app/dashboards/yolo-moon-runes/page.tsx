@@ -214,6 +214,105 @@ const CompletedVotingSection = ({
   question: VotingQuestion;
   results: VotingResults;
 }) => {
+  if (!results || !results.winningChoice) return null;
+
+  const winningPercentage = results.winningChoice === 'yes' 
+    ? (results.yesVotes / results.totalVotingPower) * 100
+    : (results.noVotes / results.totalVotingPower) * 100;
+
+  return (
+    <div className="p-6 rounded-lg bg-[#1a1f2e]">
+      <div className="mb-4">
+        <h3 className="text-2xl font-semibold mb-2">{question.question}</h3>
+        <div className="text-sm text-gray-400">
+          Voting ended {new Date(question.endTime).toLocaleDateString()}
+        </div>
+      </div>
+
+      <div className="mb-6">
+        <div className="text-xl font-medium flex items-center gap-2">
+          <span>Winner:</span>
+          <span className={`${
+            results.winningChoice === 'yes' ? 'text-green-500' : 'text-red-500'
+          }`}>
+            {results.winningChoice === 'yes' ? 'Yes' : 'No'}
+          </span>
+          <span className="text-gray-400">
+            ({winningPercentage.toFixed(1)}%)
+          </span>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <h4 className="font-medium">Final Results</h4>
+        <div className="space-y-3">
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>Yes</span>
+              <span>{results?.totalVotingPower ? 
+                ((results.yesVotes / results.totalVotingPower) * 100).toFixed(1)
+                : '0'}%</span>
+            </div>
+            <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-green-500 transition-all duration-500"
+                style={{ 
+                  width: results?.totalVotingPower ? 
+                    `${(results.yesVotes / results.totalVotingPower) * 100}%`
+                    : '0%'
+                }}
+              />
+            </div>
+            <div className="text-sm text-gray-400 mt-1">
+              {results?.yesVotes && results.yesVotes > 0 && 
+                `${results.yesVotes.toLocaleString()} votes (${results.yesVotes.toLocaleString()} YOLO)`
+              }
+            </div>
+          </div>
+
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>No</span>
+              <span>{results?.totalVotingPower ? 
+                ((results.noVotes / results.totalVotingPower) * 100).toFixed(1)
+                : '0'}%</span>
+            </div>
+            <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-red-500 transition-all duration-500"
+                style={{ 
+                  width: results?.totalVotingPower ? 
+                    `${(results.noVotes / results.totalVotingPower) * 100}%`
+                    : '0%'
+                }}
+              />
+            </div>
+            <div className="text-sm text-gray-400 mt-1">
+              {results?.noVotes && results.noVotes > 0 && 
+                `${results.noVotes.toLocaleString()} votes (${results.noVotes.toLocaleString()} YOLO)`
+              }
+            </div>
+          </div>
+
+          <div className="text-sm text-gray-400 mt-2">
+            <p>Total votes: {results?.totalVoters || 0}</p>
+            <p>Total voting power: {results?.totalVotingPower.toLocaleString() || '0'} YOLO</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const DisplayResults = ({
+  results,
+  question
+}: {
+  results: VotingResults;
+  question: VotingQuestion;
+}) => {
+  if (!results || !results.winningChoice) return null;
+
   const winningPercentage = results.winningChoice === 'yes' 
     ? (results.yesVotes / results.totalVotingPower) * 100
     : (results.noVotes / results.totalVotingPower) * 100;
@@ -590,12 +689,12 @@ export default function YoloMoonRunesDashboard() {
                     timeRemaining={timeRemaining}
                     votingPower={votingPower}
                   />
-                ) : (
+                ) : activeQuestion.status === 'completed' && results ? (
                   <CompletedVotingSection
                     question={activeQuestion}
-                    results={results!}
+                    results={results}
                   />
-                )
+                ) : null
               ) : (
                 <div className="p-6 rounded-lg bg-white/10 backdrop-blur-sm">
                   <p className="text-gray-400 mb-2">No active or completed questions.</p>

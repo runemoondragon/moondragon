@@ -36,6 +36,7 @@ export interface VotingQuestion {
   status: 'active' | 'completed' | 'archived';
   createdBy: string;
   options: ['yes', 'no'];
+  results?: VotingResults;
 }
 
 export interface VotingQuestionsData {

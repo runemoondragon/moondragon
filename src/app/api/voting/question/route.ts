@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { VotingQuestion, VotingQuestionsData, VotingSessionStatus } from '@/lib/types';
+import { VotingQuestion, VotingQuestionsData, VotingSessionStatus, VotingResults, Vote } from '@/lib/types';
 
 const questionsPath = path.join(process.cwd(), 'data/voting-questions.json');
 
@@ -15,6 +15,29 @@ async function saveQuestions(questions: VotingQuestion[]): Promise<void> {
   await fs.writeFile(questionsPath, JSON.stringify({ questions }, null, 2));
 }
 
+async function calculateResults(questionId: string): Promise<VotingResults> {
+  const votesData = await fs.readFile(path.join(process.cwd(), 'data/votes.json'), 'utf8');
+  const votes: Vote[] = JSON.parse(votesData);
+  const questionVotes = votes.filter(v => v.questionId === questionId);
+  
+  const yesVotes = questionVotes
+    .filter(v => v.choice === 'yes')
+    .reduce((sum, v) => sum + v.tokenBalance, 0);
+  
+  const noVotes = questionVotes
+    .filter(v => v.choice === 'no')
+    .reduce((sum, v) => sum + v.tokenBalance, 0);
+
+  return {
+    yesVotes,
+    noVotes,
+    totalVoters: questionVotes.length,
+    totalVotingPower: yesVotes + noVotes,
+    winningChoice: yesVotes > noVotes ? 'yes' : noVotes > yesVotes ? 'no' : undefined,
+    hasEnded: true
+  };
+}
+
 export async function GET() {
   try {
     // Read the questions file using async fs
@@ -25,18 +48,20 @@ export async function GET() {
     const currentTime = new Date().getTime();
     let hasUpdates = false;
 
-    questionsData.questions = questionsData.questions.map((question: VotingQuestion) => {
+    questionsData.questions = await Promise.all(questionsData.questions.map(async (question: VotingQuestion) => {
       const endTime = new Date(question.endTime).getTime();
       
       if (currentTime > endTime && question.status === 'active') {
         hasUpdates = true;
+        const results = await calculateResults(question.id);
         return {
           ...question,
-          status: 'completed'
+          status: 'completed',
+          results
         };
       }
       return question;
-    });
+    }));
 
     // Save updates if any status changed
     if (hasUpdates) {
