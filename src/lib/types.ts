@@ -35,6 +35,7 @@ export interface VotingQuestion {
   endTime: string;
   status: 'active' | 'completed' | 'archived';
   createdBy: string;
+  options: ['yes', 'no'];
 }
 
 export interface VotingQuestionsData {

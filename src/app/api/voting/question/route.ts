@@ -86,7 +86,8 @@ export async function POST(request: Request) {
       startTime: startTime.toISOString(),
       endTime: endTime.toISOString(),
       status: 'active',
-      createdBy: adminAddress
+      createdBy: adminAddress,
+      options: ['yes', 'no']
     };
 
     updatedQuestions.push(newQuestion);

@@ -68,7 +68,7 @@ export default function VotingInterface({ session, onSessionEnd }: Props) {
       </div>
 
       <div className="space-y-4">
-        {session.options.map((option) => (
+        {session.options.map((option: 'yes' | 'no') => (
           <button
             key={option}
             onClick={() => handleVote(option)}
