@@ -179,7 +179,7 @@ const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, on
                   className="max-w-xs px-4 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
                   sideOffset={5}
                 >
-                  Create a new voting session for governance decisions. Propose questions and gather input from token holders.
+                  Create a new voting session for governance decisions. Propose questions and gather input from {token.tokenName} token holders.
                   <Tooltip.Arrow className="fill-gray-900" />
                 </Tooltip.Content>
               </Tooltip.Portal>
