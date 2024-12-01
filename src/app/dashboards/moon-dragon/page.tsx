@@ -8,6 +8,7 @@ import { NavBar } from "@/components/NavBar";
 import { FiEdit2, FiSave, FiX, FiTrash2 } from 'react-icons/fi';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import * as AlertDialog from '@radix-ui/react-alert-dialog';
+import { CreateVotingForm, VotingFormData } from "@/components/CreateVotingForm";
 
 interface TokenDisplayProps {
   token: TokenAssociation;
@@ -309,6 +310,7 @@ export default function MoonDragonDashboard() {
   const [userToken, setUserToken] = useState<TokenAssociation | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string>('');
+  const [showVotingForm, setShowVotingForm] = useState(false);
 
   useEffect(() => {
     const fetchUserToken = async () => {
@@ -452,8 +454,7 @@ export default function MoonDragonDashboard() {
   };
 
   const handleButton1Click = () => {
-    console.log("Button 1 clicked");
-    // Add functionality later
+    setShowVotingForm(true);
   };
 
   const handleButton2Click = () => {
@@ -464,6 +465,11 @@ export default function MoonDragonDashboard() {
   const handleButton3Click = () => {
     console.log("Button 3 clicked");
     // Add functionality later
+  };
+
+  const handleCreateVoting = async (data: VotingFormData) => {
+    // This will be implemented in the next step
+    console.log('Creating voting session:', data);
   };
 
   if (!isMounted) {
@@ -524,6 +530,11 @@ export default function MoonDragonDashboard() {
           </div>
         </div>
       </main>
+      <CreateVotingForm
+        isOpen={showVotingForm}
+        onClose={() => setShowVotingForm(false)}
+        onSubmit={handleCreateVoting}
+      />
     </div>
   );
 } 
