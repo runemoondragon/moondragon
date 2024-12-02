@@ -61,18 +61,15 @@ export interface VotingResults {
 }
 
 export interface VotingSession {
-  id: string;
-  token: string;
   question: string;
-  startTime: string;
-  endTime: string;
-  status: 'pending' | 'active' | 'completed';
-  votes: {
-    yes: number;
-    no: number;
+  options: string[];
+  results?: {
+    votes: Record<string, number>;
+    votingPower: Record<string, number>;
+    totalVotes: number;
+    totalVotingPower: number;
+    winningOption: string;
   };
-  voters: string[];
-  createdBy: string;
 }
 
 export interface VotingInputData {
