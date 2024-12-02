@@ -1,5 +1,4 @@
-export function generateDashboardContent(tokenName: string) {
-  return `"use client";
+"use client";
 import { useEffect, useState } from 'react';
 import { useLaserEyes } from '@omnisat/lasereyes';
 import { VotingFormData, CreateVotingForm } from '@/components/CreateVotingForm';
@@ -39,7 +38,7 @@ const formatTimeRemaining = (endTime: string): string => {
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-  return \`\${hours}h \${minutes}m \${seconds}s\`;
+  return `${hours}h ${minutes}m ${seconds}s`;
 };
 
 const calculateVoteResults = (yesVotes: number, noVotes: number) => {
@@ -70,7 +69,7 @@ export default function TokenDashboard() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState<Record<string, string>>({});
 
-  const tokenName = "${tokenName}";
+  const tokenName = "UNCOMMON•GOODS";
 
   useEffect(() => {
     setIsMounted(true);
@@ -106,7 +105,7 @@ export default function TokenDashboard() {
   const checkIsAdmin = async () => {
     if (!address) return;
     try {
-      const response = await fetch(\`/api/user-token?address=\${address}\`);
+      const response = await fetch(`/api/user-token?address=${address}`);
       const data = await response.json();
       setIsAdmin(data.token?.tokenName === tokenName);
     } catch (error) {
@@ -128,7 +127,7 @@ export default function TokenDashboard() {
   const fetchVotingSessions = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(\`/api/voting/sessions/\${encodeURIComponent(tokenName)}\`);
+      const response = await fetch(`/api/voting/sessions/${encodeURIComponent(tokenName)}`);
       const data = await response.json();
       
       if (!response.ok) {
@@ -136,7 +135,7 @@ export default function TokenDashboard() {
       }
 
       // Get user's voted questions
-      const votesResponse = await fetch(\`/api/voting/\${encodeURIComponent(tokenName)}/user-votes?walletAddress=\${address}\`);
+      const votesResponse = await fetch(`/api/voting/${encodeURIComponent(tokenName)}/user-votes?walletAddress=${address}`);
       const { votedQuestionIds } = await votesResponse.json();
       const votedQuestions = new Set(votedQuestionIds);
       
@@ -168,7 +167,7 @@ export default function TokenDashboard() {
   const handleVote = async (sessionId: string, choice: 'yes' | 'no') => {
     if (!address || !votingPower) return;
     try {
-      const response = await fetch(\`/api/voting/\${encodeURIComponent(tokenName)}/vote\`, {
+      const response = await fetch(`/api/voting/${encodeURIComponent(tokenName)}/vote`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -228,7 +227,7 @@ export default function TokenDashboard() {
     
     if (now >= endTime && session.status === 'active') {
       try {
-        const response = await fetch(\`/api/voting/\${encodeURIComponent(tokenName)}/update-status\`, {
+        const response = await fetch(`/api/voting/${encodeURIComponent(tokenName)}/update-status`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -326,7 +325,7 @@ export default function TokenDashboard() {
                                 <div 
                                   className="h-full bg-green-500 transition-all duration-500"
                                   style={{ 
-                                    width: \`\${(session.results.yesVotes / session.results.totalVotingPower) * 100}%\` 
+                                    width: `${(session.results.yesVotes / session.results.totalVotingPower) * 100}%` 
                                   }}
                                 />
                               </div>
@@ -345,7 +344,7 @@ export default function TokenDashboard() {
                                 <div 
                                   className="h-full bg-red-500 transition-all duration-500"
                                   style={{ 
-                                    width: \`\${(session.results.noVotes / session.results.totalVotingPower) * 100}%\` 
+                                    width: `${(session.results.noVotes / session.results.totalVotingPower) * 100}%` 
                                   }}
                                 />
                               </div>
@@ -419,5 +418,4 @@ export default function TokenDashboard() {
       </main>
     </div>
   );
-}`;
-} 
+}

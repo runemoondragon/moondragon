@@ -468,8 +468,32 @@ export default function MoonDragonDashboard() {
   };
 
   const handleCreateVoting = async (data: VotingFormData) => {
-    // This will be implemented in the next step
-    console.log('Creating voting session:', data);
+    try {
+      const response = await fetch('/api/voting/create-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          question: data.question,
+          startTime: data.startTime,
+          endTime: data.endTime,
+          token: userToken?.tokenName || '',
+          createdBy: address || 'system'
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to create voting session');
+      }
+
+      setShowVotingForm(false);
+    } catch (error) {
+      console.error('Error creating voting session:', error);
+      throw error;
+    }
   };
 
   if (!isMounted) {

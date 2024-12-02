@@ -4,7 +4,7 @@
       "id": "q1",
       "question": "Do you think Bitcoin Runes have the potential to revolutionize asset issuance and simplify asset management?",
       "startTime": "2024-11-26T15:00:00.000Z",
-      "endTime": "2024-12-03T17:21:00.000Z",
+      "endTime": "2024-12-06T17:21:00.000Z",
       "status": "active",
       "createdBy": "bc1pcl39n752txp0p2w5aywvxdfwxsgvgrxken3twrnvlu7gzgd6cqeqmvzcf6",
       "results": {
@@ -13,7 +13,7 @@
         "totalVoters": 6,
         "totalVotingPower": 12400000,
         "winningChoice": "yes",
-        "hasEnded": true
+        "hasEnded": false
       }
     }
   ]

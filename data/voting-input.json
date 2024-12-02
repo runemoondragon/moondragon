@@ -1,0 +1,68 @@
+{
+  "questions": [
+    {
+      "id": "q1733100842423",
+      "token": "MAGA•FIGHT•FIGHT",
+      "question": "Test yes or no question",
+      "startTime": "2024-12-01T18:53",
+      "endTime": "2024-12-02T11:55",
+      "status": "completed",
+      "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
+      "results": {
+        "yesVotes": 1000000,
+        "noVotes": 540000,
+        "totalVoters": 3,
+        "totalVotingPower": 1540000,
+        "hasEnded": true
+      }
+    },
+    {
+      "id": "q1733105754801",
+      "token": "PI•NETWORK•RUNE",
+      "question": "Test yes or no question",
+      "startTime": "2024-12-01T18:16",
+      "endTime": "2024-12-02T23:15",
+      "status": "active",
+      "createdBy": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
+      "results": {
+        "yesVotes": 0,
+        "noVotes": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
+        "hasEnded": false
+      }
+    },
+    {
+      "id": "q1733115707837",
+      "token": "UNCOMMON•GOODS",
+      "question": "Should this platform's token have a premine for development purposes?",
+      "startTime": "2024-12-01T23:02",
+      "endTime": "2024-12-03T23:01",
+      "status": "active",
+      "createdBy": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
+      "results": {
+        "yesVotes": 5,
+        "noVotes": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 5,
+        "hasEnded": false
+      }
+    },
+    {
+      "id": "q1733160842097",
+      "token": "MAGA•FIGHT•FIGHT",
+      "question": "Test 2 yes or no question",
+      "startTime": "2024-12-02T17:35",
+      "endTime": "2024-12-03T11:32",
+      "status": "active",
+      "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
+      "results": {
+        "yesVotes": 1000000,
+        "noVotes": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 1000000,
+        "hasEnded": false
+      }
+    }
+  ]
+}

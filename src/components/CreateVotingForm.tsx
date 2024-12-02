@@ -27,35 +27,22 @@ export function CreateVotingForm({ isOpen, onClose, onSubmit }: CreateVotingForm
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
+    
     // Validation
     if (!formData.question || !formData.startTime || !formData.endTime) {
       setError('All fields are required');
       return;
     }
 
-    const startDate = new Date(formData.startTime);
-    const endDate = new Date(formData.endTime);
-    const now = new Date();
-
-    if (startDate < now) {
-      setError('Start time must be in the future');
-      return;
-    }
-
-    if (endDate <= startDate) {
-      setError('End time must be after start time');
-      return;
-    }
-
-    setIsSubmitting(true);
     try {
-      await onSubmit(formData);
+      await onSubmit({
+        question: formData.question,
+        startTime: formData.startTime,
+        endTime: formData.endTime
+      });
       onClose();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create voting session');
-    } finally {
-      setIsSubmitting(false);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to create voting session');
     }
   };
 

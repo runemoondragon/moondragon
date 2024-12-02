@@ -16,10 +16,11 @@ export const ACCESS_TOKENS: AccessToken[] = [
     "description": "Access Moon Dragon Dashboard"
   },
   {
-    "name": "DOG•GO•TO•THE•MOON",
-    "requiredBalance": 50000,
-    "dashboardPath": "/dashboards/dog-go-to-the-moon",
-    "description": "Access Dog Go To The Moon Dashboard"
+    "name": "UNCOMMON•GOODS",
+    "requiredBalance": 5,
+    "dashboardPath": "/dashboards/uncommon-goods",
+    "description": "Access UNCOMMON•GOODS Dashboard",
+    "externalUrl": "/dashboards/uncommon-goods"
   },
   {
     "name": "YOLO•MOON•RUNES",
@@ -29,16 +30,9 @@ export const ACCESS_TOKENS: AccessToken[] = [
   },
   {
     "name": "MAGA•FIGHT•FIGHT",
-    "requiredBalance": 100000,
+    "requiredBalance": 10000,
     "dashboardPath": "/dashboards/maga-fight-fight",
     "description": "Access MAGA•FIGHT•FIGHT Dashboard",
     "externalUrl": "/dashboards/maga-fight-fight"
-  },
-  {
-    "name": "MANIA•MANIA•MANIA",
-    "requiredBalance": 10000000,
-    "dashboardPath": "/dashboards/mania-mania-mania",
-    "description": "Access MANIA•MANIA•MANIA Dashboard",
-    "externalUrl": "/dashboards/mania-mania-mania"
   }
 ]; 

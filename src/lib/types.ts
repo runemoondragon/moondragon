@@ -62,13 +62,42 @@ export interface VotingResults {
 
 export interface VotingSession {
   id: string;
+  token: string;
   question: string;
-  options: string[];
-  results?: {
-    votes: Record<string, number>;
-    votingPower: Record<string, number>;
-    totalVotes: number;
-    totalVotingPower: number;
-    winningOption?: string;
+  startTime: string;
+  endTime: string;
+  status: 'pending' | 'active' | 'completed';
+  votes: {
+    yes: number;
+    no: number;
   };
+  voters: string[];
+  createdBy: string;
+}
+
+export interface VotingInputData {
+  questions: Array<{
+    id: string;
+    token: string;
+    question: string;
+    startTime: string;
+    endTime: string;
+    status: 'active' | 'completed' | 'archived';
+    createdBy: string;
+    results: {
+      yesVotes: number;
+      noVotes: number;
+      totalVoters: number;
+      totalVotingPower: number;
+      winningChoice?: 'yes' | 'no';
+      hasEnded: boolean;
+    };
+  }>;
+}
+
+export interface VotingFormData {
+  question: string;
+  description: string;
+  startDate: string;
+  endDate: string;
 }
