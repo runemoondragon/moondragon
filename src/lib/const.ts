@@ -11,9 +11,9 @@ export interface AccessToken {
 export const ACCESS_TOKENS: AccessToken[] = [
   {
     "name": "RUNE•MOON•DRAGON",
-    "requiredBalance": 2000000,
+    "requiredBalance": 200000000,
     "dashboardPath": "/dashboards/moon-dragon",
-    "description": "Access Moon Dragon Dashboard"
+    "description": "Access Test Moon Dragon Dashboard"
   },
   {
     "name": "UNCOMMON•GOODS",
