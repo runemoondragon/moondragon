@@ -19,16 +19,16 @@
     {
       "id": "q1733115707837",
       "token": "UNCOMMON•GOODS",
-      "question": "Should this platform's token have a premine for development purposes?",
+      "question": "🚀 Should we reduce the access requirement for BitBoard Dash by 50% once the minting phase is complete? 💡",
       "startTime": "2024-12-01T23:02",
       "endTime": "2024-12-05T23:01",
       "status": "active",
       "createdBy": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
       "results": {
-        "yesVotes": 5,
+        "yesVotes": 0,
         "noVotes": 0,
-        "totalVoters": 1,
-        "totalVotingPower": 5,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
         "hasEnded": false
       }
     },
