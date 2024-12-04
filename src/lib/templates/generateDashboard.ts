@@ -13,7 +13,7 @@ interface VotingSession {
   question: string;
   startTime: string;
   endTime: string;
-  status: 'active' | 'completed';
+  status: 'active' | 'completed' | 'archived';
   results: {
     yesVotes: number;
     noVotes: number;
@@ -140,21 +140,23 @@ export default function TokenDashboard() {
       const { votedQuestionIds } = await votesResponse.json();
       const votedQuestions = new Set(votedQuestionIds);
       
-      // Format sessions with vote status
-      const formattedSessions = (data.questions || []).map((q: any) => ({
-        id: q.id,
-        question: q.question,
-        startTime: q.startTime,
-        endTime: q.endTime,
-        status: q.status,
-        hasVoted: votedQuestions.has(q.id),
-        results: {
-          yesVotes: Number(q.results.yesVotes),
-          noVotes: Number(q.results.noVotes),
-          totalVoters: Number(q.results.totalVoters),
-          totalVotingPower: Number(q.results.totalVotingPower)
-        }
-      }));
+      // Filter out archived sessions and format remaining ones
+      const formattedSessions = (data.questions || [])
+        .filter((q: any) => q.status !== 'archived')
+        .map((q: any) => ({
+          id: q.id,
+          question: q.question,
+          startTime: q.startTime,
+          endTime: q.endTime,
+          status: q.status,
+          hasVoted: votedQuestions.has(q.id),
+          results: {
+            yesVotes: Number(q.results.yesVotes),
+            noVotes: Number(q.results.noVotes),
+            totalVoters: Number(q.results.totalVoters),
+            totalVotingPower: Number(q.results.totalVotingPower)
+          }
+        }));
 
       setVotingSessions(formattedSessions);
     } catch (error) {
@@ -244,6 +246,35 @@ export default function TokenDashboard() {
       } catch (error) {
         console.error('Failed to update session status:', error);
       }
+    }
+  };
+
+  const handleArchiveSession = async (session: VotingSession) => {
+    if (!isAdmin) {
+      toast.error('Only token admin can archive sessions');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/voting/archive-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tokenName,
+          questionId: session.id,
+          adminAddress: address
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to archive session');
+      }
+
+      toast.success('Session archived successfully');
+      fetchVotingSessions();
+    } catch (error) {
+      console.error('Error archiving session:', error);
+      toast.error('Failed to archive session');
     }
   };
 
@@ -374,6 +405,14 @@ export default function TokenDashboard() {
                                         <div>
                                           Winning margin: {results.margin.toFixed(1)}%
                                         </div>
+                                        {isAdmin && (
+                                          <button
+                                            onClick={() => handleArchiveSession(session)}
+                                            className="mt-4 px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
+                                          >
+                                            Archive This Session
+                                          </button>
+                                        )}
                                       </>
                                     );
                                   }

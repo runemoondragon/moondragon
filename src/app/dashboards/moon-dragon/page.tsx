@@ -9,6 +9,9 @@ import { FiEdit2, FiSave, FiX, FiTrash2 } from 'react-icons/fi';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import * as AlertDialog from '@radix-ui/react-alert-dialog';
 import { CreateVotingForm, VotingFormData } from "@/components/CreateVotingForm";
+import { Menu } from '@headlessui/react';
+import { toast } from 'react-hot-toast';
+import { Dialog, DialogTitle, DialogPanel } from '@headlessui/react';
 
 interface TokenDisplayProps {
   token: TokenAssociation;
@@ -20,9 +23,11 @@ interface TokenDisplayProps {
   onButton1Click: () => void;
   onButton2Click: () => void;
   onButton3Click: () => void;
+  setShowVotingForm: (show: boolean) => void;
+  setShowArchiveModal: (show: boolean) => void;
 }
 
-const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, onButton1Click, onButton2Click, onButton3Click }: TokenDisplayProps) => {
+const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, onButton1Click, onButton2Click, onButton3Click, setShowVotingForm, setShowArchiveModal }: TokenDisplayProps) => {
   const [newBalance, setNewBalance] = useState(token.requiredBalance);
   const [error, setError] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -207,26 +212,38 @@ const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, on
               </Tooltip.Portal>
             </Tooltip.Root>
 
-            <Tooltip.Root>
-              <Tooltip.Trigger asChild>
-                <button
-                  onClick={onButton3Click}
-                  className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors opacity-70 cursor-not-allowed"
-                  disabled
-                >
-                  Board Actions
-                </button>
-              </Tooltip.Trigger>
-              <Tooltip.Portal>
-                <Tooltip.Content
-                  className="max-w-xs px-4 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
-                  sideOffset={5}
-                >
-                  Empower board members to execute company-level actions, such as strategic proposals or decision approvals. Coming Soon.
-                  <Tooltip.Arrow className="fill-gray-900" />
-                </Tooltip.Content>
-              </Tooltip.Portal>
-            </Tooltip.Root>
+            <Menu as="div" className="relative">
+              <Menu.Button className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors">
+                Board Actions
+              </Menu.Button>
+              
+              <Menu.Items className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg py-1 z-10">
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      onClick={() => setShowVotingForm(true)}
+                      className={`${
+                        active ? 'bg-gray-700' : ''
+                      } w-full text-left px-4 py-2`}
+                    >
+                      Start New Question
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      onClick={() => setShowArchiveModal(true)}
+                      className={`${
+                        active ? 'bg-gray-700' : ''
+                      } w-full text-left px-4 py-2`}
+                    >
+                      Manage Archives
+                    </button>
+                  )}
+                </Menu.Item>
+              </Menu.Items>
+            </Menu>
           </Tooltip.Provider>
         </div>
       </div>
@@ -311,6 +328,10 @@ export default function MoonDragonDashboard() {
   const [isEditing, setIsEditing] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [showVotingForm, setShowVotingForm] = useState(false);
+  const [showArchiveModal, setShowArchiveModal] = useState(false);
+  const [votingSessions, setVotingSessions] = useState<any[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [archivedSessions, setArchivedSessions] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchUserToken = async () => {
@@ -496,6 +517,67 @@ export default function MoonDragonDashboard() {
     }
   };
 
+  const handleArchiveSession = async (session: any) => {
+    if (!isAdmin || !userToken) {
+      toast.error('Only token admin can archive sessions');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/voting/archive-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tokenName: userToken.tokenName,
+          questionId: session.id,
+          adminAddress: address
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to archive session');
+      }
+
+      toast.success('Session archived successfully');
+      fetchVotingSessions();
+    } catch (error) {
+      console.error('Error archiving session:', error);
+      toast.error('Failed to archive session');
+    }
+  };
+
+  const fetchVotingSessions = async () => {
+    if (!userToken) return;
+    try {
+      const response = await fetch(`/api/voting/sessions/${userToken.tokenName}`);
+      if (response.ok) {
+        const data = await response.json();
+        setVotingSessions(data.sessions);
+      }
+    } catch (error) {
+      console.error('Error fetching sessions:', error);
+    }
+  };
+
+  const fetchArchivedSessions = async () => {
+    if (!userToken) return;
+    try {
+      const response = await fetch(`/api/voting/archived-sessions/${userToken.tokenName}`);
+      if (response.ok) {
+        const data = await response.json();
+        setArchivedSessions(data.sessions);
+      }
+    } catch (error) {
+      console.error('Error fetching archived sessions:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (showArchiveModal) {
+      fetchArchivedSessions();
+    }
+  }, [showArchiveModal]);
+
   if (!isMounted) {
     return null;
   }
@@ -548,6 +630,8 @@ export default function MoonDragonDashboard() {
                   onButton1Click={handleButton1Click}
                   onButton2Click={handleButton2Click}
                   onButton3Click={handleButton3Click}
+                  setShowVotingForm={setShowVotingForm}
+                  setShowArchiveModal={setShowArchiveModal}
                 />
               </div>
             )}
@@ -559,6 +643,55 @@ export default function MoonDragonDashboard() {
         onClose={() => setShowVotingForm(false)}
         onSubmit={handleCreateVoting}
       />
+      {showArchiveModal && (
+        <Dialog open={showArchiveModal} onClose={() => setShowArchiveModal(false)} className="relative z-50">
+          <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
+          
+          <div className="fixed inset-0 flex items-center justify-center p-4">
+            <DialogPanel className="w-full max-w-2xl rounded-lg bg-gray-900 p-6">
+              <DialogTitle className="text-xl font-semibold mb-4">
+                Archived Voting Sessions
+              </DialogTitle>
+              
+              <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+                {archivedSessions.map(session => (
+                  <div key={session.id} className="p-4 bg-gray-800 rounded-lg">
+                    <h3 className="font-medium mb-2">{session.question}</h3>
+                    <div className="text-sm text-gray-400">
+                      <p>Ended: {new Date(session.endTime).toLocaleDateString()}</p>
+                      <p>Yes: {((session.results.yesVotes / session.results.totalVotingPower) * 100).toFixed(1)}%</p>
+                      <p>No: {((session.results.noVotes / session.results.totalVotingPower) * 100).toFixed(1)}%</p>
+                      <p>Total Votes: {session.results.totalVoters}</p>
+                    </div>
+                    {session.status === 'completed' && isAdmin && (
+                      <div className="mt-4">
+                        <button
+                          onClick={() => handleArchiveSession(session)}
+                          className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
+                        >
+                          Archive This Session
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+                {archivedSessions.length === 0 && (
+                  <p className="text-gray-400 text-center py-4">No archived sessions found</p>
+                )}
+              </div>
+
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={() => setShowArchiveModal(false)}
+                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg"
+                >
+                  Close
+                </button>
+              </div>
+            </DialogPanel>
+          </div>
+        </Dialog>
+      )}
     </div>
   );
 } 

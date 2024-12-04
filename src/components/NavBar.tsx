@@ -31,21 +31,6 @@ export function NavBar({ address }: { address?: string }) {
       </div>
       
       <div className="flex items-center gap-6">
-        <Link 
-          href="/Docs" 
-           className="text-gray-600 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-500 transition-colors"
-        >
-          Docs
-        </Link>
-        
-        <a 
-           href="https://x.com/liquidordinals" 
-           target="_blank" 
-           rel="noopener noreferrer"
-           className="text-gray-600 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-500 transition-colors"
-        >
-          <FiTwitter size={20} />
-        </a>
 
         {address && (
           <div className="bg-yellow-50 dark:bg-yellow-900/20 px-4 py-2 rounded-lg">

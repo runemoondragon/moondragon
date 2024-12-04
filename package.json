@@ -11,6 +11,7 @@
     "clean": "rm -rf .next out node_modules"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.0",
     "@omnisat/lasereyes": "^0.0.126",
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.2",

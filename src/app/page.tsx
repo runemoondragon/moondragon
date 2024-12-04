@@ -18,6 +18,8 @@ import {
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NavBar } from "@/components/NavBar";
+import * as Tooltip from '@radix-ui/react-tooltip';
+import { Footer } from "@/components/Footer";
 
 const truncateAddress = (address: string) => {
   if (!address) return '';
@@ -181,96 +183,174 @@ export default function Home() {
       <NavBar address={address} />
       
       <main className="flex flex-col items-center justify-center flex-1 p-8 mt-16">
-        <div className="flex flex-col items-center gap-8 max-w-3xl w-full">
-          <h1 className="text-5xl font-bold text-center">
-            Unlock Access with Your Rune Balance
-          </h1>
-          <p className="text-xl text-center text-gray-600 dark:text-gray-300">
-            RuneCheck verifies your wallet balance to grant exclusive access to governance, voting, and other privileges.
-          </p>
+        <div className="flex flex-col items-center gap-8 max-w-4xl w-full">
+          {/* Hero Section */}
+          <div className="text-center space-y-4 mb-8">
+            <h1 className="text-5xl font-bold">
+            Unlock Access with Your Rune Tokens
+            </h1>
+            <p className="text-xl text-gray-600 dark:text-gray-300">
+            Bitboard verifies rune wallet balance to grant exclusive access to governance, voting, and other privileges.
+            </p>
+          </div>
 
+          {/* Wallet Connected Content */}
           {address && (
-            <div className="w-full">
-              {/* Rune Balances Section */}
-              <div className="mt-8">
-                <h2 className="text-xl font-semibold mb-3">Your Rune Balances</h2>
-                {isLoading ? (
-                  <p>Loading rune balances...</p>
-                ) : runeBalances.length > 0 ? (
-                  <div className="grid gap-3">
-                    {runeBalances.map((rune, index) => (
-                      <div
-                        key={index}
-                        className="p-4 rounded-lg bg-white/10 backdrop-blur-sm"
+            <div className="w-full flex flex-col items-center gap-12">
+              {/* Centered Rune Balances Section */}
+              <div className="max-w-xl w-full">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-gray-200 dark:border-gray-800">
+                  <h2 className="text-xl font-semibold mb-4">Your Rune Balances</h2>
+                  {isLoading ? (
+                    <p>Loading rune balances...</p>
+                  ) : runeBalances.length > 0 ? (
+                    <div className="space-y-3">
+                      {runeBalances.map((rune, index) => (
+                        <div
+                          key={index}
+                          className="p-4 rounded-lg bg-white/5"
+                        >
+                          <p className="font-semibold">{rune.name}</p>
+                          <p>Balance: {rune.balance}</p>
+                          <p>Symbol: {rune.symbol}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p>No rune balances found</p>
+                  )}
+                </div>
+
+                {/* Centered Access Button */}
+                <div className="mt-6 flex flex-col items-center gap-3">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className="px-6 py-2 text-white bg-orange-500 hover:bg-orange-600 rounded-lg flex items-center gap-2"
+                        disabled={isVerifying}
                       >
-                        <p className="font-semibold">{rune.name}</p>
-                        <p>Balance: {rune.balance}</p>
-                        <p>Symbol: {rune.symbol}</p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p>No rune balances found</p>
-                )}
+                        {isVerifying ? "Verifying..." : "Access To"} <ChevronDown className="w-4 h-4" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-64">
+                      {ACCESS_TOKENS.map((token) => {
+                        const runeBalance = runeBalances.find(rune => rune.name === token.name);
+                        const currentBalance = runeBalance ? parseInt(runeBalance.balance.replace(/,/g, '')) : 0;
+                        const hasAccess = currentBalance >= token.requiredBalance;
+                        
+                        return (
+                          <DropdownMenuItem
+                            key={token.name}
+                            onClick={() => handleAccessAttempt(token)}
+                            className={cn(
+                              "flex flex-col items-start gap-1 p-3",
+                              hasAccess 
+                                ? "hover:bg-green-50 dark:hover:bg-green-900/20"
+                                : "hover:bg-red-50 dark:hover:bg-red-900/20"
+                            )}
+                          >
+                            <div className="font-medium">{token.name}</div>
+                            <div className="text-sm text-gray-500">
+                              Required: {token.requiredBalance.toLocaleString()} tokens
+                              <br />
+                              Current: {currentBalance.toLocaleString()} tokens
+                            </div>
+                            <div className="text-xs mt-1">
+                              {hasAccess ? (
+                                <span className="text-green-500">✅ Requirements met</span>
+                              ) : (
+                                <span className="text-red-500">❌ Insufficient balance ({currentBalance.toLocaleString()} / {token.requiredBalance.toLocaleString()})</span>
+                              )}
+                            </div>
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  
+                  {verificationMessage && (
+                    <p className="text-center text-yellow-500 max-w-md">
+                      {verificationMessage}
+                    </p>
+                  )}
+                </div>
               </div>
 
-              {/* Access Section */}
-              <div className="flex flex-col items-center gap-3 mt-8">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button
-                      className="px-6 py-2 text-white bg-orange-500 hover:bg-orange-600 rounded-lg flex items-center gap-2"
-                      disabled={isVerifying}
-                    >
-                      {isVerifying ? "Verifying..." : "Access To"} <ChevronDown className="w-4 h-4" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-64">
-                    {ACCESS_TOKENS.map((token) => {
-                      const runeBalance = runeBalances.find(rune => rune.name === token.name);
-                      const currentBalance = runeBalance ? parseInt(runeBalance.balance.replace(/,/g, '')) : 0;
-                      const hasAccess = currentBalance >= token.requiredBalance;
-                      
-                      return (
-                        <DropdownMenuItem
-                          key={token.name}
-                          onClick={() => handleAccessAttempt(token)}
-                          className={cn(
-                            "flex flex-col items-start gap-1 p-3",
-                            hasAccess 
-                              ? "hover:bg-green-50 dark:hover:bg-green-900/20"
-                              : "hover:bg-red-50 dark:hover:bg-red-900/20"
-                          )}
-                        >
-                          <div className="font-medium">{token.name}</div>
-                          <div className="text-sm text-gray-500">
-                            Required: {token.requiredBalance.toLocaleString()} tokens
-                            <br />
-                            Current: {currentBalance.toLocaleString()} tokens
-                          </div>
-                          <div className="text-xs mt-1">
-                            {hasAccess ? (
-                              <span className="text-green-500">✅ Requirements met</span>
-                            ) : (
-                              <span className="text-red-500">❌ Insufficient balance ({currentBalance.toLocaleString()} / {token.requiredBalance.toLocaleString()})</span>
-                            )}
-                          </div>
-                        </DropdownMenuItem>
-                      );
-                    })}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                
-                {verificationMessage && (
-                  <p className="text-center text-yellow-500 max-w-md">
-                    {verificationMessage}
-                  </p>
-                )}
+              {/* Info Cards at Bottom */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mt-8">
+                <Tooltip.Provider>
+                  {/* About Card */}
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <div className="p-6 rounded-lg bg-white/10 backdrop-blur-sm border border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-white/20 transition-colors">
+                        <h2 className="text-xl font-semibold text-center">About</h2>
+                      </div>
+                    </Tooltip.Trigger>
+                    <Tooltip.Portal>
+                      <Tooltip.Content
+                        className="max-w-xs p-4 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
+                        sideOffset={5}
+                      >
+                        <p className="space-y-2">
+                          Bitboard makes it easy to create token-gated governance dashboards and voting tools for communities.
+                          <br /><br />
+                          Users can vote, manage proposals, and track results through dashboards, all without incurring on-chain costs, based on their Rune token holdings.
+                        </p>
+                        <Tooltip.Arrow className="fill-gray-900" />
+                      </Tooltip.Content>
+                    </Tooltip.Portal>
+                  </Tooltip.Root>
+
+                  {/* Creating Dashboards Card */}
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <div className="p-6 rounded-lg bg-white/10 backdrop-blur-sm border border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-white/20 transition-colors">
+                        <h2 className="text-xl font-semibold text-center">Creating Dashboards</h2>
+                      </div>
+                    </Tooltip.Trigger>
+                    <Tooltip.Portal>
+                      <Tooltip.Content
+                        className="max-w-xs p-4 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
+                        sideOffset={5}
+                      >
+                        <p className="space-y-2">
+                          Use the Rune Moon Dragon Dashboard to add your token and set up a governance system.
+                          <br /><br />
+                          Customize minimum requirements, voting sessions, and governance tools specific to your token.
+                        </p>
+                        <Tooltip.Arrow className="fill-gray-900" />
+                      </Tooltip.Content>
+                    </Tooltip.Portal>
+                  </Tooltip.Root>
+
+                  {/* Requirements Card */}
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <div className="p-6 rounded-lg bg-white/10 backdrop-blur-sm border border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-white/20 transition-colors">
+                        <h2 className="text-xl font-semibold text-center">Requirements</h2>
+                      </div>
+                    </Tooltip.Trigger>
+                    <Tooltip.Portal>
+                      <Tooltip.Content
+                        className="max-w-xs p-4 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
+                        sideOffset={5}
+                      >
+                        <p className="space-y-2">
+                          A minimum balance of Rune Moon Dragon tokens is needed to access, test the dashboard, and add tokens.
+                          <br /><br />
+                          Only users who meet the token requirements you set can interact with the dashboards you create for governance of each token.
+                        </p>
+                        <Tooltip.Arrow className="fill-gray-900" />
+                      </Tooltip.Content>
+                    </Tooltip.Portal>
+                  </Tooltip.Root>
+                </Tooltip.Provider>
               </div>
             </div>
           )}
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

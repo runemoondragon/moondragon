@@ -6,6 +6,8 @@ import { fetchOrdAddress } from "@/lib/runebalance";
 import { NavBar } from "@/components/NavBar";
 import { useRouter } from "next/navigation";
 import VotingSection from './components/VotingSection';
+import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal';
+import { VotingSession } from '@/lib/types';
 
 interface RuneBalance {
   name: string;
@@ -21,6 +23,9 @@ export default function TokenDashboard({ params }: { params: { token: string } }
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [votingPower, setVotingPower] = useState(0);
+  const [showArchiveModal, setShowArchiveModal] = useState(false);
+  const [selectedSession, setSelectedSession] = useState<VotingSession | null>(null);
+  const [archivedSessions, setArchivedSessions] = useState<VotingSession[]>([]);
 
   const fetchVotingPower = async () => {
     if (!address) return;
