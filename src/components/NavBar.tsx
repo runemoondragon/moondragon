@@ -25,8 +25,9 @@ export function NavBar({ address }: { address?: string }) {
           priority
           unoptimized
         />
-        <Link href="/" className="font-bold text-xl hover:text-orange-500 transition-colors">
+        <Link href="/" className="font-bold text-xl hover:text-orange-500 transition-colors flex items-center gap-2">
           BitBoard
+          <span className="text-xs px-2 py-0.5 bg-orange-500 text-white rounded-full">Beta</span>
         </Link>
       </div>
       
