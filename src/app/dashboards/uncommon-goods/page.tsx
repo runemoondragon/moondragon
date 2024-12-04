@@ -274,9 +274,10 @@ export default function TokenDashboard() {
               <>
                 {votingSessions && votingSessions.length > 0 ? (
                   votingSessions.map((session: any) => (
-                    <div key={session.id} className="p-6 rounded-lg bg-gray-800">
-                      <h3 className="text-2xl font-semibold mb-4">{session.question}</h3>
-                      <div className="flex items-center gap-2 text-sm text-gray-400 mb-4">
+                    <div key={session.id} className="p-6 rounded-lg bg-white dark:bg-[#1a1f2d] border border-gray-200 dark:border-transparent shadow-sm">
+                      <h3 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">{session.question}</h3>
+                      
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
                         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M12 8V12L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                           <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2"/>
@@ -294,13 +295,13 @@ export default function TokenDashboard() {
                             <div className="flex gap-4">
                               <button
                                 onClick={() => handleVote(session.id, 'yes')}
-                                className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg transition-colors"
+                                className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
                               >
                                 Yes
                               </button>
                               <button
                                 onClick={() => handleVote(session.id, 'no')}
-                                className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg transition-colors"
+                                className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
                               >
                                 No
                               </button>

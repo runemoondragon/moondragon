@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     // Verify BITBOARD•DASH access
     const balances = await fetchOrdAddress(adminAddress);
     const bitboardBalance = balances?.find((token: RuneBalance) => token.name === "BITBOARD•DASH");
-    const hasAccess = bitboardBalance && parseInt(bitboardBalance.balance) >= 1000000;
+    const hasAccess = bitboardBalance && parseInt(bitboardBalance.balance) >= 200000;
 
     if (!hasAccess) {
       return NextResponse.json({ error: 'Insufficient BITBOARD•DASH balance' }, { status: 403 });

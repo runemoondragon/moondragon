@@ -607,7 +607,7 @@ export default function MoonDragonDashboard() {
               <div className="p-6 rounded-lg bg-white/10 backdrop-blur-sm col-span-2">
                 <h2 className="text-xl font-semibold mb-4">Add Your Token</h2>
                 <p className="text-sm text-gray-400 mb-4">
-                  As a RUNE•MOON•DRAGON holder, you can add one token to the system.
+                  As a BITBOARD•DASH holder, you can add one token to the system.
                 </p>
                 <AddTokenForm onSubmit={handleAddToken} />
               </div>

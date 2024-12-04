@@ -74,11 +74,11 @@ export async function DELETE(req: Request) {
     const bitboardBalance = balances?.find((token: { name: string, balance: string }) => 
       token.name === "BITBOARD•DASH"
     );
-    const hasAccess = bitboardBalance && parseInt(bitboardBalance.balance) >= 1000000;
+    const hasAccess = bitboardBalance && parseInt(bitboardBalance.balance) >= 200000;
 
     if (!hasAccess) {
       return NextResponse.json({ 
-        error: 'Unauthorized. You need at least 1,000,000 BITBOARD•DASH tokens.' 
+        error: 'Unauthorized. You need at least 200,000 BITBOARD•DASH tokens.' 
       }, { status: 401 });
     }
 

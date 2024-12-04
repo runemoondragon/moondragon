@@ -25,10 +25,10 @@
       "status": "active",
       "createdBy": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
       "results": {
-        "yesVotes": 0,
+        "yesVotes": 5,
         "noVotes": 0,
-        "totalVoters": 0,
-        "totalVotingPower": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 5,
         "hasEnded": false
       }
     },
