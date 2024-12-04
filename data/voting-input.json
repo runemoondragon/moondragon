@@ -63,22 +63,6 @@
         "totalVotingPower": 1150000,
         "hasEnded": false
       }
-    },
-    {
-      "id": "q1733324675954",
-      "token": "RUNES•AS•FUCK",
-      "question": "Test yes or no",
-      "startTime": "2024-12-04T15:05",
-      "endTime": "2024-12-04T09:20",
-      "status": "archived",
-      "createdBy": "bc1putrlcy6h52pgmnpgdfxrfunvzkfjf8mcmr2a3a5d7k4vf89jg9uq54r08a",
-      "results": {
-        "yesVotes": 15000,
-        "noVotes": 0,
-        "totalVoters": 1,
-        "totalVotingPower": 15000,
-        "hasEnded": true
-      }
     }
   ]
 }

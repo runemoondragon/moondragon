@@ -34,12 +34,5 @@ export const ACCESS_TOKENS: AccessToken[] = [
     "dashboardPath": "/dashboards/maga-fight-fight",
     "description": "Access MAGA•FIGHT•FIGHT Dashboard",
     "externalUrl": "/dashboards/maga-fight-fight"
-  },
-  {
-    "name": "RUNES•AS•FUCK",
-    "requiredBalance": 15000,
-    "dashboardPath": "/dashboards/runes-as-fuck",
-    "description": "Access RUNES•AS•FUCK Dashboard",
-    "externalUrl": "/dashboards/runes-as-fuck"
   }
 ]; 
