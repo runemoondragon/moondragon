@@ -10,13 +10,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Verify RUNE•MOON•DRAGON access
+    // Verify BITBOARD•DASH access
     const balances = await fetchOrdAddress(adminAddress);
-    const moonDragonBalance = balances?.find((token: RuneBalance) => token.name === "RUNE•MOON•DRAGON");
-    const hasAccess = moonDragonBalance && parseInt(moonDragonBalance.balance) >= 2000000;
+    const bitboardBalance = balances?.find((token: RuneBalance) => token.name === "BITBOARD•DASH");
+    const hasAccess = bitboardBalance && parseInt(bitboardBalance.balance) >= 1000000;
 
     if (!hasAccess) {
-      return NextResponse.json({ error: 'Insufficient RUNE•MOON•DRAGON balance' }, { status: 403 });
+      return NextResponse.json({ error: 'Insufficient BITBOARD•DASH balance' }, { status: 403 });
     }
 
     // Rest of the code...

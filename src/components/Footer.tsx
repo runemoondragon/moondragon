@@ -47,7 +47,7 @@ export function Footer() {
               FAQ
             </Link>
             <Link 
-              href="#"
+              href="https://x.com/Bitboardme"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-500 transition-colors"

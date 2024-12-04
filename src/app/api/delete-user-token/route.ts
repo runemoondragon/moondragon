@@ -69,16 +69,16 @@ export async function DELETE(req: Request) {
       }, { status: 400 });
     }
 
-    // Verify RUNE•MOON•DRAGON access
+    // Verify BITBOARD•DASH access
     const balances = await fetchOrdAddress(walletAddress);
-    const moonDragonBalance = balances?.find((token: { name: string, balance: string }) => 
-      token.name === "RUNE•MOON•DRAGON"
+    const bitboardBalance = balances?.find((token: { name: string, balance: string }) => 
+      token.name === "BITBOARD•DASH"
     );
-    const hasAccess = moonDragonBalance && parseInt(moonDragonBalance.balance) >= 2000000;
+    const hasAccess = bitboardBalance && parseInt(bitboardBalance.balance) >= 1000000;
 
     if (!hasAccess) {
       return NextResponse.json({ 
-        error: 'Unauthorized. You need at least 2,000,000 RUNE•MOON•DRAGON tokens.' 
+        error: 'Unauthorized. You need at least 1,000,000 BITBOARD•DASH tokens.' 
       }, { status: 401 });
     }
 
@@ -121,9 +121,9 @@ export async function DELETE(req: Request) {
     }
 
   } catch (error) {
-    console.error('Error deleting token:', error);
+    console.error('Error:', error);
     return NextResponse.json({ 
-      error: 'Failed to delete token' 
+      error: 'Internal server error' 
     }, { status: 500 });
   }
 } 

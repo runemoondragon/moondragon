@@ -12,5 +12,12 @@
     "walletAddress": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
     "associatedUrl": "/dashboards/uncommon-goods",
     "createdAt": "2024-12-02T19:08:24.138Z"
+  },
+  {
+    "tokenName": "RUNES•AS•FUCK",
+    "requiredBalance": 15000,
+    "walletAddress": "bc1putrlcy6h52pgmnpgdfxrfunvzkfjf8mcmr2a3a5d7k4vf89jg9uq54r08a",
+    "associatedUrl": "/dashboards/runes-as-fuck",
+    "createdAt": "2024-12-04T15:01:25.598Z"
   }
 ]

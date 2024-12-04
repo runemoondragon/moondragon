@@ -314,11 +314,11 @@ export default function Home() {
                         sideOffset={5}
                       >
                         <p className="space-y-2">
-                          Use the Rune Moon Dragon Dashboard to add your token and set up a governance system.
+                          Use the BITBOARD•DASH to add your token and set up a governance system.
                           <br /><br />
                           Customize minimum requirements, voting sessions, and governance tools specific to your token.
-                          <br /><br />
-                          The official token for the platform is BitBoard.Dash. Rune Moon Dragon serves as a test token for development and demonstration purposes.
+          
+      
 
                         </p>
                         <Tooltip.Arrow className="fill-gray-900" />

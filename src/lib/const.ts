@@ -10,10 +10,10 @@ export interface AccessToken {
 
 export const ACCESS_TOKENS: AccessToken[] = [
   {
-    "name": "RUNE•MOON•DRAGON",
-    "requiredBalance": 200000000,
+    "name": "BITBOARD•DASH",
+    "requiredBalance": 1000000,
     "dashboardPath": "/dashboards/moon-dragon",
-    "description": "Access Test Moon Dragon Dashboard"
+    "description": "Access Moon Dragon Dashboard"
   },
   {
     "name": "UNCOMMON•GOODS",
@@ -34,5 +34,12 @@ export const ACCESS_TOKENS: AccessToken[] = [
     "dashboardPath": "/dashboards/maga-fight-fight",
     "description": "Access MAGA•FIGHT•FIGHT Dashboard",
     "externalUrl": "/dashboards/maga-fight-fight"
+  },
+  {
+    "name": "RUNES•AS•FUCK",
+    "requiredBalance": 15000,
+    "dashboardPath": "/dashboards/runes-as-fuck",
+    "description": "Access RUNES•AS•FUCK Dashboard",
+    "externalUrl": "/dashboards/runes-as-fuck"
   }
 ]; 

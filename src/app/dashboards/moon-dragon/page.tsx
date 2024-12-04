@@ -588,7 +588,7 @@ export default function MoonDragonDashboard() {
       
       <main className="flex flex-col items-start p-8 mt-20 max-w-7xl mx-auto w-full">
         <div className="w-full">
-          <h1 className="text-4xl font-bold mb-8">Moon Dragon Dashboard</h1>
+          <h1 className="text-4xl font-bold mb-8">BITBOARD Dashboard</h1>
           
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {/* Token Stats */}

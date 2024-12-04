@@ -85,14 +85,14 @@ export async function POST(request: Request) {
       createdAt: new Date()
     };
 
-    // Verify RUNE•MOON•DRAGON access
+    // Verify BITBOARD•DASH access
     const balances = await fetchOrdAddress(walletAddress);
-    const moonDragonBalance = balances?.find((token: RuneBalance) => token.name === "RUNE•MOON•DRAGON");
-    const hasAccess = moonDragonBalance && parseInt(moonDragonBalance.balance) >= 2000000;
+    const bitboardBalance = balances?.find((token: RuneBalance) => token.name === "BITBOARD•DASH");
+    const hasAccess = bitboardBalance && parseInt(bitboardBalance.balance) >= 1000000;
 
     if (!hasAccess) {
       return NextResponse.json({ 
-        error: 'Unauthorized. You need at least 2,000,000 RUNE•MOON•DRAGON tokens.' 
+        error: 'Unauthorized. You need at least 1,000,000 BITBOARD•DASH tokens.' 
       }, { status: 401 });
     }
 
