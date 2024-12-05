@@ -38,6 +38,7 @@ export default function Home() {
   const [verificationMessage, setVerificationMessage] = useState<string | JSX.Element>("");
   const [selectedToken, setSelectedToken] = useState<string | null>(null);
   const [tokenRequirements, setTokenRequirements] = useState<Record<string, boolean>>({});
+  const [filteredTokens, setFilteredTokens] = useState<AccessToken[]>([]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -95,6 +96,26 @@ export default function Home() {
       checkAllTokens();
     }
   }, [address, runeBalances]);
+
+  useEffect(() => {
+    if (!runeBalances.length) return;
+    
+    const filtered = ACCESS_TOKENS.filter(token => {
+      const runeBalance = runeBalances.find(rune => rune.name === token.name);
+      const currentBalance = runeBalance ? parseInt(runeBalance.balance.replace(/,/g, '')) : 0;
+      
+      if (token.name === "BITBOARD•DASH") return true;
+      return currentBalance >= token.requiredBalance;
+    });
+    
+    const sortedFiltered = filtered.sort((a, b) => {
+      if (a.name === "BITBOARD•DASH") return -1;
+      if (b.name === "BITBOARD•DASH") return 1;
+      return 0;
+    });
+    
+    setFilteredTokens(sortedFiltered);
+  }, [runeBalances]);
 
   const handleAccessAttempt = async (token: AccessToken) => {
     if (!address || !signMessage) {
@@ -229,42 +250,48 @@ export default function Home() {
                         className="px-6 py-2 text-white bg-orange-500 hover:bg-orange-600 rounded-lg flex items-center gap-2"
                         disabled={isVerifying}
                       >
-                        {isVerifying ? "Verifying..." : "Access To"} <ChevronDown className="w-4 h-4" />
+                        {isVerifying ? "Verifying..." : "Access Dash"} <ChevronDown className="w-4 h-4" />
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-64">
-                      {ACCESS_TOKENS.map((token) => {
-                        const runeBalance = runeBalances.find(rune => rune.name === token.name);
-                        const currentBalance = runeBalance ? parseInt(runeBalance.balance.replace(/,/g, '')) : 0;
-                        const hasAccess = currentBalance >= token.requiredBalance;
-                        
-                        return (
-                          <DropdownMenuItem
-                            key={token.name}
-                            onClick={() => handleAccessAttempt(token)}
-                            className={cn(
-                              "flex flex-col items-start gap-1 p-3",
-                              hasAccess 
-                                ? "hover:bg-green-50 dark:hover:bg-green-900/20"
-                                : "hover:bg-red-50 dark:hover:bg-red-900/20"
-                            )}
-                          >
-                            <div className="font-medium">{token.name}</div>
-                            <div className="text-sm text-gray-500">
-                              Required: {token.requiredBalance.toLocaleString()} tokens
-                              <br />
-                              Current: {currentBalance.toLocaleString()} tokens
-                            </div>
-                            <div className="text-xs mt-1">
-                              {hasAccess ? (
-                                <span className="text-green-500">✅ Requirements met</span>
-                              ) : (
-                                <span className="text-red-500">❌ Insufficient balance ({currentBalance.toLocaleString()} / {token.requiredBalance.toLocaleString()})</span>
+                      {filteredTokens.length === 0 ? (
+                        <div className="p-3 text-sm text-gray-500 text-center">
+                          No tokens available for access with your current wallet address
+                        </div>
+                      ) : (
+                        filteredTokens.map((token) => {
+                          const runeBalance = runeBalances.find(rune => rune.name === token.name);
+                          const currentBalance = runeBalance ? parseInt(runeBalance.balance.replace(/,/g, '')) : 0;
+                          const hasAccess = currentBalance >= token.requiredBalance;
+                          
+                          return (
+                            <DropdownMenuItem
+                              key={token.name}
+                              onClick={() => handleAccessAttempt(token)}
+                              className={cn(
+                                "flex flex-col items-start gap-1 p-3",
+                                hasAccess 
+                                  ? "hover:bg-green-50 dark:hover:bg-green-900/20"
+                                  : "hover:bg-red-50 dark:hover:bg-red-900/20"
                               )}
-                            </div>
-                          </DropdownMenuItem>
-                        );
-                      })}
+                            >
+                              <div className="font-medium">{token.name}</div>
+                              <div className="text-sm text-gray-500">
+                                Required: {token.requiredBalance.toLocaleString()} tokens
+                                <br />
+                                Current: {currentBalance.toLocaleString()} tokens
+                              </div>
+                              <div className="text-xs mt-1">
+                                {hasAccess ? (
+                                  <span className="text-green-500">✅ Requirements met</span>
+                                ) : (
+                                  <span className="text-red-500">❌ Insufficient balance ({currentBalance.toLocaleString()} / {token.requiredBalance.toLocaleString()})</span>
+                                )}
+                              </div>
+                            </DropdownMenuItem>
+                          );
+                        })
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                   

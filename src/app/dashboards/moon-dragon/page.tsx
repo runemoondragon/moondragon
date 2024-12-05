@@ -25,9 +25,10 @@ interface TokenDisplayProps {
   onButton3Click: () => void;
   setShowVotingForm: (show: boolean) => void;
   setShowArchiveModal: (show: boolean) => void;
+  setShowAddressDetails: (show: boolean) => void;
 }
 
-const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, onButton1Click, onButton2Click, onButton3Click, setShowVotingForm, setShowArchiveModal }: TokenDisplayProps) => {
+const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, onButton1Click, onButton2Click, onButton3Click, setShowVotingForm, setShowArchiveModal, setShowAddressDetails }: TokenDisplayProps) => {
   const [newBalance, setNewBalance] = useState(token.requiredBalance);
   const [error, setError] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -213,20 +214,20 @@ const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, on
             </Tooltip.Root>
 
             <Menu as="div" className="relative">
-              <Menu.Button className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors">
+              <Menu.Button className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors text-white">
                 Board Actions
               </Menu.Button>
               
-              <Menu.Items className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg py-1 z-10">
+              <Menu.Items className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-10 border border-gray-200 dark:border-gray-700">
                 <Menu.Item>
                   {({ active }) => (
                     <button
-                      onClick={() => setShowVotingForm(true)}
+                      onClick={() => setShowAddressDetails(true)}
                       className={`${
-                        active ? 'bg-gray-700' : ''
-                      } w-full text-left px-4 py-2`}
+                        active ? 'bg-gray-100 dark:bg-gray-700' : ''
+                      } w-full text-left px-4 py-2 text-gray-900 dark:text-white`}
                     >
-                      Start New Question
+                      List All Addresses
                     </button>
                   )}
                 </Menu.Item>
@@ -235,8 +236,8 @@ const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, on
                     <button
                       onClick={() => setShowArchiveModal(true)}
                       className={`${
-                        active ? 'bg-gray-700' : ''
-                      } w-full text-left px-4 py-2`}
+                        active ? 'bg-gray-100 dark:bg-gray-700' : ''
+                      } w-full text-left px-4 py-2 text-gray-900 dark:text-white`}
                     >
                       Manage Archives
                     </button>
@@ -320,6 +321,95 @@ const AddTokenForm = ({ onSubmit }: { onSubmit: (data: any) => Promise<void> }) 
   );
 };
 
+// Add these interfaces before the MoonDragonDashboard component
+interface VoteDetail {
+  walletAddress: string;
+  choice: string;
+  tokenBalance: number;
+  timestamp: string;
+}
+
+interface GroupedVotes {
+  [questionId: string]: {
+    questionText: string;
+    votes: VoteDetail[];
+  };
+}
+
+// Add the AddressDetails component
+const AddressDetails = ({ 
+  isOpen, 
+  onClose, 
+  votingDetails 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  votingDetails: GroupedVotes;
+}) => {
+  return (
+    <Dialog open={isOpen} onClose={onClose} className="relative z-50">
+      <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
+      
+      <div className="fixed inset-0 flex items-center justify-center p-4">
+        <Dialog.Panel className="w-full max-w-4xl rounded-lg bg-white dark:bg-gray-900 p-6 text-gray-900 dark:text-white">
+          <Dialog.Title className="text-xl font-semibold mb-4">
+            Voting Address Details
+          </Dialog.Title>
+          
+          <div className="space-y-6 max-h-[70vh] overflow-y-auto">
+            {Object.entries(votingDetails).map(([questionId, questionData]) => (
+              <div key={questionId} className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
+                <h3 className="font-medium mb-3">
+                  {questionData.questionText}
+                  <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
+                    (ID: {questionId})
+                  </span>
+                </h3>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full">
+                    <thead>
+                      <tr className="text-left text-sm text-gray-500 dark:text-gray-400">
+                        <th className="pb-2">Wallet Address</th>
+                        <th className="pb-2">Choice</th>
+                        <th className="pb-2">Token Balance</th>
+                        <th className="pb-2">Timestamp</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {questionData.votes.map((vote, index) => (
+                        <tr key={index} className="border-t border-gray-200 dark:border-gray-700">
+                          <td className="py-2 text-sm">{vote.walletAddress}</td>
+                          <td className="py-2 text-sm">{vote.choice}</td>
+                          <td className="py-2 text-sm">{vote.tokenBalance.toLocaleString()}</td>
+                          <td className="py-2 text-sm">
+                            {new Date(vote.timestamp).toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))}
+            {Object.keys(votingDetails).length === 0 && (
+              <p className="text-center text-gray-500 dark:text-gray-400">No voting data available</p>
+            )}
+          </div>
+
+          <div className="mt-6 flex justify-end">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </Dialog.Panel>
+      </div>
+    </Dialog>
+  );
+};
+
 export default function MoonDragonDashboard() {
   const { address } = useLaserEyes();
   const router = useRouter();
@@ -332,6 +422,8 @@ export default function MoonDragonDashboard() {
   const [votingSessions, setVotingSessions] = useState<any[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [archivedSessions, setArchivedSessions] = useState<any[]>([]);
+  const [showAddressDetails, setShowAddressDetails] = useState(false);
+  const [votingDetails, setVotingDetails] = useState<GroupedVotes>({});
 
   useEffect(() => {
     const fetchUserToken = async () => {
@@ -572,11 +664,32 @@ export default function MoonDragonDashboard() {
     }
   };
 
+  const fetchVotingDetails = async () => {
+    if (!userToken) return;
+    
+    try {
+      const response = await fetch(`/api/voting/address-details/${userToken.tokenName}`);
+      if (!response.ok) throw new Error('Failed to fetch voting details');
+      
+      const data = await response.json();
+      setVotingDetails(data.votes);
+    } catch (error) {
+      console.error('Error fetching voting details:', error);
+      toast.error('Failed to fetch voting details');
+    }
+  };
+
   useEffect(() => {
     if (showArchiveModal) {
       fetchArchivedSessions();
     }
   }, [showArchiveModal]);
+
+  useEffect(() => {
+    if (showAddressDetails) {
+      fetchVotingDetails();
+    }
+  }, [showAddressDetails]);
 
   if (!isMounted) {
     return null;
@@ -632,6 +745,7 @@ export default function MoonDragonDashboard() {
                   onButton3Click={handleButton3Click}
                   setShowVotingForm={setShowVotingForm}
                   setShowArchiveModal={setShowArchiveModal}
+                  setShowAddressDetails={setShowAddressDetails}
                 />
               </div>
             )}
@@ -648,16 +762,16 @@ export default function MoonDragonDashboard() {
           <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
           
           <div className="fixed inset-0 flex items-center justify-center p-4">
-            <DialogPanel className="w-full max-w-2xl rounded-lg bg-gray-900 p-6">
+            <DialogPanel className="w-full max-w-2xl rounded-lg bg-white dark:bg-gray-900 p-6 text-gray-900 dark:text-white">
               <DialogTitle className="text-xl font-semibold mb-4">
                 Archived Voting Sessions
               </DialogTitle>
               
               <div className="space-y-4 max-h-[60vh] overflow-y-auto">
                 {archivedSessions.map(session => (
-                  <div key={session.id} className="p-4 bg-gray-800 rounded-lg">
+                  <div key={session.id} className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
                     <h3 className="font-medium mb-2">{session.question}</h3>
-                    <div className="text-sm text-gray-400">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
                       <p>Ended: {new Date(session.endTime).toLocaleDateString()}</p>
                       <p>Yes: {((session.results.yesVotes / session.results.totalVotingPower) * 100).toFixed(1)}%</p>
                       <p>No: {((session.results.noVotes / session.results.totalVotingPower) * 100).toFixed(1)}%</p>
@@ -667,7 +781,7 @@ export default function MoonDragonDashboard() {
                       <div className="mt-4">
                         <button
                           onClick={() => handleArchiveSession(session)}
-                          className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
+                          className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-900 dark:text-white rounded-lg transition-colors"
                         >
                           Archive This Session
                         </button>
@@ -676,14 +790,14 @@ export default function MoonDragonDashboard() {
                   </div>
                 ))}
                 {archivedSessions.length === 0 && (
-                  <p className="text-gray-400 text-center py-4">No archived sessions found</p>
+                  <p className="text-center text-gray-500 dark:text-gray-400 py-4">No archived sessions found</p>
                 )}
               </div>
 
               <div className="mt-6 flex justify-end">
                 <button
                   onClick={() => setShowArchiveModal(false)}
-                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg"
+                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg transition-colors"
                 >
                   Close
                 </button>
@@ -692,6 +806,11 @@ export default function MoonDragonDashboard() {
           </div>
         </Dialog>
       )}
+      <AddressDetails
+        isOpen={showAddressDetails}
+        onClose={() => setShowAddressDetails(false)}
+        votingDetails={votingDetails}
+      />
     </div>
   );
 } 

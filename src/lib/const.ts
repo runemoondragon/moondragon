@@ -1,4 +1,4 @@
-export const BTC_MESSAGE_TO_SIGN = "RuneCheck Authentication";
+export const BTC_MESSAGE_TO_SIGN = "BitboardDash Authentication";
 
 export interface AccessToken {
   name: string;

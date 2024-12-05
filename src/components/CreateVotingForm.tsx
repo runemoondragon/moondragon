@@ -15,6 +15,12 @@ export interface VotingFormData {
   endTime: string;
 }
 
+function getLocalISOString() {
+  const now = new Date();
+  const offset = now.getTimezoneOffset() * 60000;
+  return new Date(now.getTime() - offset).toISOString().slice(0, 16);
+}
+
 export function CreateVotingForm({ isOpen, onClose, onSubmit }: CreateVotingFormProps) {
   const [formData, setFormData] = useState<VotingFormData>({
     question: '',
@@ -50,14 +56,14 @@ export function CreateVotingForm({ isOpen, onClose, onSubmit }: CreateVotingForm
     <Dialog.Root open={isOpen} onOpenChange={onClose}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
-        <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] max-w-md p-6 rounded-lg bg-gray-900 border border-gray-800 shadow-xl">
+        <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] max-w-md p-6 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-xl text-gray-900 dark:text-white">
           <div className="flex justify-between items-center mb-4">
             <Dialog.Title className="text-xl font-semibold">
               Create New Voting Session
             </Dialog.Title>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-700 rounded-full transition-colors"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
               aria-label="Close"
             >
               <FiX size={20} />
@@ -74,7 +80,7 @@ export function CreateVotingForm({ isOpen, onClose, onSubmit }: CreateVotingForm
                 type="text"
                 value={formData.question}
                 onChange={(e) => setFormData(prev => ({ ...prev, question: e.target.value }))}
-                className="w-full p-2 rounded-lg bg-white/10 backdrop-blur-sm border border-gray-700"
+                className="w-full p-2 rounded-lg bg-gray-50 dark:bg-white/10 border border-gray-300 dark:border-gray-700"
                 placeholder="Enter your question here"
               />
             </div>
@@ -89,8 +95,8 @@ export function CreateVotingForm({ isOpen, onClose, onSubmit }: CreateVotingForm
                   type="datetime-local"
                   value={formData.startTime}
                   onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
-                  className="w-full p-2 rounded-lg bg-white/10 backdrop-blur-sm border border-gray-700"
-                  min={new Date().toISOString().slice(0, 16)}
+                  className="w-full p-2 rounded-lg bg-gray-50 dark:bg-white/10 border border-gray-300 dark:border-gray-700"
+                  min={getLocalISOString()}
                 />
               </div>
 
@@ -103,8 +109,8 @@ export function CreateVotingForm({ isOpen, onClose, onSubmit }: CreateVotingForm
                   type="datetime-local"
                   value={formData.endTime}
                   onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
-                  className="w-full p-2 rounded-lg bg-white/10 backdrop-blur-sm border border-gray-700"
-                  min={formData.startTime || new Date().toISOString().slice(0, 16)}
+                  className="w-full p-2 rounded-lg bg-gray-50 dark:bg-white/10 border border-gray-300 dark:border-gray-700"
+                  min={formData.startTime || getLocalISOString()}
                 />
               </div>
             </div>
@@ -119,7 +125,7 @@ export function CreateVotingForm({ isOpen, onClose, onSubmit }: CreateVotingForm
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg transition-colors"
               >
                 Cancel
               </button>

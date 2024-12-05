@@ -289,7 +289,7 @@ export default function TokenDashboard() {
           <h1 className="text-4xl font-bold mb-8">{tokenName} Dashboard</h1>
 
           {/* Token Balance Section */}
-          <div className="mb-8 p-6 rounded-lg bg-white/10 backdrop-blur-sm">
+          <div className="mb-8 p-6 rounded-lg bg-white dark:bg-white/10 backdrop-blur-sm border border-gray-200 dark:border-transparent">
             <h2 className="text-xl font-semibold mb-4">Your Voting Power</h2>
             <div className="text-3xl font-bold">
               {votingPower.toLocaleString()} {tokenName}
@@ -306,9 +306,9 @@ export default function TokenDashboard() {
               <>
                 {votingSessions && votingSessions.length > 0 ? (
                   votingSessions.map((session: any) => (
-                    <div key={session.id} className="p-6 rounded-lg bg-gray-800">
+                    <div key={session.id} className="p-6 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                       <h3 className="text-2xl font-semibold mb-4">{session.question}</h3>
-                      <div className="flex items-center gap-2 text-sm text-gray-400 mb-4">
+                      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-4">
                         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M12 8V12L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                           <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2"/>
@@ -353,7 +353,7 @@ export default function TokenDashboard() {
                                 <span>Yes</span>
                                 <span>{((session.results.yesVotes / session.results.totalVotingPower) * 100).toFixed(1)}%</span>
                               </div>
-                              <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                              <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                                 <div 
                                   className="h-full bg-green-500 transition-all duration-500"
                                   style={{ 
@@ -372,7 +372,7 @@ export default function TokenDashboard() {
                                 <span>No</span>
                                 <span>{((session.results.noVotes / session.results.totalVotingPower) * 100).toFixed(1)}%</span>
                               </div>
-                              <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                              <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                                 <div 
                                   className="h-full bg-red-500 transition-all duration-500"
                                   style={{ 
@@ -385,7 +385,7 @@ export default function TokenDashboard() {
                               </div>
                             </div>
 
-                            <div className="text-sm text-gray-400 mt-4">
+                            <div className="text-sm text-gray-500 dark:text-gray-400 mt-4">
                               Total votes: {session.results.totalVoters}
                               <br />
                               Total voting power: {session.results.totalVotingPower.toLocaleString()} {tokenName}

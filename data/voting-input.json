@@ -21,15 +21,15 @@
       "token": "UNCOMMON•GOODS",
       "question": "🚀 Should we reduce the access requirement for BitBoard Dash by 50% once the minting phase is complete? 💡",
       "startTime": "2024-12-01T23:02",
-      "endTime": "2024-12-05T23:01",
-      "status": "active",
+      "endTime": "2024-12-05T09:12",
+      "status": "completed",
       "createdBy": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
       "results": {
         "yesVotes": 5,
         "noVotes": 0,
         "totalVoters": 1,
         "totalVotingPower": 5,
-        "hasEnded": false
+        "hasEnded": true
       }
     },
     {
@@ -38,7 +38,7 @@
       "question": "Test 2 yes or no question",
       "startTime": "2024-12-02T17:35",
       "endTime": "2024-12-03T11:32",
-      "status": "completed",
+      "status": "archived",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
         "yesVotes": 1000000,
@@ -61,6 +61,22 @@
         "noVotes": 1150000,
         "totalVoters": 2,
         "totalVotingPower": 1150000,
+        "hasEnded": false
+      }
+    },
+    {
+      "id": "q1733438688481",
+      "token": "MAGA•FIGHT•FIGHT",
+      "question": "Test 4 yes or no question",
+      "startTime": "2024-12-05T16:45",
+      "endTime": "2024-12-06T16:45",
+      "status": "active",
+      "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
+      "results": {
+        "yesVotes": 0,
+        "noVotes": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
         "hasEnded": false
       }
     }
