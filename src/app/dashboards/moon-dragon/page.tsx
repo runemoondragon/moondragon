@@ -12,6 +12,7 @@ import { CreateVotingForm, VotingFormData } from "@/components/CreateVotingForm"
 import { Menu } from '@headlessui/react';
 import { toast } from 'react-hot-toast';
 import { Dialog, DialogTitle, DialogPanel } from '@headlessui/react';
+import { RuneBalance, fetchOrdAddress } from "@/lib/runebalance";
 
 interface TokenDisplayProps {
   token: TokenAssociation;
@@ -196,10 +197,9 @@ const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, on
               <Tooltip.Trigger asChild>
                 <button
                   onClick={onButton2Click}
-                  className="flex-1 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors opacity-70 cursor-not-allowed"
-                  disabled
+                  className="flex-1 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors"
                 >
-                  Distribute Dividends
+                  Distribute Rewards
                 </button>
               </Tooltip.Trigger>
               <Tooltip.Portal>
@@ -410,6 +410,346 @@ const AddressDetails = ({
   );
 };
 
+// Add this interface for the distribution form
+interface DistributionFormData {
+  recipients: {
+    address: string;
+    amount: number;
+  }[];
+}
+
+// Add this interface for voter data
+interface VoterData {
+  questionId: string;
+  questionText: string;
+  status: string;
+}
+
+// Add this interface for token selection
+interface TokenBalance {
+  name: string;
+  balance: string;
+  symbol: string;
+}
+
+// Update the DistributeRewardsForm component
+const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName }: {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (data: DistributionFormData) => Promise<void>;
+  tokenName?: string;
+}) => {
+  const { address } = useLaserEyes();
+  const [runeBalances, setRuneBalances] = useState<RuneBalance[]>([]);
+  const [amount, setAmount] = useState<number>(0);
+  const [addresses, setAddresses] = useState<string>('');
+  const [feeRate, setFeeRate] = useState<number>(7);
+  const [error, setError] = useState('');
+  const [showVoterModal, setShowVoterModal] = useState(false);
+  const [questions, setQuestions] = useState<VoterData[]>([]);
+  const [selectedQuestionId, setSelectedQuestionId] = useState<string>('');
+  const [selectedToken, setSelectedToken] = useState<TokenBalance | null>(null);
+
+  // Modify the fetchQuestions function to use the same data as List All Addresses
+  const fetchQuestions = async () => {
+    if (!tokenName) return;
+    
+    try {
+      const response = await fetch(`/api/voting/address-details/${tokenName}`);
+      if (!response.ok) throw new Error('Failed to fetch voting details');
+      
+      const data = await response.json();
+      console.log('Fetched voting details:', data);
+
+      // Transform the voting details into questions format
+      const allQuestions = Object.entries(data.votes).map(([questionId, questionData]: [string, any]) => ({
+        questionId,
+        questionText: questionData.questionText || `Question (ID: ${questionId})`,
+        status: 'completed'
+      }));
+
+      setQuestions(allQuestions);
+      console.log('Transformed questions:', allQuestions);
+    } catch (error) {
+      console.error('Error fetching questions:', error);
+      toast.error('Failed to fetch questions');
+    }
+  };
+
+  // Modify the importVoters function
+  const importVoters = async (questionId: string) => {
+    if (!tokenName) return;
+    
+    try {
+      const response = await fetch(`/api/voting/address-details/${tokenName}`);
+      if (!response.ok) throw new Error('Failed to fetch voting details');
+      
+      const data = await response.json();
+      console.log('Fetched voting details:', data); // Debug log
+      
+      if (data.votes && data.votes[questionId]) {
+        const voterAddresses = data.votes[questionId].votes
+          .filter((vote: any) => vote.walletAddress) // Ensure address exists
+          .map((vote: any) => vote.walletAddress)
+          .join('\n');
+        
+        if (voterAddresses) {
+          setAddresses(voterAddresses);
+          setShowVoterModal(false);
+          toast.success('Voter addresses imported successfully');
+        } else {
+          toast.error('No valid voter addresses found for this question');
+        }
+      } else {
+        toast.error('No voting data found for this question');
+      }
+    } catch (error) {
+      console.error('Error importing voters:', error);
+      toast.error('Failed to import voters');
+    }
+  };
+
+  // Add this back to the DistributeRewardsForm component, right after the importVoters function
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    
+    try {
+      // Parse addresses from textarea
+      const addressList = addresses
+        .split('\n')
+        .filter(addr => addr.trim())
+        .map(addr => addr.trim());
+
+      if (!addressList.length) {
+        throw new Error('Please enter at least one address');
+      }
+
+      if (amount <= 0) {
+        throw new Error('Amount must be greater than 0');
+      }
+
+      // Create recipients array with same amount for each address
+      const recipients = addressList.map(address => ({
+        address,
+        amount
+      }));
+      
+      await onSubmit({ recipients });
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to distribute rewards');
+    }
+  };
+
+  useEffect(() => {
+    const loadRuneBalances = async () => {
+      if (!address) return;
+      try {
+        const balances = await fetchOrdAddress(address);
+        setRuneBalances(balances);
+      } catch (error) {
+        console.error('Error loading rune balances:', error);
+        toast.error('Failed to load rune balances');
+      }
+    };
+
+    if (isOpen) {
+      loadRuneBalances();
+    }
+  }, [address, isOpen]);
+
+  return (
+    <Dialog open={isOpen} onClose={onClose} className="relative z-50">
+      <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
+      
+      <div className="fixed inset-0 flex items-center justify-center p-4">
+        <Dialog.Panel className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-lg bg-[#0B1018] p-6 text-white">
+          <Dialog.Title className="text-xl font-semibold mb-6">
+            Distribute Rewards
+          </Dialog.Title>
+
+          {/* Token Selection Section */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium mb-2">
+              SELECT RUNE
+            </label>
+            <div className="max-h-[25vh] overflow-y-auto">
+              {runeBalances.map((rune) => (
+                <div
+                  key={rune.name}
+                  onClick={() => setSelectedToken(rune)}
+                  className={`p-4 bg-black/50 rounded-lg border border-gray-700 mb-2 cursor-pointer ${
+                    selectedToken?.name === rune.name ? 'border-orange-500' : ''
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs">{rune.symbol}</span>
+                      </div>
+                      <div>
+                        <div className="font-medium">{rune.name}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-medium">{parseInt(rune.balance).toLocaleString()}</div>
+                      <div className="text-sm text-gray-400">Balance</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-2 text-sm text-gray-400">
+              Selecting 1 bundle (UTXO) is more economical than multiple bundles.
+            </div>
+          </div>
+
+          {/* Existing form content */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Amount per address input */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                AMOUNT PER ADDRESS
+              </label>
+              <input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(Number(e.target.value))}
+                className="w-full p-3 bg-black border border-gray-700 rounded-lg"
+                min="0"
+                required
+              />
+            </div>
+
+            {/* Addresses textarea */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                PASTE ADDRESSES OR UPLOAD CSV FILE (MAX. 1000)
+              </label>
+              <div className="relative">
+                <div className="flex gap-2 mb-2">
+                  <input
+                    type="file"
+                    accept=".csv"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                          const text = e.target?.result as string;
+                          setAddresses(text);
+                        };
+                        reader.readAsText(file);
+                      }
+                    }}
+                    className="flex-1"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      fetchQuestions();
+                      setShowVoterModal(true);
+                    }}
+                    className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors"
+                  >
+                    Import Voters
+                  </button>
+                </div>
+                <textarea
+                  value={addresses}
+                  onChange={(e) => setAddresses(e.target.value)}
+                  className="w-full h-[15vh] p-3 bg-black border border-gray-700 rounded-lg"
+                  placeholder="Paste or drop CSV file"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Fee rate input */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                FEE RATE (SAT/VB)
+              </label>
+              <input
+                type="number"
+                value={feeRate}
+                onChange={(e) => setFeeRate(Number(e.target.value))}
+                className="w-full p-3 bg-black border border-gray-700 rounded-lg"
+                min="1"
+                required
+              />
+            </div>
+
+            {/* Warning message */}
+            <div className="text-yellow-500 text-sm">
+              ⚠️ Check the transaction (PSBT) before signing. We are not responsible for any errors or lost funds.
+            </div>
+
+            {error && (
+              <p className="text-red-500 text-sm">{error}</p>
+            )}
+
+            {/* Submit button */}
+            <button
+              type="submit"
+              className="w-full p-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
+            >
+              CREATE TRANSACTION
+            </button>
+          </form>
+        </Dialog.Panel>
+      </div>
+
+      {/* Add Voter Import Modal */}
+      <Dialog open={showVoterModal} onClose={() => setShowVoterModal(false)} className="relative z-50">
+        <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
+        
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="w-full max-w-md rounded-lg bg-gray-900 p-6 text-white">
+            <Dialog.Title className="text-xl font-semibold mb-6">
+              Import Voters from Question
+            </Dialog.Title>
+            
+            <div className="space-y-4">
+              <select
+                value={selectedQuestionId}
+                onChange={(e) => setSelectedQuestionId(e.target.value)}
+                className="w-full p-3 bg-black border border-gray-700 rounded-lg text-white text-sm"
+              >
+                <option value="">Select a question</option>
+                {questions.map((q) => (
+                  <option key={q.questionId} value={q.questionId}>
+                    {q.questionText} (ID: {q.questionId})
+                  </option>
+                ))}
+              </select>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowVoterModal(false)}
+                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => importVoters(selectedQuestionId)}
+                  disabled={!selectedQuestionId}
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Import
+                </button>
+              </div>
+            </div>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
+    </Dialog>
+  );
+};
+
 export default function MoonDragonDashboard() {
   const { address } = useLaserEyes();
   const router = useRouter();
@@ -424,6 +764,7 @@ export default function MoonDragonDashboard() {
   const [archivedSessions, setArchivedSessions] = useState<any[]>([]);
   const [showAddressDetails, setShowAddressDetails] = useState(false);
   const [votingDetails, setVotingDetails] = useState<GroupedVotes>({});
+  const [showDistributionForm, setShowDistributionForm] = useState(false);
 
   useEffect(() => {
     const fetchUserToken = async () => {
@@ -571,8 +912,7 @@ export default function MoonDragonDashboard() {
   };
 
   const handleButton2Click = () => {
-    console.log("Button 2 clicked");
-    // Add functionality later
+    setShowDistributionForm(true);
   };
 
   const handleButton3Click = () => {
@@ -679,6 +1019,33 @@ export default function MoonDragonDashboard() {
     }
   };
 
+  const handleDistributeRewards = async (data: DistributionFormData) => {
+    try {
+      // Here you would implement the PSBT creation and broadcasting
+      const response = await fetch('/api/distribute-rewards', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tokenName: userToken?.tokenName,
+          recipients: data.recipients,
+          senderAddress: address
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to distribute rewards');
+      }
+
+      toast.success('Rewards distributed successfully');
+      setShowDistributionForm(false);
+    } catch (error) {
+      console.error('Error distributing rewards:', error);
+      toast.error('Failed to distribute rewards');
+    }
+  };
+
   useEffect(() => {
     if (showArchiveModal) {
       fetchArchivedSessions();
@@ -701,7 +1068,7 @@ export default function MoonDragonDashboard() {
       
       <main className="flex flex-col items-start p-8 mt-20 max-w-7xl mx-auto w-full">
         <div className="w-full">
-          <h1 className="text-4xl font-bold mb-8">BITBOARD Dashboard</h1>
+          <h1 className="text-4xl font-bold mb-8">BITBOARD DASH</h1>
           
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {/* Token Stats */}
@@ -810,6 +1177,12 @@ export default function MoonDragonDashboard() {
         isOpen={showAddressDetails}
         onClose={() => setShowAddressDetails(false)}
         votingDetails={votingDetails}
+      />
+      <DistributeRewardsForm
+        isOpen={showDistributionForm}
+        onClose={() => setShowDistributionForm(false)}
+        onSubmit={handleDistributeRewards}
+        tokenName={userToken?.tokenName}
       />
     </div>
   );

@@ -37,4 +37,15 @@ export async function getTokenBalance(address: string) {
 export async function getVotingPower(address: string): Promise<number> {
   const balance = await getTokenBalance(address);
   return balance.raw;
+}
+
+export async function fetchOrdAddress(address: string) {
+  try {
+    const response = await fetch(`https://api.ordinals.io/runes/address/${address}`);
+    if (!response.ok) throw new Error('Failed to fetch rune balances');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching rune balances:', error);
+    return [];
+  }
 } 
