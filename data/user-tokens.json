@@ -12,5 +12,12 @@
     "walletAddress": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
     "associatedUrl": "/dashboards/uncommon-goods",
     "createdAt": "2024-12-02T19:08:24.138Z"
+  },
+  {
+    "tokenName": "DOG•GO•TO•THE•MOON",
+    "requiredBalance": 100000,
+    "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+    "associatedUrl": "/dashboards/dog-go-to-the-moon",
+    "createdAt": "2024-12-06T22:41:59.635Z"
   }
 ]

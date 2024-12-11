@@ -54,14 +54,14 @@
       "question": "Test 3 yes or no question",
       "startTime": "2024-12-03T22:02",
       "endTime": "2024-12-06T22:01",
-      "status": "active",
+      "status": "completed",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
         "yesVotes": 0,
         "noVotes": 1150000,
         "totalVoters": 2,
         "totalVotingPower": 1150000,
-        "hasEnded": false
+        "hasEnded": true
       }
     },
     {
@@ -70,14 +70,14 @@
       "question": "Test 4 yes or no question",
       "startTime": "2024-12-05T16:45",
       "endTime": "2024-12-06T16:45",
-      "status": "active",
+      "status": "completed",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
         "yesVotes": 0,
         "noVotes": 0,
         "totalVoters": 0,
         "totalVotingPower": 0,
-        "hasEnded": false
+        "hasEnded": true
       }
     }
   ]

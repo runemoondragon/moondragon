@@ -34,5 +34,12 @@ export const ACCESS_TOKENS: AccessToken[] = [
     "dashboardPath": "/dashboards/maga-fight-fight",
     "description": "Access MAGA•FIGHT•FIGHT Dashboard",
     "externalUrl": "/dashboards/maga-fight-fight"
+  },
+  {
+    "name": "DOG•GO•TO•THE•MOON",
+    "requiredBalance": 100000,
+    "dashboardPath": "/dashboards/dog-go-to-the-moon",
+    "description": "Access DOG•GO•TO•THE•MOON Dashboard",
+    "externalUrl": "/dashboards/dog-go-to-the-moon"
   }
 ]; 

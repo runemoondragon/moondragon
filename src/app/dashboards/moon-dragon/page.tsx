@@ -425,30 +425,62 @@ interface VoterData {
   status: string;
 }
 
-// Add this interface for token selection
+// Update the UTXO interface to include divisibility
+interface UTXO {
+  txid: string;
+  vout: number;
+  value: number;
+  rune: {
+    name: string;
+    amount: string;
+    status: string;
+    timestamp: number;
+    divisibility?: number;
+  }
+}
+
+// Update this interface for token selection
 interface TokenBalance {
   name: string;
   balance: string;
   symbol: string;
+  divisibility: number;
 }
 
-// Update the DistributeRewardsForm component
-const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName }: {
+// Add utility function for conversion
+const satToBtc = (sats: number) => (sats / 100000000).toFixed(8);
+
+const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice }: {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: DistributionFormData) => Promise<void>;
   tokenName?: string;
+  btcPrice: number;
 }) => {
-  const { address } = useLaserEyes();
+  const { 
+    address, 
+    signPsbt, 
+    getBalance, 
+    paymentAddress,
+    publicKey,
+    paymentPublicKey,
+    balance 
+  } = useLaserEyes();
   const [runeBalances, setRuneBalances] = useState<RuneBalance[]>([]);
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<number>(1);
   const [addresses, setAddresses] = useState<string>('');
-  const [feeRate, setFeeRate] = useState<number>(7);
+  const [feeRate, setFeeRate] = useState<number>(2);
   const [error, setError] = useState('');
   const [showVoterModal, setShowVoterModal] = useState(false);
   const [questions, setQuestions] = useState<VoterData[]>([]);
   const [selectedQuestionId, setSelectedQuestionId] = useState<string>('');
   const [selectedToken, setSelectedToken] = useState<TokenBalance | null>(null);
+  const [selectedUTXOs, setSelectedUTXOs] = useState<UTXO[]>([]);
+  const [availableUTXOs, setAvailableUTXOs] = useState<UTXO[]>([]);
+  const [showTxDetails, setShowTxDetails] = useState(false);
+  const [txDetails, setTxDetails] = useState<any>(null);
+  const [psbt, setPsbt] = useState<string>('');
+
 
   // Modify the fetchQuestions function to use the same data as List All Addresses
   const fetchQuestions = async () => {
@@ -509,36 +541,176 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName }: {
     }
   };
 
+  // Add new function to fetch UTXOs when token is selected
+  const fetchUTXOs = async (tokenName: string) => {
+    try {
+      const response = await fetch(`/api/rune-utxos?token=${encodeURIComponent(tokenName)}`);
+      if (!response.ok) throw new Error('Failed to fetch UTXOs');
+      
+      const data = await response.json();
+      setAvailableUTXOs(data.utxos);
+    } catch (error) {
+      console.error('Error fetching UTXOs:', error);
+      toast.error('Failed to fetch UTXOs');
+    }
+  };
+
+  // Modify the token selection handler
+  const handleTokenSelect = async (rune: RuneBalance) => {
+    // If clicking the same token, toggle the selection
+    if (selectedToken?.name === rune.name) {
+      setSelectedToken(null);
+      return;
+    }
+    
+    // Add divisibility when setting the token
+    setSelectedToken({
+      name: rune.name,
+      balance: rune.balance,
+      symbol: rune.symbol,
+      divisibility: 0  // Set default or get from API response if available
+    });
+
+    try {
+      console.log('Fetching UTXOs for token:', rune.name);
+      const response = await fetch(`/api/rune-utxos?token=${encodeURIComponent(rune.name)}&address=${address}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch UTXOs: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log('Fetched UTXOs:', data);
+      setAvailableUTXOs(data.utxos);
+      
+      if (data.utxos.length === 0) {
+        toast('No UTXOs found for this token');
+      }
+    } catch (error) {
+      console.error('Error fetching UTXOs:', error);
+      toast.error('Failed to fetch UTXOs');
+    }
+  };
+
   // Add this back to the DistributeRewardsForm component, right after the importVoters function
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setShowTxDetails(false);
     
     try {
-      // Parse addresses from textarea
-      const addressList = addresses
+      if (!selectedUTXOs?.length) {
+        throw new Error('Please select at least one UTXO');
+      }
+
+      const selectedRune = selectedUTXOs[0];
+      const recipientList = addresses
         .split('\n')
-        .filter(addr => addr.trim())
-        .map(addr => addr.trim());
+        .map(addr => addr.trim())
+        .filter(addr => addr);
 
-      if (!addressList.length) {
-        throw new Error('Please enter at least one address');
+      if (!recipientList.length) {
+        throw new Error('No valid recipient addresses found');
       }
 
-      if (amount <= 0) {
-        throw new Error('Amount must be greater than 0');
+      // Calculate amount per recipient
+      const outputAmount = Math.floor(Number(selectedRune.rune.amount) / recipientList.length);
+
+      // Calculate Rune change amount
+      const totalRune = Number(selectedRune.rune.amount);
+      const requiredRune = Number(amount) * recipientList.length;
+      const runeChange = totalRune - requiredRune;
+
+      // Format the request data
+      const requestData = {
+        sendAmount: Number(amount),
+        addressList: recipientList,
+        inputs: [
+          // Rune input
+          {
+            location: `${selectedRune.txid}_${selectedRune.vout}`,
+            active: true,
+            id: selectedRune.rune.name,
+            name: selectedRune.rune.name,
+            symbol: selectedToken?.symbol || '',
+            amount: selectedRune.rune.amount,
+            divisibility: selectedToken?.divisibility || 0
+          },
+          // BTC input with proper conversion
+          {
+            location: 'payment_input',
+            active: true,
+            id: 'btc',
+            amount: ((Number(balance || '0')) / 100000000).toString()
+          }
+        ],
+        outputs: [
+          // Recipient outputs
+          ...recipientList.map(addr => ({
+            address: addr,
+            rune: {
+              name: selectedRune.rune.name,
+              symbol: selectedToken?.symbol || '',
+              amount: amount.toString(),
+              divisibility: selectedToken?.divisibility || 0
+            }
+          })),
+          // Add Rune change output
+          {
+            address: address, // ordinalAddress for change
+            rune: {
+              name: selectedRune.rune.name,
+              symbol: selectedToken?.symbol || '',
+              amount: runeChange.toString(),
+              divisibility: selectedToken?.divisibility || 0
+            }
+          }
+        ],
+        ordinalAddress: address,
+        ordinalPubkey: publicKey,
+        paymentAddress,
+        paymentPubkey: paymentPublicKey,
+        balance,
+        feerate: feeRate
+      };
+
+      console.log('PSBT Request Data:', JSON.stringify(requestData, null, 2));
+
+      const response = await fetch('/api/distribute-rewards', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestData)
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.details || 'Failed to create transaction');
       }
 
-      // Create recipients array with same amount for each address
-      const recipients = addressList.map(address => ({
-        address,
-        amount
-      }));
-      
-      await onSubmit({ recipients });
-      onClose();
+      const data = await response.json();
+      setPsbt(data.psbtBase64);
+      setTxDetails(data);
+      setShowTxDetails(true);
+
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to distribute rewards');
+      console.error('Transaction creation error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create transaction');
+    }
+  };
+
+  const handleSignTransaction = async () => {
+    try {
+      if (!psbt) {
+        throw new Error('No PSBT available to sign');
+      }
+      
+      const signedPsbt = await signPsbt(psbt);
+      if (signedPsbt) {
+        toast.success('Transaction signed successfully!');
+        // You can add broadcast logic here if needed
+      }
+    } catch (err) {
+      console.error('Signing error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to sign transaction');
     }
   };
 
@@ -574,29 +746,71 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName }: {
             <label className="block text-sm font-medium mb-2">
               SELECT RUNE
             </label>
-            <div className="max-h-[25vh] overflow-y-auto">
+            <div className="max-h-[50vh] overflow-y-auto space-y-2">
               {runeBalances.map((rune) => (
-                <div
-                  key={rune.name}
-                  onClick={() => setSelectedToken(rune)}
-                  className={`p-4 bg-black/50 rounded-lg border border-gray-700 mb-2 cursor-pointer ${
-                    selectedToken?.name === rune.name ? 'border-orange-500' : ''
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">{rune.symbol}</span>
+                <div key={rune.name}>
+                  <div
+                    onClick={() => handleTokenSelect(rune)}
+                    className={`p-4 bg-black/50 rounded-lg border border-gray-700 mb-2 cursor-pointer ${
+                      selectedToken?.name === rune.name ? 'border-orange-500' : ''
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">{rune.symbol}</span>
+                        </div>
+                        <div>
+                          <div className="font-medium">{rune.name}</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-medium">{rune.name}</div>
+                      <div className="text-right">
+                        <div className="font-medium">{parseInt(rune.balance).toLocaleString()}</div>
+                        <div className="text-sm text-gray-400">Balance</div>
                       </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-medium">{parseInt(rune.balance).toLocaleString()}</div>
-                      <div className="text-sm text-gray-400">Balance</div>
                     </div>
                   </div>
+                  
+                  {/* Show UTXOs directly under each token when selected */}
+                  {selectedToken?.name === rune.name && availableUTXOs.map((utxo) => (
+                    <div
+                      key={`${utxo.txid}-${utxo.vout}`}
+                      onClick={() => {
+                        const isSelected = selectedUTXOs.some(
+                          u => u.txid === utxo.txid && u.vout === utxo.vout
+                        );
+                        if (isSelected) {
+                          setSelectedUTXOs(selectedUTXOs.filter(
+                            u => u.txid !== utxo.txid || u.vout !== utxo.vout
+                          ));
+                        } else {
+                          setSelectedUTXOs([...selectedUTXOs, utxo]);
+                        }
+                      }}
+                      className={`ml-8 p-3 mb-2 bg-black/30 rounded-lg border cursor-pointer transition-colors ${
+                        selectedUTXOs.some(u => u.txid === utxo.txid && u.vout === utxo.vout)
+                          ? 'border-orange-500 bg-orange-500/10'
+                          : 'border-gray-800 hover:border-orange-500/50'
+                      }`}
+                    >
+                      <div className="flex justify-between items-center">
+                        <div className="text-sm">
+                          <div className="font-medium truncate w-48">
+                            {utxo.txid.substring(0, 8)}...
+                          </div>
+                          <div className="text-gray-400">
+                            Output: {utxo.vout}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-medium">
+                            {parseInt(utxo.rune.amount).toLocaleString()}
+                          </div>
+                          <div className="text-sm text-gray-400">Amount</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
@@ -617,7 +831,8 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName }: {
                 value={amount}
                 onChange={(e) => setAmount(Number(e.target.value))}
                 className="w-full p-3 bg-black border border-gray-700 rounded-lg"
-                min="0"
+                min="1"
+                step="1"
                 required
               />
             </div>
@@ -688,6 +903,74 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName }: {
 
             {error && (
               <p className="text-red-500 text-sm">{error}</p>
+            )}
+
+{showTxDetails && txDetails && (
+  <div className="mt-6 space-y-4">
+    <h3 className="text-lg font-semibold">Transaction Details</h3>
+    <div className="space-y-2 text-sm">
+      {/* Input Amount */}
+      <div className="flex justify-between">
+        <span>Input Amount:</span>
+        <span>{txDetails.btcDetails.inputAmount} sats</span>
+      </div>
+
+      {/* Transaction Fee */}
+      <div className="flex justify-between">
+        <span>TX fee:</span>
+        <span>{txDetails.btcDetails.fee} sats</span>
+      </div>
+
+      {/* Dust Total */}
+      <div className="flex justify-between">
+        <span>Dust Total:</span>
+        <span>{txDetails.btcDetails.dustTotal} sats</span>
+      </div>
+
+      {/* Change */}
+      <div className="flex justify-between">
+        <span>Change:</span>
+        <span>
+          {(txDetails.btcDetails.inputAmount -
+            (txDetails.btcDetails.dustTotal + txDetails.btcDetails.fee)) || 0}{' '}
+          sats
+        </span>
+      </div>
+
+      {/* Total */}
+      <div className="flex justify-between font-semibold">
+        <span>Total:</span>
+        <div className="text-right">
+          <div>
+            {(
+              (txDetails.btcDetails.dustTotal + txDetails.btcDetails.fee) /
+              100000000
+            ).toFixed(8)}{' '}
+            BTC
+          </div>
+          <div className="text-sm text-gray-400">
+            $
+            {(
+              ((txDetails.btcDetails.dustTotal + txDetails.btcDetails.fee) /
+                100000000) *
+              btcPrice
+            ).toFixed(2)}{' '}
+            USD
+          </div>
+        </div>
+      </div>
+    </div>
+                
+                <div className="flex gap-4">
+                  <button
+                    type="button"
+                    onClick={handleSignTransaction}
+                    className="flex-1 p-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
+                  >
+                    Sign Transaction
+                  </button>
+                </div>
+              </div>
             )}
 
             {/* Submit button */}
@@ -765,6 +1048,7 @@ export default function MoonDragonDashboard() {
   const [showAddressDetails, setShowAddressDetails] = useState(false);
   const [votingDetails, setVotingDetails] = useState<GroupedVotes>({});
   const [showDistributionForm, setShowDistributionForm] = useState(false);
+  const [btcPrice, setBtcPrice] = useState(0);
 
   useEffect(() => {
     const fetchUserToken = async () => {
@@ -1058,6 +1342,13 @@ export default function MoonDragonDashboard() {
     }
   }, [showAddressDetails]);
 
+  useEffect(() => {
+    fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')
+      .then(res => res.json())
+      .then(data => setBtcPrice(data.bitcoin.usd))
+      .catch(console.error);
+  }, []);
+
   if (!isMounted) {
     return null;
   }
@@ -1183,6 +1474,7 @@ export default function MoonDragonDashboard() {
         onClose={() => setShowDistributionForm(false)}
         onSubmit={handleDistributeRewards}
         tokenName={userToken?.tokenName}
+        btcPrice={btcPrice}
       />
     </div>
   );
