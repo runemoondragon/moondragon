@@ -187,7 +187,7 @@ const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, on
                   className="max-w-xs px-4 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
                   sideOffset={5}
                 >
-                  Create a new voting session for governance decisions. Propose questions and gather input from {token.tokenName} token holders.
+                  Create a new voting session. Propose questions and gather input from {token.tokenName} token holders.
                   <Tooltip.Arrow className="fill-gray-900" />
                 </Tooltip.Content>
               </Tooltip.Portal>
@@ -199,7 +199,7 @@ const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, on
                   onClick={onButton2Click}
                   className="flex-1 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors"
                 >
-                  Distribute Rewards
+                  Distribute 
                 </button>
               </Tooltip.Trigger>
               <Tooltip.Portal>
@@ -207,7 +207,7 @@ const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, on
                   className="max-w-xs px-4 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
                   sideOffset={5}
                 >
-                  Allocate and distribute profits or rewards to token holders based on their share of the asset. Coming Soon.
+                  Allocate and distribute rewards to participants based on their share of the asset.
                   <Tooltip.Arrow className="fill-gray-900" />
                 </Tooltip.Content>
               </Tooltip.Portal>
@@ -558,8 +558,12 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
     // If clicking the same token, toggle the selection
     if (selectedToken?.name === rune.name) {
       setSelectedToken(null);
+      setSelectedUTXOs([]); // Clear selected UTXOs when deselecting token
       return;
     }
+    
+    // Clear previously selected UTXOs when selecting a new token
+    setSelectedUTXOs([]);
     
     // Add divisibility when setting the token
     setSelectedToken({
@@ -592,6 +596,12 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
   // Update the UTXO selection handler
   const handleUTXOSelect = (utxo: UTXO) => {
     setSelectedUTXOs(prev => {
+      // Check if trying to select a different rune
+      if (prev.length > 0 && prev[0].rune.name !== utxo.rune.name) {
+        toast.error("Can't process multiple runes at the same time. Select only UTXOs from a single rune.");
+        return prev;
+      }
+
       const isSelected = prev.some(selected => selected.txid === utxo.txid);
       if (isSelected) {
         return prev.filter(selected => selected.txid !== utxo.txid);

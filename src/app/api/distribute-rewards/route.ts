@@ -16,7 +16,10 @@ interface PsbtInput {
   amount: string;
   divisibility?: number;
 }
-
+// Extend PsbtInput to include an optional `address` field
+interface PsbtInputExtended extends PsbtInput {
+  address?: string; // Optional: Only needed in specific cases
+}
 interface PsbtOutput {
   address: string;
   rune?: {

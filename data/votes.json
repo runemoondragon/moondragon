@@ -96,5 +96,19 @@
     "choice": "no",
     "tokenBalance": "150000",
     "timestamp": "2024-12-03T22:42:00.936Z"
+  },
+  {
+    "questionId": "q1733928112183",
+    "walletAddress": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
+    "choice": "yes",
+    "tokenBalance": "5",
+    "timestamp": "2024-12-11T17:39:09.737Z"
+  },
+  {
+    "questionId": "q1733938651519",
+    "walletAddress": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
+    "choice": "yes",
+    "tokenBalance": "5",
+    "timestamp": "2024-12-11T17:39:14.552Z"
   }
 ]

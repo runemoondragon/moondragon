@@ -73,10 +73,26 @@
       "status": "active",
       "createdBy": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
       "results": {
-        "yesVotes": 0,
+        "yesVotes": 5,
         "noVotes": 0,
-        "totalVoters": 0,
-        "totalVotingPower": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 5,
+        "hasEnded": false
+      }
+    },
+    {
+      "id": "q1733938651519",
+      "token": "UNCOMMON•GOODS",
+      "question": "Should we create a feature for directly swapping one Rune token for another?",
+      "startTime": "2024-12-11T11:38",
+      "endTime": "2024-12-25T11:37",
+      "status": "active",
+      "createdBy": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
+      "results": {
+        "yesVotes": 5,
+        "noVotes": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 5,
         "hasEnded": false
       }
     }

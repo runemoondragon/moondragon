@@ -319,7 +319,7 @@ export default function Home() {
                         sideOffset={5}
                       >
                         <p className="space-y-2">
-                          Bitboard makes it easy to create token-gated governance dashboards and voting tools for communities.
+                          Bitboard makes it easy to create token-gated dashboards and voting tools for communities.
                           <br /><br />
                           Users can vote, manage proposals, and track results through dashboards, all without incurring on-chain costs, based on their Rune token holdings.
                         </p>
@@ -343,7 +343,7 @@ export default function Home() {
                         <p className="space-y-2">
                           Use the BITBOARD•DASH to add your token and set up a governance system.
                           <br /><br />
-                          Customize minimum requirements, voting sessions, and governance tools specific to your token.
+                          Set custom minimum requirements, launch voting sessions, and utilize tools to distribute Rune tokens to participants effortlessly.
           
       
 
@@ -366,9 +366,9 @@ export default function Home() {
                         sideOffset={5}
                       >
                         <p className="space-y-2">
-                          A minimum balance of Rune Moon Dragon tokens is needed to access, test the dashboard, and add tokens.
+                          A minimum balance of BITBOARD•DASH token is needed to access the main dashboard to add your project token.
                           <br /><br />
-                          Only users who meet the token requirements you set can interact with the dashboards you create for governance of each token.
+                          Only users who meet the token requirement you set can interact with the dashboards you created.
                         </p>
                         <Tooltip.Arrow className="fill-gray-900" />
                       </Tooltip.Content>
