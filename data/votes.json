@@ -96,12 +96,5 @@
     "choice": "no",
     "tokenBalance": "150000",
     "timestamp": "2024-12-03T22:42:00.936Z"
-  },
-  {
-    "questionId": "q1733115707837",
-    "walletAddress": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
-    "choice": "yes",
-    "tokenBalance": "5",
-    "timestamp": "2024-12-04T21:03:02.145Z"
   }
 ]

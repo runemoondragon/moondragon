@@ -256,7 +256,7 @@ export default function Home() {
                     <DropdownMenuContent className="w-64">
                       {filteredTokens.length === 0 ? (
                         <div className="p-3 text-sm text-gray-500 text-center">
-                          No tokens available for access with your current wallet address
+                          No dashboard available for access with your current Connected wallet address
                         </div>
                       ) : (
                         filteredTokens.map((token) => {

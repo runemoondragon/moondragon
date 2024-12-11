@@ -106,14 +106,16 @@ export async function POST(req: Request) {
       throw new Error("Missing required Rune or BTC input");
     }
 
-    // Validate Rune input
-    const totalRune = Number(runeInput.amount);
+    // Calculate total Rune from all inputs
+    const totalRune = inputs.reduce((sum, input) => sum + Number(input.amount), 0);
     const requiredRune = sendAmount * addressList.length;
+
+    // Validate total amount
     if (requiredRune > totalRune) {
-      throw new Error("Insufficient Rune balance");
+      throw new Error(`Insufficient Rune balance. Need ${requiredRune} but have ${totalRune}`);
     }
 
-    // Calculate Rune change
+    // Calculate correct change
     const runeChange = totalRune - requiredRune;
 
     // Validate BTC input
@@ -131,20 +133,20 @@ export async function POST(req: Request) {
     console.log('BTC Change:', btcChange, 'Sats');
     console.log('Total BTC Required:', totalBTCRequired, 'Sats');
 
-    // Create outputs for Rune recipients
-    const outputs: PsbtOutput[] = addressList.map((address: string) => ({
-      address,
-      rune: {
-        name: runeInput.name!,
-        symbol: runeInput.symbol!,
-        amount: sendAmount.toString(),
-        divisibility: runeInput.divisibility || 0,
-      },
-    }));
-
-    // Add Rune change output if there is change
-    if (runeChange > 0) {
-      outputs.push({
+    // Create outputs with correct amounts
+    const outputs: PsbtOutput[] = [
+      // Recipient outputs
+      ...addressList.map((address: string) => ({
+        address,
+        rune: {
+          name: runeInput.name!,
+          symbol: runeInput.symbol!,
+          amount: sendAmount.toString(),
+          divisibility: runeInput.divisibility || 0,
+        },
+      })),
+      // Change output with correct amount
+      {
         address: ordinalAddress,
         rune: {
           name: runeInput.name!,
@@ -152,8 +154,8 @@ export async function POST(req: Request) {
           amount: runeChange.toString(),
           divisibility: runeInput.divisibility || 0,
         },
-      });
-    }
+      }
+    ];
 
     // Add BTC change output
     if (btcChange > DUST_LIMIT) {
@@ -174,20 +176,24 @@ export async function POST(req: Request) {
     // Add inputs
     inputs.forEach(input => {
       if (input.location === 'payment_input') {
-        // Handle BTC payment input differently
+        // Handle BTC payment input
         psbt.addInput({
-          hash: Buffer.alloc(32, 0),  // Placeholder hash for payment input
+          hash: Buffer.alloc(32), // 32-byte buffer for txid
           index: 0,
           witnessUtxo: {
             script: bitcoin.address.toOutputScript(paymentAddress, network),
-            value: Math.floor(Number(input.amount) * 100000000)
+            value: totalBTC
           }
         });
+        
       } else {
         // Handle Rune input
         const [txid, vout] = input.location.split('_');
+        if (!txid) {
+          throw new Error('Invalid UTXO location');
+        }
         psbt.addInput({
-          hash: Buffer.from(txid, 'hex').reverse(),  // Convert txid to proper Buffer
+          hash: Buffer.from(txid, 'hex').reverse(),
           index: parseInt(vout),
           witnessUtxo: {
             script: bitcoin.address.toOutputScript(ordinalAddress, network),
@@ -223,19 +229,24 @@ export async function POST(req: Request) {
           },
         })),
         receive: [
-          {
-            to: ordinalAddress,
-            bundle: {
-              size: DUST_LIMIT,
-              runes: {
-                name: runeInput.name!,
-                symbol: runeInput.symbol!,
-                amount: runeChange > 0 ? runeChange : 0,
-                divisibility: runeInput.divisibility || 0,
-              },
-            },
-          },
+          ...(runeChange > 0
+            ? [
+                {
+                  to: ordinalAddress,
+                  bundle: {
+                    size: DUST_LIMIT,
+                    runes: {
+                      name: runeInput.name!,
+                      symbol: runeInput.symbol!,
+                      amount: runeChange,
+                      divisibility: runeInput.divisibility || 0,
+                    },
+                  },
+                },
+              ]
+            : []),
         ],
+        
       },
       btcDetails: {
         inputAmount: totalBTC,

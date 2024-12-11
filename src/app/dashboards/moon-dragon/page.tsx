@@ -480,8 +480,6 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
   const [showTxDetails, setShowTxDetails] = useState(false);
   const [txDetails, setTxDetails] = useState<any>(null);
   const [psbt, setPsbt] = useState<string>('');
-
-
   // Modify the fetchQuestions function to use the same data as List All Addresses
   const fetchQuestions = async () => {
     if (!tokenName) return;
@@ -591,6 +589,21 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
     }
   };
 
+  // Update the UTXO selection handler
+  const handleUTXOSelect = (utxo: UTXO) => {
+    setSelectedUTXOs(prev => {
+      const isSelected = prev.some(selected => selected.txid === utxo.txid);
+      if (isSelected) {
+        return prev.filter(selected => selected.txid !== utxo.txid);
+      } else {
+        return [...prev, utxo];
+      }
+    });
+  };
+
+  // Calculate combined total amount
+  const totalAmount = selectedUTXOs.reduce((sum, utxo) => sum + Number(utxo.rune.amount), 0);
+
   // Add this back to the DistributeRewardsForm component, right after the importVoters function
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -616,26 +629,30 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
       const outputAmount = Math.floor(Number(selectedRune.rune.amount) / recipientList.length);
 
       // Calculate Rune change amount
-      const totalRune = Number(selectedRune.rune.amount);
-      const requiredRune = Number(amount) * recipientList.length;
-      const runeChange = totalRune - requiredRune;
+      const totalRuneAmount = selectedUTXOs.reduce((sum, utxo) => sum + Number(utxo.rune.amount), 0);
+      const requiredAmount = Number(amount) * recipientList.length;
+      const runeChange = totalRuneAmount - requiredAmount;
+
+      if (runeChange < 0) {
+        throw new Error(`Insufficient Rune balance. Need ${requiredAmount} but only have ${totalRuneAmount}`);
+      }
 
       // Format the request data
       const requestData = {
         sendAmount: Number(amount),
         addressList: recipientList,
         inputs: [
-          // Rune input
-          {
-            location: `${selectedRune.txid}_${selectedRune.vout}`,
+          // Rune inputs from selected UTXOs
+          ...selectedUTXOs.map(utxo => ({
+            location: `${utxo.txid}_${utxo.vout}`,
             active: true,
-            id: selectedRune.rune.name,
-            name: selectedRune.rune.name,
+            id: utxo.rune.name,
+            name: utxo.rune.name,
             symbol: selectedToken?.symbol || '',
-            amount: selectedRune.rune.amount,
+            amount: utxo.rune.amount,
             divisibility: selectedToken?.divisibility || 0
-          },
-          // BTC input with proper conversion
+          })),
+          // BTC input
           {
             location: 'payment_input',
             active: true,
@@ -648,19 +665,19 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
           ...recipientList.map(addr => ({
             address: addr,
             rune: {
-              name: selectedRune.rune.name,
+              name: selectedUTXOs[0].rune.name,
               symbol: selectedToken?.symbol || '',
               amount: amount.toString(),
               divisibility: selectedToken?.divisibility || 0
             }
           })),
-          // Add Rune change output
+          // Add Rune change output with correct calculation
           {
-            address: address, // ordinalAddress for change
+            address: address,
             rune: {
-              name: selectedRune.rune.name,
+              name: selectedUTXOs[0].rune.name,
               symbol: selectedToken?.symbol || '',
-              amount: runeChange.toString(),
+              amount: runeChange.toString(), // Use the correctly calculated change
               divisibility: selectedToken?.divisibility || 0
             }
           }
@@ -905,61 +922,65 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
               <p className="text-red-500 text-sm">{error}</p>
             )}
 
-{showTxDetails && txDetails && (
-  <div className="mt-6 space-y-4">
-    <h3 className="text-lg font-semibold">Transaction Details</h3>
-    <div className="space-y-2 text-sm">
-      {/* Input Amount */}
-      <div className="flex justify-between">
-        <span>Input Amount:</span>
-        <span>{txDetails.btcDetails.inputAmount} sats</span>
-      </div>
+            <div>
+              <h4>Total Selected Amount: {totalAmount.toLocaleString()} Runes</h4>
+            </div>
 
-      {/* Transaction Fee */}
-      <div className="flex justify-between">
-        <span>TX fee:</span>
-        <span>{txDetails.btcDetails.fee} sats</span>
-      </div>
+            {showTxDetails && txDetails && (
+              <div className="mt-6 space-y-4">
+                <h3 className="text-lg font-semibold">Transaction Details</h3>
+                <div className="space-y-2 text-sm">
+                  {/* Input Amount */}
+                  <div className="flex justify-between">
+                    <span>Input Amount:</span>
+                    <span>{txDetails.btcDetails.inputAmount} sats</span>
+                  </div>
 
-      {/* Dust Total */}
-      <div className="flex justify-between">
-        <span>Dust Total:</span>
-        <span>{txDetails.btcDetails.dustTotal} sats</span>
-      </div>
+                  {/* Transaction Fee */}
+                  <div className="flex justify-between">
+                    <span>TX fee:</span>
+                    <span>{txDetails.btcDetails.fee} sats</span>
+                  </div>
 
-      {/* Change */}
-      <div className="flex justify-between">
-        <span>Change:</span>
-        <span>
-          {(txDetails.btcDetails.inputAmount -
-            (txDetails.btcDetails.dustTotal + txDetails.btcDetails.fee)) || 0}{' '}
-          sats
-        </span>
-      </div>
+                  {/* Dust Total */}
+                  <div className="flex justify-between">
+                    <span>Dust Total:</span>
+                    <span>{txDetails.btcDetails.dustTotal} sats</span>
+                  </div>
 
-      {/* Total */}
-      <div className="flex justify-between font-semibold">
-        <span>Total:</span>
-        <div className="text-right">
-          <div>
-            {(
-              (txDetails.btcDetails.dustTotal + txDetails.btcDetails.fee) /
-              100000000
-            ).toFixed(8)}{' '}
-            BTC
-          </div>
-          <div className="text-sm text-gray-400">
-            $
-            {(
-              ((txDetails.btcDetails.dustTotal + txDetails.btcDetails.fee) /
-                100000000) *
-              btcPrice
-            ).toFixed(2)}{' '}
-            USD
-          </div>
-        </div>
-      </div>
-    </div>
+                  {/* Change */}
+                  <div className="flex justify-between">
+                    <span>Change:</span>
+                    <span>
+                      {(txDetails.btcDetails.inputAmount -
+                        (txDetails.btcDetails.dustTotal + txDetails.btcDetails.fee)) || 0}{' '}
+                      sats
+                    </span>
+                  </div>
+
+                  {/* Total */}
+                  <div className="flex justify-between font-semibold">
+                    <span>Total:</span>
+                    <div className="text-right">
+                      <div>
+                        {(
+                          (txDetails.btcDetails.dustTotal + txDetails.btcDetails.fee) /
+                          100000000
+                        ).toFixed(8)}{' '}
+                        BTC
+                      </div>
+                      <div className="text-sm text-gray-400">
+                        $
+                        {(
+                          ((txDetails.btcDetails.dustTotal + txDetails.btcDetails.fee) /
+                            100000000) *
+                          btcPrice
+                        ).toFixed(2)}{' '}
+                        USD
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 
                 <div className="flex gap-4">
                   <button
