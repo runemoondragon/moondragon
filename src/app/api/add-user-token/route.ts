@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 import { TokenAssociation } from '@/lib/types';
@@ -64,45 +64,22 @@ async function addToAccessTokens(newToken: AccessToken) {
   }
 }
 
-// Add this to mark the route as dynamic
-export const dynamic = 'force-dynamic';
-
 export async function POST(request: Request) {
   try {
     const { name, requiredBalance, walletAddress } = await request.json();
 
-    // Improved balance parsing that works both locally and on server
-    let parsedBalance: number;
-    try {
-      // Handle both string and number inputs, and remove commas
-      const cleanBalance = typeof requiredBalance === 'string' 
-        ? requiredBalance.replace(/,/g, '')
-        : String(requiredBalance);
-      parsedBalance = parseInt(cleanBalance, 10);
-
-      if (isNaN(parsedBalance)) {
-        return NextResponse.json({ 
-          error: 'Invalid required balance value' 
-        }, { status: 400 });
-      }
-    } catch (error) {
-      return NextResponse.json({ 
-        error: 'Invalid required balance format' 
-      }, { status: 400 });
-    }
-
-    // Rest of your existing validation
-    if (!name || !walletAddress) {
+    // Validate required fields
+    if (!name || requiredBalance === undefined || !walletAddress) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    // Update token data to use parsed balance
+    // Create token data with default dashboard URL
     const tokenData: TokenAssociation = {
       tokenName: name,
-      requiredBalance: parsedBalance, // Use parsed balance
+      requiredBalance,
       walletAddress,
       associatedUrl: `/dashboards/${name.toLowerCase().replace(/[•]/g, '-')}`,
       createdAt: new Date()

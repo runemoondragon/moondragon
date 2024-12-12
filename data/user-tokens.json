@@ -19,5 +19,12 @@
     "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
     "associatedUrl": "/dashboards/dog-go-to-the-moon",
     "createdAt": "2024-12-06T22:41:59.635Z"
+  },
+  {
+    "tokenName": "PI•NETWORK•RUNE",
+    "requiredBalance": 1000000,
+    "walletAddress": "bc1pkql3xqy7qdtnpwl3kdzzdnlsddlkrkx827akgm6pakvqqq8smdtq532c3g",
+    "associatedUrl": "/dashboards/pi-network-rune",
+    "createdAt": "2024-12-12T15:10:12.653Z"
   }
 ]

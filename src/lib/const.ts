@@ -41,5 +41,12 @@ export const ACCESS_TOKENS: AccessToken[] = [
     "dashboardPath": "/dashboards/dog-go-to-the-moon",
     "description": "Access DOG•GO•TO•THE•MOON Dashboard",
     "externalUrl": "/dashboards/dog-go-to-the-moon"
+  },
+  {
+    "name": "PI•NETWORK•RUNE",
+    "requiredBalance": 1000000,
+    "dashboardPath": "/dashboards/pi-network-rune",
+    "description": "Access PI•NETWORK•RUNE Dashboard",
+    "externalUrl": "/dashboards/pi-network-rune"
   }
 ]; 

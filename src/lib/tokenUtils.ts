@@ -1,89 +1,51 @@
-import { TokenAssociation } from "@/lib/types";
-import fs from 'fs/promises';
-import path from 'path';
+import { ACCESS_TOKENS } from './const';
 
-const USER_TOKENS_PATH = path.join(process.cwd(), 'data', 'user-tokens.json');
-
-export const validateTokenBalance = (
-  currentBalance: number,
-  requiredBalance: number
-): boolean => {
-  return currentBalance >= requiredBalance;
-};
-
-export const formatTokenBalance = (balance: number): string => {
-  return balance.toLocaleString();
-};
-
-export const getTokenAssociation = async (
-  walletAddress: string,
-  tokenName: string
-): Promise<TokenAssociation | null> => {
+export async function getTokenBalance(address: string) {
   try {
-    const content = await fs.readFile(USER_TOKENS_PATH, 'utf-8');
-    const tokens: TokenAssociation[] = JSON.parse(content);
+    // Find the YOLO•MOON•RUNES token configuration
+    const yoloToken = ACCESS_TOKENS.find(token => token.name === "YOLO•MOON•RUNES");
     
-    const tokenAssociation = tokens.find(
-      t => t.walletAddress === walletAddress && t.tokenName === tokenName
-    );
-
-    return tokenAssociation || null;
-  } catch (error) {
-    console.error('Error getting token association:', error);
-    return null;
-  }
-};
-
-export const updateTokenBalance = async (
-  walletAddress: string,
-  tokenName: string,
-  newBalance: number
-): Promise<boolean> => {
-  try {
-    const content = await fs.readFile(USER_TOKENS_PATH, 'utf-8');
-    const tokens: TokenAssociation[] = JSON.parse(content);
-    
-    const tokenIndex = tokens.findIndex(
-      t => t.walletAddress === walletAddress && t.tokenName === tokenName
-    );
-
-    if (tokenIndex === -1) {
-      return false;
+    if (!yoloToken) {
+      throw new Error('YOLO•MOON•RUNES token configuration not found');
     }
 
-    // Update the balance
-    tokens[tokenIndex].requiredBalance = newBalance;
-
-    // Write back to file
-    await fs.writeFile(USER_TOKENS_PATH, JSON.stringify(tokens, null, 2));
-    return true;
-  } catch (error) {
-    console.error('Error updating token balance:', error);
-    return false;
-  }
-};
-
-export const getTokenBalance = async (
-  walletAddress: string,
-  tokenName: string
-): Promise<number> => {
-  try {
-    // Read the user-tokens.json file
-    const content = await fs.readFile(USER_TOKENS_PATH, 'utf-8');
-    const tokens: TokenAssociation[] = JSON.parse(content);
-    
-    // Find the token association for this wallet and token
-    const tokenAssociation = tokens.find(
-      t => t.walletAddress === walletAddress && t.tokenName === tokenName
-    );
-
-    if (!tokenAssociation) {
-      return 0;
+    // Use the same token balance check endpoint as your main dashboard
+    const response = await fetch(`/api/check-token?address=${address}&token=YOLO•MOON•RUNES`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch token balance');
     }
-
-    return tokenAssociation.requiredBalance;
+    
+    const data = await response.json();
+    
+    // Return the actual balance from your token system
+    return {
+      raw: data.balance || 0,
+      formatted: (data.balance || 0).toLocaleString(),
+      hasMinimumBalance: (data.balance || 0) >= yoloToken.requiredBalance
+    };
   } catch (error) {
-    console.error('Error getting token balance:', error);
-    return 0;
+    console.error('Error fetching YOLO•MOON•RUNES balance:', error);
+    return {
+      raw: 0,
+      formatted: '0',
+      hasMinimumBalance: false
+    };
   }
-}; 
+}
+
+// Helper function to get voting power
+export async function getVotingPower(address: string): Promise<number> {
+  const balance = await getTokenBalance(address);
+  return balance.raw;
+}
+
+export async function fetchOrdAddress(address: string) {
+  try {
+    const response = await fetch(`https://api.ordinals.io/runes/address/${address}`);
+    if (!response.ok) throw new Error('Failed to fetch rune balances');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching rune balances:', error);
+    return [];
+  }
+} 

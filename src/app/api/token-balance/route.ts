@@ -1,33 +1,24 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getTokenBalance } from '../../../lib/tokenUtils';
+import { NextResponse } from 'next/server';
+import { getTokenBalance } from '@/lib/tokenUtils';
 
-// Add this to mark the route as dynamic
-export const dynamic = 'force-dynamic';
-
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
-    const searchParams = request.nextUrl.searchParams;
+    const { searchParams } = new URL(request.url);
     const address = searchParams.get('address');
-    const tokenName = searchParams.get('token');
 
-    if (!address || !tokenName) {
-      return NextResponse.json(
-        { error: 'Missing required parameters' },
-        { status: 400 }
-      );
+    if (!address) {
+      return NextResponse.json({ error: 'Address is required' }, { status: 400 });
     }
 
-    const balance = await getTokenBalance(address, tokenName);
-
+    const balance = await getTokenBalance(address);
+    
     return NextResponse.json({
-      balance: balance
+      raw: balance.raw,
+      formatted: balance.formatted,
+      hasMinimumBalance: balance.hasMinimumBalance
     });
-
   } catch (error) {
-    console.error('Error fetching token balance:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch token balance' },
-      { status: 500 }
-    );
+    console.error('Token balance route error:', error);
+    return NextResponse.json({ error: 'Failed to fetch balance' }, { status: 500 });
   }
 } 
