@@ -319,7 +319,7 @@ export default function Home() {
                         sideOffset={5}
                       >
                         <p className="space-y-2">
-                          Bitboard makes it easy to create token-gated dashboards and voting tools for communities.
+                          Create token-gated dashboards for a rune token.
                           <br /><br />
                           Users can vote, manage proposals, and track results through dashboards, all without incurring on-chain costs, based on their Rune token holdings.
                         </p>

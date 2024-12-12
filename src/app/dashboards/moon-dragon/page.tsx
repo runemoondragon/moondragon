@@ -69,62 +69,68 @@ const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, on
                 <FiEdit2 size={16} />
               </button>
               
-              <Tooltip.Provider>
-                <Tooltip.Root>
-                  <Tooltip.Trigger asChild>
-                    <AlertDialog.Root>
+              <AlertDialog.Root>
+                <Tooltip.Provider>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
                       <AlertDialog.Trigger asChild>
-                        <button
-                          className="p-2 hover:bg-red-700 rounded-full transition-colors"
-                          disabled={isDeleting}
+                        <div 
+                          className="p-2 hover:bg-red-700 rounded-full transition-colors cursor-pointer"
+                          role="button"
+                          aria-label="Delete token"
+                          aria-describedby="delete-token-description"
                         >
                           <FiTrash2 size={16} className={isDeleting ? 'opacity-50' : ''} />
-                        </button>
+                        </div>
                       </AlertDialog.Trigger>
-                      
-                      <AlertDialog.Portal>
-                        <AlertDialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
-                        <AlertDialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] max-w-md p-6 rounded-lg bg-gray-900 border border-gray-800 shadow-xl">
-                          <AlertDialog.Title className="text-xl font-semibold mb-4">
-                            Are you sure you want to remove this token?
-                          </AlertDialog.Title>
-                          
-                          <AlertDialog.Description className="text-gray-400 mb-6">
-                            Removing this token will delete all associated data, including its dashboard, voting sessions, and settings. This action is irreversible. Please confirm if you want to proceed.
-                          </AlertDialog.Description>
-                          
-                          <div className="flex justify-end gap-3">
-                            <AlertDialog.Cancel asChild>
-                              <button className="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white transition-colors">
-                                Cancel
-                              </button>
-                            </AlertDialog.Cancel>
-                            
-                            <AlertDialog.Action asChild>
-                              <button
-                                onClick={handleDelete}
-                                disabled={isDeleting}
-                                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                              >
-                                {isDeleting ? 'Removing...' : 'Remove Token'}
-                              </button>
-                            </AlertDialog.Action>
-                          </div>
-                        </AlertDialog.Content>
-                      </AlertDialog.Portal>
-                    </AlertDialog.Root>
-                  </Tooltip.Trigger>
-                  <Tooltip.Portal>
-                    <Tooltip.Content
-                      className="max-w-xs px-4 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
-                      sideOffset={5}
+                    </Tooltip.Trigger>
+                    
+                    <Tooltip.Portal>
+                      <Tooltip.Content
+                        className="max-w-xs px-4 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
+                        sideOffset={5}
+                        id="delete-token-description"
+                      >
+                        Remove this token and all its associated data. This action is permanent.
+                        <Tooltip.Arrow className="fill-gray-900" />
+                      </Tooltip.Content>
+                    </Tooltip.Portal>
+                  </Tooltip.Root>
+                </Tooltip.Provider>
+
+                <AlertDialog.Portal>
+                  <AlertDialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
+                  <AlertDialog.Content 
+                    className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] max-w-md p-6 rounded-lg bg-gray-900 border border-gray-800 shadow-xl"
+                    aria-describedby="alert-dialog-description"
+                  >
+                    <AlertDialog.Title className="text-xl font-semibold mb-4">
+                      Are you sure you want to remove this token?
+                    </AlertDialog.Title>
+                    
+                    <AlertDialog.Description 
+                      className="text-gray-400 mb-6"
+                      id="alert-dialog-description"
                     >
-                      Remove this token and all its associated data. This action is permanent.
-                      <Tooltip.Arrow className="fill-gray-900" />
-                    </Tooltip.Content>
-                  </Tooltip.Portal>
-                </Tooltip.Root>
-              </Tooltip.Provider>
+                      Removing this token will delete all associated data, including its dashboard, voting sessions, and settings. This action is irreversible.
+                    </AlertDialog.Description>
+                    
+                    <div className="flex justify-end gap-3">
+                      <AlertDialog.Cancel className="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white transition-colors">
+                        Cancel
+                      </AlertDialog.Cancel>
+                      
+                      <AlertDialog.Action
+                        onClick={handleDelete}
+                        className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isDeleting}
+                      >
+                        {isDeleting ? 'Removing...' : 'Remove Token'}
+                      </AlertDialog.Action>
+                    </div>
+                  </AlertDialog.Content>
+                </AlertDialog.Portal>
+              </AlertDialog.Root>
             </>
           ) : (
             <div className="flex gap-2">
@@ -489,7 +495,6 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
       if (!response.ok) throw new Error('Failed to fetch voting details');
       
       const data = await response.json();
-      console.log('Fetched voting details:', data);
 
       // Transform the voting details into questions format
       const allQuestions = Object.entries(data.votes).map(([questionId, questionData]: [string, any]) => ({
@@ -499,7 +504,6 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
       }));
 
       setQuestions(allQuestions);
-      console.log('Transformed questions:', allQuestions);
     } catch (error) {
       console.error('Error fetching questions:', error);
       toast.error('Failed to fetch questions');
@@ -515,7 +519,6 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
       if (!response.ok) throw new Error('Failed to fetch voting details');
       
       const data = await response.json();
-      console.log('Fetched voting details:', data); // Debug log
       
       if (data.votes && data.votes[questionId]) {
         const voterAddresses = data.votes[questionId].votes
@@ -574,14 +577,12 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
     });
 
     try {
-      console.log('Fetching UTXOs for token:', rune.name);
       const response = await fetch(`/api/rune-utxos?token=${encodeURIComponent(rune.name)}&address=${address}`);
       if (!response.ok) {
         throw new Error(`Failed to fetch UTXOs: ${response.statusText}`);
       }
       
       const data = await response.json();
-      console.log('Fetched UTXOs:', data);
       setAvailableUTXOs(data.utxos);
       
       if (data.utxos.length === 0) {
@@ -699,8 +700,6 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
         balance,
         feerate: feeRate
       };
-
-      console.log('PSBT Request Data:', JSON.stringify(requestData, null, 2));
 
       const response = await fetch('/api/distribute-rewards', {
         method: 'POST',
@@ -1085,24 +1084,18 @@ export default function MoonDragonDashboard() {
     const fetchUserToken = async () => {
       if (!address) return;
       try {
-        console.log('Fetching token for address:', address);
         const response = await fetch(`/api/user-token?address=${address}`);
-        console.log('API Response status:', response.status);
         
         if (!response.ok) {
-          console.log('Response not OK, setting token to null');
           setUserToken(null);
           return;
         }
         
         const data = await response.json();
-        console.log('API Response data:', data);
         
         if (data.token && Object.keys(data.token).length > 0) {
-          console.log('Setting valid token:', data.token);
           setUserToken(data.token);
         } else {
-          console.log('No valid token found, setting to null');
           setUserToken(null);
         }
       } catch (error) {
@@ -1231,7 +1224,6 @@ export default function MoonDragonDashboard() {
   };
 
   const handleButton3Click = () => {
-    console.log("Button 3 clicked");
     // Add functionality later
   };
 
