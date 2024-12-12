@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import * as jose from 'jose';
 import { BTC_MESSAGE_TO_SIGN, ACCESS_TOKENS } from "@/lib/const";
 import { fetchOrdAddress, RuneBalance } from "@/lib/runebalance";
+import { getDynamicAccessTokens } from '@/lib/dynamicTokens';
 
 const secret = new TextEncoder().encode(
   process.env.JWT_SECRET_KEY || "your-secret-key"
@@ -22,8 +23,12 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
-    // Get token requirements
-    const token = ACCESS_TOKENS.find(t => t.name === tokenName);
+    // Get both static and dynamic tokens
+    const dynamicTokens = await getDynamicAccessTokens();
+    const allTokens = [...ACCESS_TOKENS, ...dynamicTokens];
+    
+    // Get token requirements from either source
+    const token = allTokens.find(t => t.name === tokenName);
     if (!token) {
       console.log("❌ Invalid token:", tokenName);
       return NextResponse.json({ error: 'Invalid token' }, { status: 400 });

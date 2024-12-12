@@ -12,7 +12,7 @@ interface VotingSession {
   question: string;
   startTime: string;
   endTime: string;
-  status: 'active' | 'completed';
+  status: 'active' | 'completed' | 'archived';
   results: {
     yesVotes: number;
     noVotes: number;
@@ -139,9 +139,9 @@ export default function TokenDashboard() {
       const { votedQuestionIds } = await votesResponse.json();
       const votedQuestions = new Set(votedQuestionIds);
       
-      // Filter out archived sessions
+      // Filter out archived sessions and format remaining ones
       const formattedSessions = (data.questions || [])
-        .filter((q: any) => q.status !== 'archived') // Filter out archived sessions
+        .filter((q: any) => q.status !== 'archived')
         .map((q: any) => ({
           id: q.id,
           question: q.question,
@@ -229,7 +229,6 @@ export default function TokenDashboard() {
     
     if (now >= endTime && session.status === 'active') {
       try {
-        // Update session status in voting-input.json
         const response = await fetch(`/api/voting/${encodeURIComponent(tokenName)}/update-status`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -241,7 +240,7 @@ export default function TokenDashboard() {
         });
 
         if (response.ok) {
-          await fetchVotingSessions(); // Refresh sessions after update
+          await fetchVotingSessions();
         }
       } catch (error) {
         console.error('Failed to update session status:', error);
@@ -361,7 +360,7 @@ export default function TokenDashboard() {
                                   }}
                                 />
                               </div>
-                              <div className="text-sm text-gray-400">
+                              <div className="text-sm text-gray-500 dark:text-gray-400">
                                 {session.results.yesVotes.toLocaleString()} votes ({session.results.yesVotes.toLocaleString()} {tokenName})
                               </div>
                             </div>
@@ -380,7 +379,7 @@ export default function TokenDashboard() {
                                   }}
                                 />
                               </div>
-                              <div className="text-sm text-gray-400">
+                              <div className="text-sm text-gray-500 dark:text-gray-400">
                                 {session.results.noVotes.toLocaleString()} votes ({session.results.noVotes.toLocaleString()} {tokenName})
                               </div>
                             </div>
@@ -426,7 +425,7 @@ export default function TokenDashboard() {
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-400 text-center py-8">
+                  <p className="text-gray-500 dark:text-gray-400 text-center py-8">
                     No voting sessions available
                   </p>
                 )}

@@ -100,21 +100,44 @@ export default function Home() {
   useEffect(() => {
     if (!runeBalances.length) return;
     
-    const filtered = ACCESS_TOKENS.filter(token => {
-      const runeBalance = runeBalances.find(rune => rune.name === token.name);
-      const currentBalance = runeBalance ? parseInt(runeBalance.balance.replace(/,/g, '')) : 0;
-      
-      if (token.name === "BITBOARD•DASH") return true;
-      return currentBalance >= token.requiredBalance;
-    });
+    const fetchAndFilterTokens = async () => {
+      try {
+        // Get dynamic tokens
+        const response = await fetch('/api/dynamic-tokens');
+        if (!response.ok) throw new Error('Failed to fetch dynamic tokens');
+        const dynamicTokens = await response.json();
+        
+        // Combine with static tokens from const.ts
+        const allTokens = [...ACCESS_TOKENS, ...dynamicTokens];
+        
+        const filtered = allTokens.filter(token => {
+          const runeBalance = runeBalances.find(rune => rune.name === token.name);
+          const currentBalance = runeBalance ? parseInt(runeBalance.balance.replace(/,/g, '')) : 0;
+          
+          if (token.name === "BITBOARD•DASH") return true;
+          return currentBalance >= token.requiredBalance;
+        });
+        
+        const sortedFiltered = filtered.sort((a, b) => {
+          if (a.name === "BITBOARD•DASH") return -1;
+          if (b.name === "BITBOARD•DASH") return 1;
+          return 0;
+        });
+        
+        setFilteredTokens(sortedFiltered);
+      } catch (error) {
+        console.error('Error fetching dynamic tokens:', error);
+        // Fallback to static tokens if dynamic tokens fetch fails
+        const filtered = ACCESS_TOKENS.filter(token => {
+          const runeBalance = runeBalances.find(rune => rune.name === token.name);
+          const currentBalance = runeBalance ? parseInt(runeBalance.balance.replace(/,/g, '')) : 0;
+          return token.name === "BITBOARD•DASH" || currentBalance >= token.requiredBalance;
+        });
+        setFilteredTokens(filtered);
+      }
+    };
     
-    const sortedFiltered = filtered.sort((a, b) => {
-      if (a.name === "BITBOARD•DASH") return -1;
-      if (b.name === "BITBOARD•DASH") return 1;
-      return 0;
-    });
-    
-    setFilteredTokens(sortedFiltered);
+    fetchAndFilterTokens();
   }, [runeBalances]);
 
   const handleAccessAttempt = async (token: AccessToken) => {

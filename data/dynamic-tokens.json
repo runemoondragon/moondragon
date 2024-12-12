@@ -1,0 +1,30 @@
+[
+  {
+    "name": "BITCOIN•COMICS",
+    "requiredBalance": 4,
+    "dashboardPath": "/dashboards/bitcoin-comics",
+    "description": "Access BITCOIN•COMICS Dashboard",
+    "externalUrl": "/dashboards/bitcoin-comics"
+  },
+  {
+    "name": "MAGA•FIGHT•FIGHT",
+    "requiredBalance": 10000,
+    "dashboardPath": "/dashboards/maga-fight-fight",
+    "description": "Access MAGA•FIGHT•FIGHT Dashboard",
+    "externalUrl": "/dashboards/maga-fight-fight"
+  },
+  {
+    "name": "UNCOMMON•GOODS",
+    "requiredBalance": 5,
+    "dashboardPath": "/dashboards/uncommon-goods",
+    "description": "Access UNCOMMON•GOODS Dashboard",
+    "externalUrl": "/dashboards/uncommon-goods"
+  },
+  {
+    "name": "PI•NETWORK•RUNE",
+    "requiredBalance": 7079632675,
+    "dashboardPath": "/dashboards/pi-network-rune",
+    "description": "Access PI•NETWORK•RUNE Dashboard",
+    "externalUrl": "/dashboards/pi-network-rune"
+  }
+]

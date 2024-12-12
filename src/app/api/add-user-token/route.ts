@@ -3,7 +3,8 @@ import fs from 'fs/promises';
 import path from 'path';
 import { TokenAssociation } from '@/lib/types';
 import { fetchOrdAddress } from '@/lib/runebalance';
-import { AccessToken } from '@/lib/const';
+import { AccessToken, ACCESS_TOKENS } from '@/lib/const';
+import { getDynamicAccessTokens, writeDynamicAccessTokens } from '@/lib/dynamicTokens';
 
 const USER_TOKENS_PATH = path.join(process.cwd(), 'data', 'user-tokens.json');
 const CONST_PATH = path.join(process.cwd(), 'src', 'lib', 'const.ts');
@@ -23,56 +24,51 @@ const validateBalance = (balance: any): number => {
 
 async function readUserTokens(): Promise<TokenAssociation[]> {
   try {
+    console.log('Reading from path:', USER_TOKENS_PATH);
     const content = await fs.readFile(USER_TOKENS_PATH, 'utf-8');
+    console.log('Current content:', content);
     return JSON.parse(content);
-  } catch {
+  } catch (error) {
+    console.error('Error reading tokens:', error);
     return [];
   }
 }
 
 async function writeUserTokens(tokens: TokenAssociation[]) {
   try {
-    await fs.writeFile(USER_TOKENS_PATH, JSON.stringify(tokens, null, 2));
+    console.log('Writing to path:', USER_TOKENS_PATH);
+    console.log('Writing tokens:', JSON.stringify(tokens, null, 2));
+    
+    // Ensure data directory exists
+    const dataDir = path.dirname(USER_TOKENS_PATH);
+    await fs.mkdir(dataDir, { recursive: true });
+
+    // Write tokens with explicit encoding and mode
+    await fs.writeFile(
+      USER_TOKENS_PATH,
+      JSON.stringify(tokens, null, 2),
+      { 
+        encoding: 'utf8',
+        mode: 0o666 // Read/write for everyone
+      }
+    );
+
+    // Verify write
+    const written = await fs.readFile(USER_TOKENS_PATH, 'utf8');
+    console.log('Verified written content:', written);
   } catch (error) {
-    console.error('Error writing user tokens:', error);
-    throw new Error('Failed to write user tokens file');
+    console.error('Error writing tokens:', error);
+    throw error;
   }
 }
 
 async function addToAccessTokens(newToken: AccessToken) {
   try {
-    const constFile = await fs.readFile(CONST_PATH, 'utf-8');
-    
-    // Use regex to find and update the ACCESS_TOKENS array
-    const accessTokensRegex = /export const ACCESS_TOKENS: AccessToken\[] = (\[[\s\S]*?\]);/;
-    const match = constFile.match(accessTokensRegex);
-    
-    if (!match) {
-      throw new Error('Could not find ACCESS_TOKENS array in const.ts');
-    }
-
-    try {
-      // Parse the existing tokens array
-      const currentTokens = JSON.parse(match[1].replace(/'/g, '"'));
-      
-      // Add the new token
-      currentTokens.push(newToken);
-
-      // Create the new file content
-      const newFileContent = constFile.replace(
-        accessTokensRegex,
-        `export const ACCESS_TOKENS: AccessToken[] = ${JSON.stringify(currentTokens, null, 2)};`
-      );
-
-      // Write back to file
-      await fs.writeFile(CONST_PATH, newFileContent, 'utf-8');
-      
-    } catch (parseError) {
-      console.error('Error parsing ACCESS_TOKENS:', parseError);
-      throw new Error('Failed to parse ACCESS_TOKENS array');
-    }
+    const dynamicTokens = await getDynamicAccessTokens();
+    dynamicTokens.push(newToken);
+    await writeDynamicAccessTokens(dynamicTokens);
   } catch (error) {
-    console.error('Error updating ACCESS_TOKENS:', error);
+    console.error('Error updating dynamic tokens:', error);
     throw error;
   }
 }
@@ -82,27 +78,26 @@ export async function POST(request: Request) {
     const { name, requiredBalance, walletAddress } = await request.json();
 
     // Validate required fields
-    if (!name || requiredBalance === undefined || !walletAddress) {
+    if (!name || !walletAddress) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    // Validate balance
-    try {
-      validateBalance(requiredBalance);
-    } catch (error) {
+    // Parse and validate required balance
+    const parsedBalance = parseInt(String(requiredBalance).replace(/,/g, ''), 10);
+    if (isNaN(parsedBalance) || parsedBalance < 0) {
       return NextResponse.json(
-        { error: 'Invalid balance value' },
+        { error: 'Invalid required balance value' },
         { status: 400 }
       );
     }
 
-    // Create token data with default dashboard URL
+    // Create token data with parsed balance
     const tokenData: TokenAssociation = {
       tokenName: name,
-      requiredBalance,
+      requiredBalance: parsedBalance, // Use parsed value
       walletAddress,
       associatedUrl: `/dashboards/${name.toLowerCase().replace(/[•]/g, '-')}`,
       createdAt: new Date()
@@ -119,69 +114,77 @@ export async function POST(request: Request) {
       }, { status: 401 });
     }
 
-    try {
-      // Check if user already has a token
-      const userTokens = await readUserTokens();
-      const existingToken = userTokens.find(t => t.walletAddress === walletAddress);
-      
-      if (existingToken) {
-        return NextResponse.json({ 
-          error: 'You already have a token registered' 
-        }, { status: 400 });
-      }
+    // Check if user already has a token
+    const userTokens = await readUserTokens();
+    console.log("📚 Current user tokens:", userTokens);
 
-      // Check if token name already exists
-      const tokenNameExists = userTokens.some(t => t.tokenName === name);
-      if (tokenNameExists) {
-        return NextResponse.json({ 
-          error: 'Token name already exists' 
-        }, { status: 400 });
-      }
-
-      // Add to user-tokens.json
-      await writeUserTokens([...userTokens, tokenData]);
-
-      // Add to ACCESS_TOKENS in const.ts
-      const accessToken: AccessToken = {
-        name,
-        requiredBalance,
-        dashboardPath: `/dashboards/${name.toLowerCase().replace(/[•]/g, '-')}`,
-        description: `Access ${name} Dashboard`,
-        externalUrl: tokenData.associatedUrl
-      };
-      
-      await addToAccessTokens(accessToken);
-
-      // Clear any cached data
-      const headers = new Headers();
-      headers.append('Cache-Control', 'no-store, must-revalidate');
-      headers.append('Pragma', 'no-cache');
-      headers.append('Expires', '0');
-
-      return new NextResponse(
-        JSON.stringify({ 
-          success: true,
-          message: "Token added successfully",
-          token: tokenData,
-          requiresReload: true
-        }),
-        { 
-          status: 200,
-          headers
-        }
-      );
-
-    } catch (fileError) {
-      console.error('File operation error:', fileError);
+    const existingToken = userTokens.find(t => t.walletAddress === walletAddress);
+    if (existingToken) {
+      console.log("⚠️ User already has token:", existingToken);
       return NextResponse.json({ 
-        error: 'Failed to add token' 
-      }, { status: 500 });
+        error: 'You already have a token registered' 
+      }, { status: 400 });
     }
 
+    // Check if token name already exists
+    const dynamicTokens = await getDynamicAccessTokens();
+    const allTokens = [...ACCESS_TOKENS, ...dynamicTokens];
+    const tokenNameExists = allTokens.some(t => t.name === name);
+    
+    if (tokenNameExists) {
+      return NextResponse.json({ 
+        error: 'Token name already exists' 
+      }, { status: 400 });
+    }
+
+    // Create token data for dynamic-tokens.json
+    const accessToken: AccessToken = {
+      name,
+      requiredBalance: parsedBalance,
+      dashboardPath: `/dashboards/${name.toLowerCase().replace(/[•]/g, '-')}`,
+      description: `Access ${name} Dashboard`,
+      externalUrl: tokenData.associatedUrl
+    };
+
+    // Save to both storage locations
+    try {
+      console.log('Starting token save process...');
+      const userTokens = await readUserTokens();
+      console.log('Current tokens:', userTokens);
+      
+      const newTokens = [...userTokens, tokenData];
+      console.log('New tokens array:', newTokens);
+      
+      // Save to both locations
+      await Promise.all([
+        writeUserTokens(newTokens),
+        writeDynamicAccessTokens([...dynamicTokens, accessToken])
+      ]);
+      console.log('Write completed');
+      
+      // Verify the save
+      const verifyTokens = await readUserTokens();
+      console.log('Verification read:', verifyTokens);
+      
+      // Return success response
+      return NextResponse.json({ 
+        success: true,
+        message: "Token added successfully",
+        token: tokenData,
+        requiresReload: true
+      });
+    } catch (error) {
+      console.error('Detailed save error:', error);
+      return NextResponse.json({ 
+        error: 'Failed to save token',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      }, { status: 500 });
+    }
   } catch (error) {
-    console.error('Error adding token:', error);
+    console.error('❌ Error processing request:', error);
     return NextResponse.json({ 
-      error: 'Failed to add token' 
+      error: 'Failed to process request',
+      details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 } 

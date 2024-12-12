@@ -110,5 +110,26 @@
     "choice": "yes",
     "tokenBalance": "5",
     "timestamp": "2024-12-11T17:39:14.552Z"
+  },
+  {
+    "questionId": "q1734034115586",
+    "walletAddress": "bc1p63jagxh3ad3pgu0eet0jx4rvx9xe37rju0qvgg7d8rlz3pjpnphqsdy3jq",
+    "choice": "no",
+    "tokenBalance": "5000",
+    "timestamp": "2024-12-12T20:09:44.741Z"
+  },
+  {
+    "questionId": "q1734035138110",
+    "walletAddress": "bc1p63jagxh3ad3pgu0eet0jx4rvx9xe37rju0qvgg7d8rlz3pjpnphqsdy3jq",
+    "choice": "no",
+    "tokenBalance": "5000",
+    "timestamp": "2024-12-12T20:25:54.438Z"
+  },
+  {
+    "questionId": "q1734044206312",
+    "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+    "choice": "no",
+    "tokenBalance": "7079632675",
+    "timestamp": "2024-12-12T22:56:57.787Z"
   }
 ]

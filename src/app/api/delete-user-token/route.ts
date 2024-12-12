@@ -3,10 +3,15 @@ import fs from 'fs/promises';
 import path from 'path';
 import { TokenAssociation } from '@/lib/types';
 import { fetchOrdAddress } from '@/lib/runebalance';
-import { AccessToken } from '@/lib/const';
+import { getDynamicAccessTokens, writeDynamicAccessTokens } from '@/lib/dynamicTokens';
 
 const USER_TOKENS_PATH = path.join(process.cwd(), 'data', 'user-tokens.json');
-const CONST_PATH = path.join(process.cwd(), 'src', 'lib', 'const.ts');
+const DASHBOARDS_PATH = path.join(process.cwd(), 'src', 'app', 'dashboards');
+
+interface RuneBalance {
+  name: string;
+  balance: string;
+}
 
 async function readUserTokens(): Promise<TokenAssociation[]> {
   try {
@@ -21,40 +26,50 @@ async function writeUserTokens(tokens: TokenAssociation[]) {
   await fs.writeFile(USER_TOKENS_PATH, JSON.stringify(tokens, null, 2));
 }
 
-async function removeFromAccessTokens(tokenName: string) {
+async function removeFromDynamicTokens(tokenName: string) {
   try {
-    const constFile = await fs.readFile(CONST_PATH, 'utf-8');
-    
-    // Use regex to find and update the ACCESS_TOKENS array
-    const accessTokensRegex = /export const ACCESS_TOKENS: AccessToken\[] = (\[[\s\S]*?\]);/;
-    const match = constFile.match(accessTokensRegex);
-    
-    if (!match) {
-      throw new Error('Could not find ACCESS_TOKENS array in const.ts');
-    }
-
-    try {
-      // Parse the existing tokens array
-      const currentTokens = JSON.parse(match[1].replace(/'/g, '"'));
-      
-      // Remove the token
-      const updatedTokens = currentTokens.filter((token: AccessToken) => token.name !== tokenName);
-
-      // Create the new file content
-      const newFileContent = constFile.replace(
-        accessTokensRegex,
-        `export const ACCESS_TOKENS: AccessToken[] = ${JSON.stringify(updatedTokens, null, 2)};`
-      );
-
-      // Write back to file
-      await fs.writeFile(CONST_PATH, newFileContent, 'utf-8');
-      
-    } catch (parseError) {
-      console.error('Error parsing ACCESS_TOKENS:', parseError);
-      throw new Error('Failed to parse ACCESS_TOKENS array');
-    }
+    const dynamicTokens = await getDynamicAccessTokens();
+    const updatedTokens = dynamicTokens.filter(token => token.name !== tokenName);
+    await writeDynamicAccessTokens(updatedTokens);
   } catch (error) {
-    console.error('Error updating ACCESS_TOKENS:', error);
+    console.error('Error removing from dynamic tokens:', error);
+    throw error;
+  }
+}
+
+async function removeDashboardFolder(tokenName: string) {
+  try {
+    const folderName = tokenName.toLowerCase().replace(/[•]/g, '-');
+    const dashboardPath = path.join(DASHBOARDS_PATH, folderName);
+    
+    // Check if directory exists before attempting to remove
+    try {
+      await fs.access(dashboardPath);
+    } catch {
+      console.log(`Dashboard folder ${folderName} doesn't exist`);
+      return;
+    }
+
+    // Remove directory and its contents recursively
+    const removeDir = async (dirPath: string) => {
+      const entries = await fs.readdir(dirPath, { withFileTypes: true });
+      
+      await Promise.all(entries.map(async (entry) => {
+        const fullPath = path.join(dirPath, entry.name);
+        if (entry.isDirectory()) {
+          await removeDir(fullPath);
+        } else {
+          await fs.unlink(fullPath);
+        }
+      }));
+      
+      await fs.rmdir(dirPath);
+    };
+
+    await removeDir(dashboardPath);
+    console.log(`Successfully removed dashboard folder: ${folderName}`);
+  } catch (error) {
+    console.error('Error removing dashboard folder:', error);
     throw error;
   }
 }
@@ -71,9 +86,7 @@ export async function DELETE(req: Request) {
 
     // Verify BITBOARD•DASH access
     const balances = await fetchOrdAddress(walletAddress);
-    const bitboardBalance = balances?.find((token: { name: string, balance: string }) => 
-      token.name === "BITBOARD•DASH"
-    );
+    const bitboardBalance = balances?.find((token: RuneBalance) => token.name === "BITBOARD•DASH");
     const hasAccess = bitboardBalance && parseInt(bitboardBalance.balance) >= 200000;
 
     if (!hasAccess) {
@@ -85,45 +98,33 @@ export async function DELETE(req: Request) {
     try {
       // Update user tokens
       const userTokens = await readUserTokens();
-      
-      // Remove the token from user-tokens.json
       const updatedTokens = userTokens.filter(
         t => !(t.walletAddress === walletAddress && t.tokenName === tokenName)
       );
-      await writeUserTokens(updatedTokens);
+      
+      // Remove from all storage locations and delete dashboard folder
+      await Promise.all([
+        writeUserTokens(updatedTokens),
+        removeFromDynamicTokens(tokenName),
+        removeDashboardFolder(tokenName)
+      ]);
 
-      // Remove from ACCESS_TOKENS in const.ts
-      await removeFromAccessTokens(tokenName);
-
-      // Clear any cached data
-      const headers = new Headers();
-      headers.append('Cache-Control', 'no-store, must-revalidate');
-      headers.append('Pragma', 'no-cache');
-      headers.append('Expires', '0');
-
-      return new NextResponse(
-        JSON.stringify({ 
-          success: true,
-          message: "Token deleted successfully",
-          requiresReload: true
-        }),
-        { 
-          status: 200,
-          headers
-        }
-      );
+      return NextResponse.json({ 
+        success: true,
+        message: "Token and associated dashboard deleted successfully",
+        requiresReload: true
+      });
 
     } catch (fileError) {
       console.error('File operation error:', fileError);
       return NextResponse.json({ 
-        error: 'Failed to delete token' 
+        error: 'Failed to delete token and dashboard' 
       }, { status: 500 });
     }
-
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error deleting token:', error);
     return NextResponse.json({ 
-      error: 'Internal server error' 
+      error: 'Failed to delete token and dashboard' 
     }, { status: 500 });
   }
 } 

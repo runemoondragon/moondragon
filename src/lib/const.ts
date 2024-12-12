@@ -16,37 +16,9 @@ export const ACCESS_TOKENS: AccessToken[] = [
     "description": "Access Moon Dragon Dashboard"
   },
   {
-    "name": "UNCOMMON•GOODS",
-    "requiredBalance": 5,
-    "dashboardPath": "/dashboards/uncommon-goods",
-    "description": "Access UNCOMMON•GOODS Dashboard",
-    "externalUrl": "/dashboards/uncommon-goods"
-  },
-  {
     "name": "YOLO•MOON•RUNES",
     "requiredBalance": 400000,
     "dashboardPath": "/dashboards/yolo-moon-runes",
     "description": "Access YOLO•MOON•RUNES Dashboard"
-  },
-  {
-    "name": "MAGA•FIGHT•FIGHT",
-    "requiredBalance": 10000,
-    "dashboardPath": "/dashboards/maga-fight-fight",
-    "description": "Access MAGA•FIGHT•FIGHT Dashboard",
-    "externalUrl": "/dashboards/maga-fight-fight"
-  },
-  {
-    "name": "DOG•GO•TO•THE•MOON",
-    "requiredBalance": 100000,
-    "dashboardPath": "/dashboards/dog-go-to-the-moon",
-    "description": "Access DOG•GO•TO•THE•MOON Dashboard",
-    "externalUrl": "/dashboards/dog-go-to-the-moon"
-  },
-  {
-    "name": "PI•NETWORK•RUNE",
-    "requiredBalance": 1000000,
-    "dashboardPath": "/dashboards/pi-network-rune",
-    "description": "Access PI•NETWORK•RUNE Dashboard",
-    "externalUrl": "/dashboards/pi-network-rune"
   }
 ]; 

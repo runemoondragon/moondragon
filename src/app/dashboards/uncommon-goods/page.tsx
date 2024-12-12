@@ -12,7 +12,7 @@ interface VotingSession {
   question: string;
   startTime: string;
   endTime: string;
-  status: 'active' | 'completed';
+  status: 'active' | 'completed' | 'archived';
   results: {
     yesVotes: number;
     noVotes: number;
@@ -139,21 +139,23 @@ export default function TokenDashboard() {
       const { votedQuestionIds } = await votesResponse.json();
       const votedQuestions = new Set(votedQuestionIds);
       
-      // Format sessions with vote status
-      const formattedSessions = (data.questions || []).map((q: any) => ({
-        id: q.id,
-        question: q.question,
-        startTime: q.startTime,
-        endTime: q.endTime,
-        status: q.status,
-        hasVoted: votedQuestions.has(q.id),
-        results: {
-          yesVotes: Number(q.results.yesVotes),
-          noVotes: Number(q.results.noVotes),
-          totalVoters: Number(q.results.totalVoters),
-          totalVotingPower: Number(q.results.totalVotingPower)
-        }
-      }));
+      // Filter out archived sessions and format remaining ones
+      const formattedSessions = (data.questions || [])
+        .filter((q: any) => q.status !== 'archived')
+        .map((q: any) => ({
+          id: q.id,
+          question: q.question,
+          startTime: q.startTime,
+          endTime: q.endTime,
+          status: q.status,
+          hasVoted: votedQuestions.has(q.id),
+          results: {
+            yesVotes: Number(q.results.yesVotes),
+            noVotes: Number(q.results.noVotes),
+            totalVoters: Number(q.results.totalVoters),
+            totalVotingPower: Number(q.results.totalVotingPower)
+          }
+        }));
 
       setVotingSessions(formattedSessions);
     } catch (error) {
@@ -246,6 +248,35 @@ export default function TokenDashboard() {
     }
   };
 
+  const handleArchiveSession = async (session: VotingSession) => {
+    if (!isAdmin) {
+      toast.error('Only token admin can archive sessions');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/voting/archive-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tokenName,
+          questionId: session.id,
+          adminAddress: address
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to archive session');
+      }
+
+      toast.success('Session archived successfully');
+      fetchVotingSessions();
+    } catch (error) {
+      console.error('Error archiving session:', error);
+      toast.error('Failed to archive session');
+    }
+  };
+
   if (!isMounted) return null;
 
   return (
@@ -257,7 +288,7 @@ export default function TokenDashboard() {
           <h1 className="text-4xl font-bold mb-8">{tokenName} Dashboard</h1>
 
           {/* Token Balance Section */}
-          <div className="mb-8 p-6 rounded-lg bg-white/10 backdrop-blur-sm">
+          <div className="mb-8 p-6 rounded-lg bg-white dark:bg-white/10 backdrop-blur-sm border border-gray-200 dark:border-transparent">
             <h2 className="text-xl font-semibold mb-4">Your Voting Power</h2>
             <div className="text-3xl font-bold">
               {votingPower.toLocaleString()} {tokenName}
@@ -274,10 +305,9 @@ export default function TokenDashboard() {
               <>
                 {votingSessions && votingSessions.length > 0 ? (
                   votingSessions.map((session: any) => (
-                    <div key={session.id} className="p-6 rounded-lg bg-white dark:bg-[#1a1f2d] border border-gray-200 dark:border-transparent shadow-sm">
-                      <h3 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">{session.question}</h3>
-                      
-                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    <div key={session.id} className="p-6 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                      <h3 className="text-2xl font-semibold mb-4">{session.question}</h3>
+                      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-4">
                         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M12 8V12L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                           <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2"/>
@@ -295,13 +325,13 @@ export default function TokenDashboard() {
                             <div className="flex gap-4">
                               <button
                                 onClick={() => handleVote(session.id, 'yes')}
-                                className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
+                                className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg transition-colors"
                               >
                                 Yes
                               </button>
                               <button
                                 onClick={() => handleVote(session.id, 'no')}
-                                className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+                                className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg transition-colors"
                               >
                                 No
                               </button>
@@ -322,7 +352,7 @@ export default function TokenDashboard() {
                                 <span>Yes</span>
                                 <span>{((session.results.yesVotes / session.results.totalVotingPower) * 100).toFixed(1)}%</span>
                               </div>
-                              <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                              <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                                 <div 
                                   className="h-full bg-green-500 transition-all duration-500"
                                   style={{ 
@@ -330,7 +360,7 @@ export default function TokenDashboard() {
                                   }}
                                 />
                               </div>
-                              <div className="text-sm text-gray-400">
+                              <div className="text-sm text-gray-500 dark:text-gray-400">
                                 {session.results.yesVotes.toLocaleString()} votes ({session.results.yesVotes.toLocaleString()} {tokenName})
                               </div>
                             </div>
@@ -341,7 +371,7 @@ export default function TokenDashboard() {
                                 <span>No</span>
                                 <span>{((session.results.noVotes / session.results.totalVotingPower) * 100).toFixed(1)}%</span>
                               </div>
-                              <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                              <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                                 <div 
                                   className="h-full bg-red-500 transition-all duration-500"
                                   style={{ 
@@ -349,12 +379,12 @@ export default function TokenDashboard() {
                                   }}
                                 />
                               </div>
-                              <div className="text-sm text-gray-400">
+                              <div className="text-sm text-gray-500 dark:text-gray-400">
                                 {session.results.noVotes.toLocaleString()} votes ({session.results.noVotes.toLocaleString()} {tokenName})
                               </div>
                             </div>
 
-                            <div className="text-sm text-gray-400 mt-4">
+                            <div className="text-sm text-gray-500 dark:text-gray-400 mt-4">
                               Total votes: {session.results.totalVoters}
                               <br />
                               Total voting power: {session.results.totalVotingPower.toLocaleString()} {tokenName}
@@ -374,6 +404,14 @@ export default function TokenDashboard() {
                                         <div>
                                           Winning margin: {results.margin.toFixed(1)}%
                                         </div>
+                                        {isAdmin && (
+                                          <button
+                                            onClick={() => handleArchiveSession(session)}
+                                            className="mt-4 px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
+                                          >
+                                            Archive This Session
+                                          </button>
+                                        )}
                                       </>
                                     );
                                   }
@@ -387,7 +425,7 @@ export default function TokenDashboard() {
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-400 text-center py-8">
+                  <p className="text-gray-500 dark:text-gray-400 text-center py-8">
                     No voting sessions available
                   </p>
                 )}

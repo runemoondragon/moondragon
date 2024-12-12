@@ -1,30 +1,30 @@
 [
   {
+    "tokenName": "BITCOIN•COMICS",
+    "requiredBalance": 4,
+    "walletAddress": "bc1p3dt64xdexkyxs5g8yl2s4l0mfl29rr7nalvgqme0rw0t9cthnueq3ptkg6",
+    "associatedUrl": "/dashboards/bitcoin-comics",
+    "createdAt": "2024-12-12T20:47:06.405Z"
+  },
+  {
     "tokenName": "MAGA•FIGHT•FIGHT",
     "requiredBalance": 10000,
     "walletAddress": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
     "associatedUrl": "/dashboards/maga-fight-fight",
-    "createdAt": "2024-12-02T05:39:17.886Z"
+    "createdAt": "2024-12-12T23:00:28.954Z"
   },
   {
     "tokenName": "UNCOMMON•GOODS",
     "requiredBalance": 5,
     "walletAddress": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
     "associatedUrl": "/dashboards/uncommon-goods",
-    "createdAt": "2024-12-02T19:08:24.138Z"
-  },
-  {
-    "tokenName": "DOG•GO•TO•THE•MOON",
-    "requiredBalance": 100000,
-    "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
-    "associatedUrl": "/dashboards/dog-go-to-the-moon",
-    "createdAt": "2024-12-06T22:41:59.635Z"
+    "createdAt": "2024-12-12T23:02:17.456Z"
   },
   {
     "tokenName": "PI•NETWORK•RUNE",
-    "requiredBalance": 1000000,
-    "walletAddress": "bc1pkql3xqy7qdtnpwl3kdzzdnlsddlkrkx827akgm6pakvqqq8smdtq532c3g",
+    "requiredBalance": 7079632675,
+    "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
     "associatedUrl": "/dashboards/pi-network-rune",
-    "createdAt": "2024-12-12T15:10:12.653Z"
+    "createdAt": "2024-12-12T23:09:41.718Z"
   }
 ]
