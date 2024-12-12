@@ -1,24 +1,30 @@
 import { NextResponse } from 'next/server';
-import { getTokenBalance } from '@/lib/tokenUtils';
+import { getTokenBalance } from '../../../lib/tokenUtils';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const address = searchParams.get('address');
+    const tokenName = searchParams.get('token');
 
-    if (!address) {
-      return NextResponse.json({ error: 'Address is required' }, { status: 400 });
+    if (!address || !tokenName) {
+      return NextResponse.json(
+        { error: 'Missing required parameters' },
+        { status: 400 }
+      );
     }
 
-    const balance = await getTokenBalance(address);
-    
+    const balance = await getTokenBalance(address, tokenName);
+
     return NextResponse.json({
-      raw: balance.raw,
-      formatted: balance.formatted,
-      hasMinimumBalance: balance.hasMinimumBalance
+      balance: balance
     });
+
   } catch (error) {
-    console.error('Token balance route error:', error);
-    return NextResponse.json({ error: 'Failed to fetch balance' }, { status: 500 });
+    console.error('Error fetching token balance:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch token balance' },
+      { status: 500 }
+    );
   }
 } 
