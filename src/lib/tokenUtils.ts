@@ -43,4 +43,19 @@ export const updateTokenBalance = async (
     console.error('Error updating token balance:', error);
     return false;
   }
+};
+
+export const getTokenBalance = async (
+  walletAddress: string,
+  tokenName: string
+): Promise<number> => {
+  try {
+    // Implement your token balance lookup logic here
+    // This is a placeholder - replace with your actual implementation
+    const tokenAssociation = await getTokenAssociation(walletAddress, tokenName);
+    return tokenAssociation?.requiredBalance || 0;
+  } catch (error) {
+    console.error('Error getting token balance:', error);
+    return 0;
+  }
 }; 
