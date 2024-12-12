@@ -1,4 +1,8 @@
 import { TokenAssociation } from "@/lib/types";
+import fs from 'fs/promises';
+import path from 'path';
+
+const USER_TOKENS_PATH = path.join(process.cwd(), 'data', 'user-tokens.json');
 
 export const validateTokenBalance = (
   currentBalance: number,
@@ -16,14 +20,14 @@ export const getTokenAssociation = async (
   tokenName: string
 ): Promise<TokenAssociation | null> => {
   try {
-    // Implement your token association lookup logic here
-    // This is a placeholder - replace with your actual implementation
-    return {
-      walletAddress,
-      tokenName,
-      requiredBalance: 0,
-      associatedUrl: '',
-    };
+    const content = await fs.readFile(USER_TOKENS_PATH, 'utf-8');
+    const tokens: TokenAssociation[] = JSON.parse(content);
+    
+    const tokenAssociation = tokens.find(
+      t => t.walletAddress === walletAddress && t.tokenName === tokenName
+    );
+
+    return tokenAssociation || null;
   } catch (error) {
     console.error('Error getting token association:', error);
     return null;
@@ -36,8 +40,22 @@ export const updateTokenBalance = async (
   newBalance: number
 ): Promise<boolean> => {
   try {
-    // Implement your balance update logic here
-    // This is a placeholder - replace with your actual implementation
+    const content = await fs.readFile(USER_TOKENS_PATH, 'utf-8');
+    const tokens: TokenAssociation[] = JSON.parse(content);
+    
+    const tokenIndex = tokens.findIndex(
+      t => t.walletAddress === walletAddress && t.tokenName === tokenName
+    );
+
+    if (tokenIndex === -1) {
+      return false;
+    }
+
+    // Update the balance
+    tokens[tokenIndex].requiredBalance = newBalance;
+
+    // Write back to file
+    await fs.writeFile(USER_TOKENS_PATH, JSON.stringify(tokens, null, 2));
     return true;
   } catch (error) {
     console.error('Error updating token balance:', error);
@@ -50,10 +68,20 @@ export const getTokenBalance = async (
   tokenName: string
 ): Promise<number> => {
   try {
-    // Implement your token balance lookup logic here
-    // This is a placeholder - replace with your actual implementation
-    const tokenAssociation = await getTokenAssociation(walletAddress, tokenName);
-    return tokenAssociation?.requiredBalance || 0;
+    // Read the user-tokens.json file
+    const content = await fs.readFile(USER_TOKENS_PATH, 'utf-8');
+    const tokens: TokenAssociation[] = JSON.parse(content);
+    
+    // Find the token association for this wallet and token
+    const tokenAssociation = tokens.find(
+      t => t.walletAddress === walletAddress && t.tokenName === tokenName
+    );
+
+    if (!tokenAssociation) {
+      return 0;
+    }
+
+    return tokenAssociation.requiredBalance;
   } catch (error) {
     console.error('Error getting token balance:', error);
     return 0;
