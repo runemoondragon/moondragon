@@ -3,6 +3,7 @@ export interface TokenAssociation {
   tokenName: string;
   requiredBalance: number;
   associatedUrl?: string;
+  createdAt?: Date;
 }
 
 export interface TokenInfo {
