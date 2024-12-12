@@ -13,6 +13,14 @@ interface RuneBalance {
   balance: string;
 }
 
+const validateBalance = (balance: any): number => {
+  const parsed = parseFloat(balance);
+  if (isNaN(parsed)) {
+    throw new Error('Invalid balance value');
+  }
+  return parsed;
+};
+
 async function readUserTokens(): Promise<TokenAssociation[]> {
   try {
     const content = await fs.readFile(USER_TOKENS_PATH, 'utf-8');
@@ -23,7 +31,12 @@ async function readUserTokens(): Promise<TokenAssociation[]> {
 }
 
 async function writeUserTokens(tokens: TokenAssociation[]) {
-  await fs.writeFile(USER_TOKENS_PATH, JSON.stringify(tokens, null, 2));
+  try {
+    await fs.writeFile(USER_TOKENS_PATH, JSON.stringify(tokens, null, 2));
+  } catch (error) {
+    console.error('Error writing user tokens:', error);
+    throw new Error('Failed to write user tokens file');
+  }
 }
 
 async function addToAccessTokens(newToken: AccessToken) {
@@ -72,6 +85,16 @@ export async function POST(request: Request) {
     if (!name || requiredBalance === undefined || !walletAddress) {
       return NextResponse.json(
         { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    // Validate balance
+    try {
+      validateBalance(requiredBalance);
+    } catch (error) {
+      return NextResponse.json(
+        { error: 'Invalid balance value' },
         { status: 400 }
       );
     }
