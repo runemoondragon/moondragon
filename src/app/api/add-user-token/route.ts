@@ -71,18 +71,38 @@ export async function POST(request: Request) {
   try {
     const { name, requiredBalance, walletAddress } = await request.json();
 
-    // Validate required fields
-    if (!name || requiredBalance === undefined || !walletAddress) {
+    // Improved balance parsing that works both locally and on server
+    let parsedBalance: number;
+    try {
+      // Handle both string and number inputs, and remove commas
+      const cleanBalance = typeof requiredBalance === 'string' 
+        ? requiredBalance.replace(/,/g, '')
+        : String(requiredBalance);
+      parsedBalance = parseInt(cleanBalance, 10);
+
+      if (isNaN(parsedBalance)) {
+        return NextResponse.json({ 
+          error: 'Invalid required balance value' 
+        }, { status: 400 });
+      }
+    } catch (error) {
+      return NextResponse.json({ 
+        error: 'Invalid required balance format' 
+      }, { status: 400 });
+    }
+
+    // Rest of your existing validation
+    if (!name || !walletAddress) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    // Create token data with default dashboard URL
+    // Update token data to use parsed balance
     const tokenData: TokenAssociation = {
       tokenName: name,
-      requiredBalance,
+      requiredBalance: parsedBalance, // Use parsed balance
       walletAddress,
       associatedUrl: `/dashboards/${name.toLowerCase().replace(/[•]/g, '-')}`,
       createdAt: new Date()
