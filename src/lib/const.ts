@@ -41,5 +41,12 @@ export const ACCESS_TOKENS: AccessToken[] = [
     "dashboardPath": "/dashboards/dog-go-to-the-moon",
     "description": "Access DOG•GO•TO•THE•MOON Dashboard",
     "externalUrl": "/dashboards/dog-go-to-the-moon"
+  },
+  {
+    "name": "RSIC•GENESIS•RUNE",
+    "requiredBalance": 50,
+    "dashboardPath": "/dashboards/rsic-genesis-rune",
+    "description": "Access RSIC•GENESIS•RUNE Dashboard",
+    "externalUrl": "/dashboards/rsic-genesis-rune"
   }
 ]; 

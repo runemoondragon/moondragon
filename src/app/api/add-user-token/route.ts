@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 import { TokenAssociation } from '@/lib/types';
@@ -63,6 +63,9 @@ async function addToAccessTokens(newToken: AccessToken) {
     throw error;
   }
 }
+
+// Add this to mark the route as dynamic
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {

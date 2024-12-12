@@ -1,9 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getTokenBalance } from '../../../lib/tokenUtils';
 
-export async function GET(request: Request) {
+// Add this to mark the route as dynamic
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl.searchParams;
     const address = searchParams.get('address');
     const tokenName = searchParams.get('token');
 
