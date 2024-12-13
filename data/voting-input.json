@@ -1,22 +1,6 @@
 {
   "questions": [
     {
-      "id": "q1733100842423",
-      "token": "MAGA•FIGHT•FIGHT",
-      "question": "Test yes or no question",
-      "startTime": "2024-12-01T18:53",
-      "endTime": "2024-12-02T11:55",
-      "status": "archived",
-      "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
-      "results": {
-        "yesVotes": 1000000,
-        "noVotes": 540000,
-        "totalVoters": 3,
-        "totalVotingPower": 1540000,
-        "hasEnded": true
-      }
-    },
-    {
       "id": "q1733160842097",
       "token": "MAGA•FIGHT•FIGHT",
       "question": "Test 2 yes or no question",
