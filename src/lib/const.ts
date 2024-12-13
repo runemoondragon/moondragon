@@ -14,11 +14,5 @@ export const ACCESS_TOKENS: AccessToken[] = [
     "requiredBalance": 200000,
     "dashboardPath": "/dashboards/moon-dragon",
     "description": "Access Moon Dragon Dashboard"
-  },
-  {
-    "name": "YOLO•MOON•RUNES",
-    "requiredBalance": 400000,
-    "dashboardPath": "/dashboards/yolo-moon-runes",
-    "description": "Access YOLO•MOON•RUNES Dashboard"
   }
 ]; 
