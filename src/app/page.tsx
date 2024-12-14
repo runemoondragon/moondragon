@@ -39,6 +39,7 @@ export default function Home() {
   const [selectedToken, setSelectedToken] = useState<string | null>(null);
   const [tokenRequirements, setTokenRequirements] = useState<Record<string, boolean>>({});
   const [filteredTokens, setFilteredTokens] = useState<AccessToken[]>([]);
+  const [dynamicTokens, setDynamicTokens] = useState<AccessToken[]>([]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -140,6 +141,21 @@ export default function Home() {
     fetchAndFilterTokens();
   }, [runeBalances]);
 
+  useEffect(() => {
+    const fetchDynamicTokens = async () => {
+      try {
+        const response = await fetch('/api/dynamic-tokens');
+        if (!response.ok) throw new Error('Failed to fetch tokens');
+        const tokens = await response.json();
+        setDynamicTokens(tokens);
+      } catch (error) {
+        console.error('Error fetching tokens:', error);
+      }
+    };
+
+    fetchDynamicTokens();
+  }, []);
+
   const handleAccessAttempt = async (token: AccessToken) => {
     if (!address || !signMessage) {
       setVerificationMessage("Please connect your wallet first");
@@ -237,6 +253,30 @@ export default function Home() {
             Bitboard verifies rune wallet balance to grant exclusive access to governance, voting, and other privileges.
             </p>
           </div>
+           {/* Connect Wallet Button */}
+           {!address && (
+            <div className="flex justify-center mb-15">
+              <ConnectWallet />
+            </div>
+          )}
+
+          {/* Add Token Grid before wallet connection */}
+          {!address && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12 w-full">
+              {dynamicTokens.slice(0, 9).map((token, index) => (
+                <div
+                  key={index}
+                  className="p-6 rounded-lg bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 hover:border-gray-700 transition-colors"
+                >
+                  <h3 className="text-xl font-semibold mb-2">{token.name}</h3>
+                  <p className="text-gray-400 mb-4">Required Balance: {token.requiredBalance.toLocaleString()}</p>
+                  <div className="text-sm text-gray-500">
+                    {token.description}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Wallet Connected Content */}
           {address && (

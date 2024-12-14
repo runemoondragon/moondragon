@@ -69,7 +69,7 @@ export default function TokenDashboard() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState<Record<string, string>>({});
 
-  const tokenName = "BITCOIN•COMICS";
+  const tokenName = "DOG•GO•TO•THE•MOON";
 
   useEffect(() => {
     setIsMounted(true);

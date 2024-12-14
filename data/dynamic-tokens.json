@@ -1,10 +1,31 @@
 [
   {
-    "name": "BITCOIN•COMICS",
-    "requiredBalance": 4,
-    "dashboardPath": "/dashboards/bitcoin-comics",
-    "description": "Access BITCOIN•COMICS Dashboard",
-    "externalUrl": "/dashboards/bitcoin-comics"
+    "name": "UNCOMMON•GOODS",
+    "requiredBalance": 5,
+    "dashboardPath": "/dashboards/uncommon-goods",
+    "description": "Access UNCOMMON•GOODS Dashboard",
+    "externalUrl": "/dashboards/uncommon-goods"
+  },
+  {
+    "name": "DOG•GO•TO•THE•MOON",
+    "requiredBalance": 10000,
+    "dashboardPath": "/dashboards/dog-go-to-the-moon",
+    "description": "Access DOG•GO•TO•THE•MOON Dashboard",
+    "externalUrl": "/dashboards/dog-go-to-the-moon"
+  },
+  {
+    "name": "YOLO•MOON•RUNES",
+    "requiredBalance": 1000000,
+    "dashboardPath": "/dashboards/yolo-moon-runes",
+    "description": "Access YOLO•MOON•RUNES Dashboard",
+    "externalUrl": "/dashboards/yolo-moon-runes"
+  },
+  {
+    "name": "BILLION•DOLLAR•CAT",
+    "requiredBalance": 5000,
+    "dashboardPath": "/dashboards/billion-dollar-cat",
+    "description": "Access BILLION•DOLLAR•CAT Dashboard",
+    "externalUrl": "/dashboards/billion-dollar-cat"
   },
   {
     "name": "MAGA•FIGHT•FIGHT",
@@ -14,17 +35,10 @@
     "externalUrl": "/dashboards/maga-fight-fight"
   },
   {
-    "name": "UNCOMMON•GOODS",
-    "requiredBalance": 5,
-    "dashboardPath": "/dashboards/uncommon-goods",
-    "description": "Access UNCOMMON•GOODS Dashboard",
-    "externalUrl": "/dashboards/uncommon-goods"
-  },
-  {
-    "name": "PI•NETWORK•RUNE",
-    "requiredBalance": 7079632675,
-    "dashboardPath": "/dashboards/pi-network-rune",
-    "description": "Access PI•NETWORK•RUNE Dashboard",
-    "externalUrl": "/dashboards/pi-network-rune"
+    "name": "PUPS•WORLD•PEACE",
+    "requiredBalance": 5000,
+    "dashboardPath": "/dashboards/pups-world-peace",
+    "description": "Access PUPS•WORLD•PEACE Dashboard",
+    "externalUrl": "/dashboards/pups-world-peace"
   }
 ]
