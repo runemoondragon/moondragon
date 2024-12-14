@@ -179,7 +179,7 @@ export default function Home() {
     if (!hasAccess) {
       setVerificationMessage(
         <span>
-          Access Denied: Insufficient {token.name} balance. You need {token.requiredBalance.toLocaleString()} tokens, you have {currentBalance.toLocaleString()}.{" "}
+          Insufficient {token.name} balance. You must hold a minimum of {token.requiredBalance.toLocaleString()} tokens, you have {currentBalance.toLocaleString()}.{" "}
           <a 
             href={`https://luminex.io/rune/${encodeURIComponent(token.name)}`}
             target="_blank"
@@ -382,9 +382,9 @@ export default function Home() {
                         sideOffset={5}
                       >
                         <p className="space-y-2">
-                        Token-Gated Dashboards: Seamlessly create dashboards restricted to specific Rune token holders, enabling secure and exclusive access to platform features.
+                        Create dashboards restricted to specific Rune token holders, enabling secure and exclusive access to platform features.
                           <br /><br />
-                          Effortless Governance: Allow users to participate in voting, manage proposals, and track results without on-chain transaction costs, ensuring a cost-effective and scalable governance solution.
+                          Allow users to participate in voting, manage proposals, and track results without on-chain transaction costs, ensuring a cost-effective and scalable governance solution.
                         </p>
                         <Tooltip.Arrow className="fill-gray-900" />
                       </Tooltip.Content>
@@ -404,9 +404,9 @@ export default function Home() {
                         sideOffset={5}
                       >
                         <p className="space-y-2">
-                        Add Your Token: Use BITBOARD•DASH to integrate your token and establish a tailored governance system.
+                        Use BITBOARD•DASH to integrate your token and establish a tailored governance system.
                           <br /><br />
-                          Custom Tools and Distribution: Set minimum requirements, initiate voting sessions, and effortlessly distribute Rune tokens to participants using the built-in mass Rune send feature.
+                          Set minimum requirements, initiate voting sessions, and effortlessly distribute Rune tokens to participants using the built-in mass Rune send feature.
           
       
 
@@ -429,9 +429,9 @@ export default function Home() {
                         sideOffset={5}
                       >
                         <p className="space-y-2">
-                        Dashboard Access: A minimum balance of BITBOARD•DASH token is required to access the main dashboard and add your project token.
+                        A minimum balance of BITBOARD•DASH token is required to access the main dashboard and add your project token.
                           <br /><br />
-                        Custom Token Requirements: Only users who meet the token requirements you set can interact with the dashboards you create.
+                        Only users who meet the token requirements you set can interact with the dashboards you create.
                         </p>
                         <Tooltip.Arrow className="fill-gray-900" />
                       </Tooltip.Content>
