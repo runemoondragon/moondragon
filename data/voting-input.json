@@ -134,27 +134,43 @@
       "question": "test voting ",
       "startTime": "2024-12-16T09:08",
       "endTime": "2024-12-17T09:08",
-      "status": "active",
+      "status": "archived",
       "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
       "results": {
         "yesVotes": 100000,
         "noVotes": 0,
         "totalVoters": 1,
         "totalVotingPower": 100000,
-        "hasEnded": false
+        "hasEnded": true
       }
     },
     {
       "id": "q1734398456392",
       "token": "DOG•GO•TO•THE•MOON",
-      "question": "Test q",
+      "question": "Should we organize a virtual 'DOG' community meetup to discuss future developments and ideas?",
       "startTime": "2024-12-16T19:20",
-      "endTime": "2024-12-17T19:20",
+      "endTime": "2024-12-20T19:20",
       "status": "active",
       "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
       "results": {
-        "yesVotes": 0,
+        "yesVotes": 100000,
         "noVotes": 100000,
+        "totalVoters": 2,
+        "totalVotingPower": 200000,
+        "hasEnded": false
+      }
+    },
+    {
+      "id": "q1734451182944",
+      "token": "DOG•GO•TO•THE•MOON",
+      "question": "Do you support the creation of a community fund to promote $DOG through various initiatives?",
+      "startTime": "2024-12-17T10:00",
+      "endTime": "2024-12-20T09:59",
+      "status": "active",
+      "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+      "results": {
+        "yesVotes": 100000,
+        "noVotes": 0,
         "totalVoters": 1,
         "totalVotingPower": 100000,
         "hasEnded": false
