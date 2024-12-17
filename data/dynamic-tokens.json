@@ -1,31 +1,24 @@
 [
   {
-    "name": "UNCOMMON•GOODS",
-    "requiredBalance": 5,
-    "dashboardPath": "/dashboards/uncommon-goods",
-    "description": "Access UNCOMMON•GOODS Dashboard",
-    "externalUrl": "/dashboards/uncommon-goods"
-  },
-  {
-    "name": "YOLO•MOON•RUNES",
-    "requiredBalance": 1000000,
-    "dashboardPath": "/dashboards/yolo-moon-runes",
-    "description": "Access YOLO•MOON•RUNES Dashboard",
-    "externalUrl": "/dashboards/yolo-moon-runes"
-  },
-  {
-    "name": "BILLION•DOLLAR•CAT",
-    "requiredBalance": 5000,
-    "dashboardPath": "/dashboards/billion-dollar-cat",
-    "description": "Access BILLION•DOLLAR•CAT Dashboard",
-    "externalUrl": "/dashboards/billion-dollar-cat"
-  },
-  {
     "name": "MAGA•FIGHT•FIGHT",
     "requiredBalance": 10000,
     "dashboardPath": "/dashboards/maga-fight-fight",
     "description": "Access MAGA•FIGHT•FIGHT Dashboard",
     "externalUrl": "/dashboards/maga-fight-fight"
+  },
+  {
+    "name": "DOG•GO•TO•THE•MOON",
+    "requiredBalance": 10000,
+    "dashboardPath": "/dashboards/dog-go-to-the-moon",
+    "description": "Access DOG•GO•TO•THE•MOON Dashboard",
+    "externalUrl": "/dashboards/dog-go-to-the-moon"
+  },
+  {
+    "name": "UNCOMMON•GOODS",
+    "requiredBalance": 5,
+    "dashboardPath": "/dashboards/uncommon-goods",
+    "description": "Access UNCOMMON•GOODS Dashboard",
+    "externalUrl": "/dashboards/uncommon-goods"
   },
   {
     "name": "PUPS•WORLD•PEACE",
@@ -35,10 +28,17 @@
     "externalUrl": "/dashboards/pups-world-peace"
   },
   {
-    "name": "DOG•GO•TO•THE•MOON",
-    "requiredBalance": 10000,
-    "dashboardPath": "/dashboards/dog-go-to-the-moon",
-    "description": "Access DOG•GO•TO•THE•MOON Dashboard",
-    "externalUrl": "/dashboards/dog-go-to-the-moon"
+    "name": "BILLION•DOLLAR•CAT",
+    "requiredBalance": 5000,
+    "dashboardPath": "/dashboards/billion-dollar-cat",
+    "description": "Access BILLION•DOLLAR•CAT Dashboard",
+    "externalUrl": "/dashboards/billion-dollar-cat"
+  },
+  {
+    "name": "YOLO•MOON•RUNES",
+    "requiredBalance": 1000000,
+    "dashboardPath": "/dashboards/yolo-moon-runes",
+    "description": "Access YOLO•MOON•RUNES Dashboard",
+    "externalUrl": "/dashboards/yolo-moon-runes"
   }
 ]
