@@ -13,6 +13,24 @@ import { Menu } from '@headlessui/react';
 import { toast } from 'react-hot-toast';
 import { Dialog, DialogTitle, DialogPanel } from '@headlessui/react';
 import { RuneBalance, fetchOrdAddress } from "@/lib/runebalance";
+import { PollForm, PollFormData } from '@/components/PollForm';
+
+interface Poll {
+  id: string;
+  pollQuestion: string;
+  options: string[];
+  tokenName: string;
+  createdAt: string;
+  endTime: string;
+  status: 'active' | 'completed' | 'archived';
+  results: {
+    [key: string]: string | number | undefined;
+    totalVoters: number;
+    totalVotingPower: number;
+    winner?: string;
+    winningPercentage?: number;
+  };
+}
 
 interface TokenDisplayProps {
   token: TokenAssociation;
@@ -27,9 +45,12 @@ interface TokenDisplayProps {
   setShowVotingForm: (show: boolean) => void;
   setShowArchiveModal: (show: boolean) => void;
   setShowAddressDetails: (show: boolean) => void;
+  setShowPollForm: (show: boolean) => void;
+  setShowPollAddressDetails: (show: boolean) => void;
+  setShowPollArchiveModal: (show: boolean) => void;
 }
 
-const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, onButton1Click, onButton2Click, onButton3Click, setShowVotingForm, setShowArchiveModal, setShowAddressDetails }: TokenDisplayProps) => {
+const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, onButton1Click, onButton2Click, onButton3Click, setShowVotingForm, setShowArchiveModal, setShowAddressDetails, setShowPollForm, setShowPollAddressDetails, setShowPollArchiveModal }: TokenDisplayProps) => {
   const [newBalance, setNewBalance] = useState(token.requiredBalance);
   const [error, setError] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -166,10 +187,61 @@ const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, on
             />
           </div>
         ) : (
-          <p className="text-sm text-gray-400">
-            Required Balance: {token.requiredBalance.toLocaleString()}
-          </p>
+          <>
+            <p className="text-sm text-gray-400">
+              Required Balance: {token.requiredBalance.toLocaleString()}
+            </p>
+            <Menu as="div" className="relative mt-2">
+              <Menu.Button className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors text-white">
+                Activity
+              </Menu.Button>
+              
+              <Menu.Items className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-10 border border-gray-200 dark:border-gray-700">
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      onClick={() => setShowAddressDetails(true)}
+                      className={`${active ? 'bg-gray-100 dark:bg-gray-700' : ''} w-full text-left px-4 py-2 text-gray-900 dark:text-white`}
+                    >
+                      List Voter
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      onClick={() => setShowPollAddressDetails(true)}
+                      className={`${active ? 'bg-gray-100 dark:bg-gray-700' : ''} w-full text-left px-4 py-2 text-gray-900 dark:text-white`}
+                    >
+                      List Poller
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      onClick={() => setShowArchiveModal(true)}
+                      className={`${active ? 'bg-gray-100 dark:bg-gray-700' : ''} w-full text-left px-4 py-2 text-gray-900 dark:text-white`}
+                    >
+                      Archived vote
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      onClick={() => setShowPollArchiveModal(true)}
+                      className={`${active ? 'bg-gray-100 dark:bg-gray-700' : ''} w-full text-left px-4 py-2 text-gray-900 dark:text-white`}
+                    >
+                      Archived poll
+                    </button>
+                  )}
+                </Menu.Item>
+              </Menu.Items>
+            </Menu>
+          </>
         )}
+        
         {token.associatedUrl && (
           <p className="text-sm text-gray-400">
             Dashboard: <a href={token.associatedUrl} className="text-blue-400 hover:text-blue-300">View Dashboard</a>
@@ -189,10 +261,7 @@ const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, on
                 </button>
               </Tooltip.Trigger>
               <Tooltip.Portal>
-                <Tooltip.Content
-                  className="max-w-xs px-4 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
-                  sideOffset={5}
-                >
+                <Tooltip.Content className="max-w-xs px-4 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg" sideOffset={5}>
                   Create a new voting session. Propose questions and gather input from {token.tokenName} token holders.
                   <Tooltip.Arrow className="fill-gray-900" />
                 </Tooltip.Content>
@@ -202,55 +271,37 @@ const TokenDisplay = ({ token, isEditing, onEdit, onCancel, onSave, onDelete, on
             <Tooltip.Root>
               <Tooltip.Trigger asChild>
                 <button
-                  onClick={onButton2Click}
-                  className="flex-1 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors"
+                  onClick={() => setShowPollForm(true)}
+                  className="flex-1 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-colors"
                 >
-                  Distribute 
+                  Start a Poll
                 </button>
               </Tooltip.Trigger>
               <Tooltip.Portal>
-                <Tooltip.Content
-                  className="max-w-xs px-4 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
-                  sideOffset={5}
-                >
-                  Allocate and distribute rewards to participants based on their share of the asset.
+                <Tooltip.Content className="max-w-xs px-4 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg" sideOffset={5}>
+                  Create a new poll to gather community feedback.
                   <Tooltip.Arrow className="fill-gray-900" />
                 </Tooltip.Content>
               </Tooltip.Portal>
             </Tooltip.Root>
 
-            <Menu as="div" className="relative">
-              <Menu.Button className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors text-white">
-                Board Actions
-              </Menu.Button>
-              
-              <Menu.Items className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-10 border border-gray-200 dark:border-gray-700">
-                <Menu.Item>
-                  {({ active }) => (
-                    <button
-                      onClick={() => setShowAddressDetails(true)}
-                      className={`${
-                        active ? 'bg-gray-100 dark:bg-gray-700' : ''
-                      } w-full text-left px-4 py-2 text-gray-900 dark:text-white`}
-                    >
-                      List All Addresses
-                    </button>
-                  )}
-                </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <button
-                      onClick={() => setShowArchiveModal(true)}
-                      className={`${
-                        active ? 'bg-gray-100 dark:bg-gray-700' : ''
-                      } w-full text-left px-4 py-2 text-gray-900 dark:text-white`}
-                    >
-                      Manage Archives
-                    </button>
-                  )}
-                </Menu.Item>
-              </Menu.Items>
-            </Menu>
+
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <button
+                  onClick={onButton2Click}
+                  className="flex-1 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors"
+                >
+                  Distribute
+                </button>
+              </Tooltip.Trigger>
+              <Tooltip.Portal>
+                <Tooltip.Content className="max-w-xs px-4 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg" sideOffset={5}>
+                  Allocate and distribute rewards to participants based on their share of the asset.
+                  <Tooltip.Arrow className="fill-gray-900" />
+                </Tooltip.Content>
+              </Tooltip.Portal>
+            </Tooltip.Root>
           </Tooltip.Provider>
         </div>
       </div>
@@ -336,9 +387,9 @@ interface VoteDetail {
 }
 
 interface GroupedVotes {
-  [questionId: string]: {
-    questionText: string;
+  [pollId: string]: {
     votes: VoteDetail[];
+    pollQuestion: string;
   };
 }
 
@@ -357,7 +408,7 @@ const AddressDetails = ({
       <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
       
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="w-full max-w-4xl rounded-lg bg-white dark:bg-gray-900 p-6 text-gray-900 dark:text-white">
+        <Dialog.Panel className="w-full max-h-[70vh] overflow-y-auto rounded-lg bg-white dark:bg-gray-900 p-6 text-gray-900 dark:text-white">
           <Dialog.Title className="text-xl font-semibold mb-4">
             Voting Address Details
           </Dialog.Title>
@@ -366,7 +417,7 @@ const AddressDetails = ({
             {Object.entries(votingDetails).map(([questionId, questionData]) => (
               <div key={questionId} className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
                 <h3 className="font-medium mb-3">
-                  {questionData.questionText}
+                  {questionData.pollQuestion}
                   <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
                     (ID: {questionId})
                   </span>
@@ -1063,6 +1114,84 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
   );
 };
 
+const PollAddressDetails = ({ 
+  isOpen, 
+  onClose, 
+  pollDetails 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  pollDetails: any;
+}) => {
+  // Remove the reduce since data is already grouped
+  const groupedVotes = pollDetails || {};
+
+  return (
+    <Dialog open={isOpen} onClose={onClose} className="relative z-50">
+      <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
+      
+      <div className="fixed inset-0 flex items-center justify-center p-4">
+        <Dialog.Panel className="w-full max-w-4xl rounded-lg bg-white dark:bg-gray-900 p-6">
+          <Dialog.Title className="text-xl font-semibold mb-4">
+            Poll Participation Details
+          </Dialog.Title>
+          
+          <div className="space-y-6 max-h-[70vh] overflow-y-auto">
+            {Object.entries(groupedVotes).map(([pollId, data]: [string, any]) => (
+              <div key={pollId} className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
+                <h3 className="font-medium mb-2">
+                  {data.pollQuestion}
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                  Poll ID: {pollId}
+                </p>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full">
+                    <thead>
+                      <tr className="text-left text-sm text-gray-500 dark:text-gray-400">
+                        <th className="pb-2">Wallet Address</th>
+                        <th className="pb-2">Choice</th>
+                        <th className="pb-2">Token Balance</th>
+                        <th className="pb-2">Timestamp</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.votes.map((vote: any, index: number) => (
+                        <tr key={index} className="border-t border-gray-200 dark:border-gray-700">
+                          <td className="py-2 text-sm font-mono">{vote.walletAddress}</td>
+                          <td className="py-2 text-sm">{vote.choice}</td>
+                          <td className="py-2 text-sm">{vote.tokenBalance.toLocaleString()}</td>
+                          <td className="py-2 text-sm">
+                            {new Date(vote.timestamp).toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))}
+            {pollDetails.length === 0 && (
+              <p className="text-center text-gray-500 dark:text-gray-400">
+                No poll participation data available
+              </p>
+            )}
+          </div>
+
+          <div className="mt-6 flex justify-end">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </Dialog.Panel>
+      </div>
+    </Dialog>
+  );
+};
+
 export default function MoonDragonDashboard() {
   const { address } = useLaserEyes();
   const router = useRouter();
@@ -1079,6 +1208,11 @@ export default function MoonDragonDashboard() {
   const [votingDetails, setVotingDetails] = useState<GroupedVotes>({});
   const [showDistributionForm, setShowDistributionForm] = useState(false);
   const [btcPrice, setBtcPrice] = useState(0);
+  const [showPollForm, setShowPollForm] = useState(false);
+  const [showPollAddressDetails, setShowPollAddressDetails] = useState(false);
+  const [pollAddressDetails, setPollAddressDetails] = useState<any[]>([]);
+  const [showPollArchiveModal, setShowPollArchiveModal] = useState(false);
+  const [archivedPolls, setArchivedPolls] = useState<Poll[]>([]);
 
   useEffect(() => {
     const fetchUserToken = async () => {
@@ -1353,6 +1487,85 @@ export default function MoonDragonDashboard() {
     }
   };
 
+  const handleCreatePoll = async (data: PollFormData) => {
+    try {
+      const response = await fetch('/api/polls/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...data,
+          tokenName: userToken?.tokenName
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create poll');
+      }
+
+      toast.success('Poll created successfully');
+      setShowPollForm(false);
+    } catch (error) {
+      console.error('Error creating poll:', error);
+      toast.error('Failed to create poll');
+    }
+  };
+
+  const fetchPollDetails = async () => {
+    if (!userToken) return;
+    
+    try {
+      const response = await fetch(`/api/polls/address-details/${userToken.tokenName}`);
+      if (!response.ok) throw new Error('Failed to fetch poll details');
+      
+      const data = await response.json();
+      setPollAddressDetails(data.votes);
+    } catch (error) {
+      console.error('Error fetching poll details:', error);
+      toast.error('Failed to fetch poll details');
+    }
+  };
+
+  const handleArchivePoll = async (pollId: string) => {
+    if (!isAdmin || !userToken) {
+      toast.error('Only token admin can archive polls');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/polls/archive', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pollId,
+          token: userToken.tokenName
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to archive poll');
+      }
+
+      toast.success('Poll archived successfully');
+      fetchArchivedPolls(); // We'll need to implement this
+    } catch (error) {
+      console.error('Error archiving poll:', error);
+      toast.error('Failed to archive poll');
+    }
+  };
+
+  const fetchArchivedPolls = async () => {
+    if (!userToken) return;
+    try {
+      const response = await fetch(`/api/polls/${userToken.tokenName}?archived=true`);
+      if (response.ok) {
+        const data = await response.json();
+        setArchivedPolls(data.polls);
+      }
+    } catch (error) {
+      console.error('Error fetching archived polls:', error);
+    }
+  };
+
   useEffect(() => {
     if (showArchiveModal) {
       fetchArchivedSessions();
@@ -1364,6 +1577,18 @@ export default function MoonDragonDashboard() {
       fetchVotingDetails();
     }
   }, [showAddressDetails]);
+
+  useEffect(() => {
+    if (showPollAddressDetails) {
+      fetchPollDetails();
+    }
+  }, [showPollAddressDetails]);
+
+  useEffect(() => {
+    if (showPollArchiveModal) {
+      fetchArchivedPolls();
+    }
+  }, [showPollArchiveModal]);
 
   useEffect(() => {
     fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')
@@ -1427,17 +1652,23 @@ export default function MoonDragonDashboard() {
                   setShowVotingForm={setShowVotingForm}
                   setShowArchiveModal={setShowArchiveModal}
                   setShowAddressDetails={setShowAddressDetails}
+                  setShowPollForm={setShowPollForm}
+                  setShowPollAddressDetails={setShowPollAddressDetails}
+                  setShowPollArchiveModal={setShowPollArchiveModal}
                 />
               </div>
             )}
           </div>
         </div>
       </main>
-      <CreateVotingForm
-        isOpen={showVotingForm}
-        onClose={() => setShowVotingForm(false)}
-        onSubmit={handleCreateVoting}
-      />
+      <div>
+        {/* Voting Form Modal */}
+        <CreateVotingForm
+          isOpen={showVotingForm}
+          onClose={() => setShowVotingForm(false)}
+          onSubmit={handleCreateVoting}
+        />
+      </div>
       {showArchiveModal && (
         <Dialog open={showArchiveModal} onClose={() => setShowArchiveModal(false)} className="relative z-50">
           <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
@@ -1499,6 +1730,81 @@ export default function MoonDragonDashboard() {
         tokenName={userToken?.tokenName}
         btcPrice={btcPrice}
       />
+      <PollForm
+        isOpen={showPollForm}
+        onClose={() => setShowPollForm(false)}
+        onSubmit={handleCreatePoll}
+        tokenName={userToken?.tokenName || ''}
+      />
+      <PollAddressDetails
+        isOpen={showPollAddressDetails}
+        onClose={() => setShowPollAddressDetails(false)}
+        pollDetails={pollAddressDetails}
+      />
+      {showPollArchiveModal && (
+        <Dialog open={showPollArchiveModal} onClose={() => setShowPollArchiveModal(false)} className="relative z-50">
+          <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
+          
+          <div className="fixed inset-0 flex items-center justify-center p-4">
+            <DialogPanel className="w-full max-w-2xl rounded-lg bg-white dark:bg-gray-900 p-6 text-gray-900 dark:text-white">
+              <DialogTitle className="text-xl font-semibold mb-4">
+                Archived Polls
+              </DialogTitle>
+              
+              <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+                {archivedPolls.map(poll => (
+                  <div key={poll.id} className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                    <h3 className="font-medium mb-2">{poll.pollQuestion}</h3>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      <p>Ended: {new Date(poll.endTime).toLocaleDateString()}</p>
+                      <div className="mt-2">
+                        <p className="font-medium mb-1">Results:</p>
+                        {poll.options.map((option, index) => {
+                          const pollKey = `poll${index + 1}`;
+                          const votes = Number(poll.results[pollKey]) || 0;
+                          const totalVotes = Number(poll.results.totalVotingPower) || 0;
+                          const percentage = totalVotes > 0 ? (votes / totalVotes) * 100 : 0;
+                          
+                          return (
+                            <div key={index} className="flex justify-between">
+                              <span>{option}</span>
+                              <span>
+                                {percentage.toFixed(1)}%
+                                ({votes.toLocaleString()} {userToken?.tokenName})
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="mt-4">
+                        <p>Total Voters: {poll.results.totalVoters}</p>
+                        <p>Total Voting Power: {poll.results.totalVotingPower?.toLocaleString()} {userToken?.tokenName}</p>
+                        {poll.results.winner && (
+                          <p className="text-green-500 dark:text-green-400">
+                            Winner: {poll.results.winner} ({poll.results.winningPercentage?.toFixed(1)}%)
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {archivedPolls.length === 0 && (
+                  <p className="text-center text-gray-500 dark:text-gray-400 py-4">No archived polls found</p>
+                )}
+              </div>
+
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={() => setShowPollArchiveModal(false)}
+                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </DialogPanel>
+          </div>
+        </Dialog>
+      )}
     </div>
   );
 } 

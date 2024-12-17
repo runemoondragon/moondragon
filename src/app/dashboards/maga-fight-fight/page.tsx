@@ -27,18 +27,46 @@ interface Rune {
   balance: number;
 }
 
+interface PollOption {
+  id: string;
+  text: string;
+  votes: number;
+}
+
+interface Poll {
+  id: string;
+  pollQuestion: string;
+  options: string[];
+  token: string;
+  startTime: string;
+  endTime: string;
+  status: 'active' | 'completed' | 'archived';
+  results: {
+    voters: string[];
+    totalVoters: number;
+    totalVotingPower: number;
+    hasEnded: boolean;
+    winner?: string;
+    winningPercentage?: number;
+    [key: `poll${number}`]: number;
+  };
+}
+
 const formatTimeRemaining = (endTime: string): string => {
-  const end = new Date(endTime).getTime();
-  const now = new Date().getTime();
-  const diff = end - now;
-
-  if (diff <= 0) return '0s';
-
-  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const end = new Date(endTime);
+  const now = new Date();
+  
+  // Check if poll has ended
+  if (end <= now) return 'Ended';
+  
+  const diff = end.getTime() - now.getTime();
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-  return `${hours}h ${minutes}m ${seconds}s`;
+  
+  if (days > 0) return `${days}d ${hours}h ${minutes}m`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
 };
 
 const calculateVoteResults = (yesVotes: number, noVotes: number) => {
@@ -68,6 +96,8 @@ export default function TokenDashboard() {
   const [showVotingForm, setShowVotingForm] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState<Record<string, string>>({});
+  const [polls, setPolls] = useState<Poll[]>([]);
+  const [showPollForm, setShowPollForm] = useState(false);
 
   const tokenName = "MAGA•FIGHT•FIGHT";
 
@@ -86,6 +116,7 @@ export default function TokenDashboard() {
       fetchVotingSessions();
       fetchVotingPower();
       checkIsAdmin();
+      fetchPolls();
     }
   }, [address]);
 
@@ -101,6 +132,27 @@ export default function TokenDashboard() {
 
     return () => clearInterval(timer);
   }, [votingSessions]);
+
+  const fetchPolls = async () => {
+    try {
+      const response = await fetch(`/api/polls/${encodeURIComponent(tokenName)}`);
+      const data = await response.json();
+      if (response.ok) {
+        // Filter out only archived polls, keep active and completed
+        const filteredPolls = data.polls.filter((poll: any) => poll.status !== 'archived');
+        setPolls(filteredPolls);
+        
+        // Check status of active polls
+        filteredPolls.forEach((poll: any) => {
+          if (poll.status === 'active') {
+            checkPollStatus(poll);
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch polls:', error);
+    }
+  };
 
   const checkIsAdmin = async () => {
     if (!address) return;
@@ -277,6 +329,87 @@ export default function TokenDashboard() {
     }
   };
 
+  const handlePollVote = async (pollId: string, optionId: string) => {
+    if (!address || !votingPower) return;
+    
+    try {
+      const response = await fetch('/api/polls/vote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pollId,
+          optionId,
+          walletAddress: address,
+          votingPower: votingPower
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to submit vote');
+      }
+
+      // Immediately refresh polls after successful vote
+      await fetchPolls();
+      toast.success('Vote submitted successfully');
+    } catch (error) {
+      console.error('Failed to vote:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to vote');
+    }
+  };
+
+  const handleArchivePoll = async (pollId: string) => {
+    if (!isAdmin) return;
+    
+    try {
+      const response = await fetch(`/api/polls/archive`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pollId,
+          token: tokenName
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to archive poll');
+      }
+
+      await fetchPolls();
+      toast.success('Poll archived successfully');
+    } catch (error) {
+      console.error('Failed to archive poll:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to archive poll');
+    }
+  };
+
+  const checkPollStatus = async (poll: any) => {
+    const now = new Date().getTime();
+    const endTime = new Date(poll.endTime).getTime();
+    
+    if (now >= endTime && poll.status === 'active') {
+      try {
+        const response = await fetch(`/api/polls/update-status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            pollId: poll.id,
+            token: tokenName,
+            status: 'completed',
+            hasEnded: true
+          })
+        });
+
+        if (response.ok) {
+          await fetchPolls();
+        }
+      } catch (error) {
+        console.error('Failed to update poll status:', error);
+      }
+    }
+  };
+
   if (!isMounted) return null;
 
   return (
@@ -430,6 +563,122 @@ export default function TokenDashboard() {
                   </p>
                 )}
               </>
+            )}
+          </div>
+
+          {/* Active Polls Section */}
+          <div className="mt-8 space-y-6">
+            <h2 className="text-2xl font-semibold mb-4">Active Polls</h2>
+            {polls && polls.length > 0 ? (
+              <div className="space-y-6">
+                {polls.map(poll => (
+                  <div key={poll.id} className="p-6 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                    {/* Header Section */}
+                    <h3 className="text-2xl font-semibold mb-4">{poll.pollQuestion}</h3>
+                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 8V12L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2"/>
+                      </svg>
+                      {formatTimeRemaining(poll.endTime)}
+                    </div>
+
+                    {/* Options Display */}
+                    <div className="space-y-4">
+                      {poll.options.map((option, index) => {
+                        const votes = poll.results[`poll${index + 1}`] || 0;
+                        const totalVotes = poll.results.totalVotingPower || 0;
+                        const percentage = totalVotes > 0 ? (votes / totalVotes) * 100 : 0;
+                        
+                        return (
+                          <div key={index} className="space-y-2">
+                            <div className="flex justify-between text-sm mb-1">
+                              <span className="font-medium">{option}</span>
+                              <span>{percentage.toFixed(1)}%</span>
+                            </div>
+                            
+                            <div className="relative">
+                              <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-blue-500 transition-all duration-500 ease-out"
+                                  style={{ width: `${percentage}%` }}
+                                />
+                              </div>
+                              
+                              <button
+                                onClick={() => handlePollVote(poll.id, `poll${index + 1}`)}
+                                disabled={!votingPower || poll.results.voters?.includes(address || '')}
+                                className="mt-2 w-full px-4 py-2 text-left text-sm hover:bg-white/5 rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                              >
+                                {votes.toLocaleString()} votes ({votes.toLocaleString()} {tokenName})
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Results Summary */}
+                    <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <div className="text-sm text-gray-500 dark:text-gray-400 space-y-1">
+                        <div>Total votes: {poll.results.totalVoters?.toLocaleString() || 0}</div>
+                        <div>Total voting power: {poll.results.totalVotingPower?.toLocaleString() || 0} {tokenName}</div>
+                        
+                        {poll.status === 'completed' && (
+                          <div className="mt-4">
+                            <div className="font-semibold text-base">Final Results</div>
+                            {poll.options.map((option, index) => {
+                              const votes = poll.results[`poll${index + 1}`] || 0;
+                              const percentage = poll.results.totalVotingPower > 0 
+                                ? (votes / poll.results.totalVotingPower) * 100 
+                                : 0;
+                              return (
+                                <div key={index} className="flex justify-between mt-2">
+                                  <span>{option}</span>
+                                  <span>{percentage.toFixed(1)}% ({votes.toLocaleString()} {tokenName})</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Admin Archive Button */}
+                      {isAdmin && poll.status === 'completed' && (
+                        <button
+                          onClick={() => handleArchivePoll(poll.id)}
+                          className="mt-4 w-full px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                        >
+                          Archive Poll
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Status Messages */}
+                    {!votingPower && (
+                      <div className="mt-4 text-sm text-red-400 text-center">
+                        You need to hold tokens to vote
+                      </div>
+                    )}
+                    
+                    {poll.results.voters?.includes(address || '') && (
+                      <div className="mt-4 text-sm text-blue-400 text-center">
+                        You have already voted
+                      </div>
+                    )}
+
+                    {poll.status === 'completed' && (
+                      <div className="mt-4 text-sm text-gray-400 text-center">
+                        Voting has ended
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+                No active polls available
+              </p>
             )}
           </div>
 

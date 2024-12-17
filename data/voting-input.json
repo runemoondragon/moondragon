@@ -22,7 +22,7 @@
       "question": "Test 3 yes or no question",
       "startTime": "2024-12-03T22:02",
       "endTime": "2024-12-06T22:01",
-      "status": "completed",
+      "status": "archived",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
         "yesVotes": 0,
@@ -37,14 +37,14 @@
       "token": "MAGA•FIGHT•FIGHT",
       "question": "Test 4 yes or no question",
       "startTime": "2024-12-05T16:45",
-      "endTime": "2024-12-06T16:45",
+      "endTime": "2024-12-15T16:45",
       "status": "completed",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
-        "yesVotes": 0,
+        "yesVotes": 150000,
         "noVotes": 0,
-        "totalVoters": 0,
-        "totalVotingPower": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 150000,
         "hasEnded": true
       }
     },
@@ -126,6 +126,38 @@
         "totalVoters": 1,
         "totalVotingPower": 7079632675,
         "hasEnded": true
+      }
+    },
+    {
+      "id": "q1734361743138",
+      "token": "DOG•GO•TO•THE•MOON",
+      "question": "test voting ",
+      "startTime": "2024-12-16T09:08",
+      "endTime": "2024-12-17T09:08",
+      "status": "active",
+      "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+      "results": {
+        "yesVotes": 100000,
+        "noVotes": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 100000,
+        "hasEnded": false
+      }
+    },
+    {
+      "id": "q1734398456392",
+      "token": "DOG•GO•TO•THE•MOON",
+      "question": "Test q",
+      "startTime": "2024-12-16T19:20",
+      "endTime": "2024-12-17T19:20",
+      "status": "active",
+      "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+      "results": {
+        "yesVotes": 0,
+        "noVotes": 100000,
+        "totalVoters": 1,
+        "totalVotingPower": 100000,
+        "hasEnded": false
       }
     }
   ]

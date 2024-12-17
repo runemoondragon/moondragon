@@ -7,13 +7,6 @@
     "externalUrl": "/dashboards/uncommon-goods"
   },
   {
-    "name": "DOG•GO•TO•THE•MOON",
-    "requiredBalance": 10000,
-    "dashboardPath": "/dashboards/dog-go-to-the-moon",
-    "description": "Access DOG•GO•TO•THE•MOON Dashboard",
-    "externalUrl": "/dashboards/dog-go-to-the-moon"
-  },
-  {
     "name": "YOLO•MOON•RUNES",
     "requiredBalance": 1000000,
     "dashboardPath": "/dashboards/yolo-moon-runes",
@@ -40,5 +33,12 @@
     "dashboardPath": "/dashboards/pups-world-peace",
     "description": "Access PUPS•WORLD•PEACE Dashboard",
     "externalUrl": "/dashboards/pups-world-peace"
+  },
+  {
+    "name": "DOG•GO•TO•THE•MOON",
+    "requiredBalance": 10000,
+    "dashboardPath": "/dashboards/dog-go-to-the-moon",
+    "description": "Access DOG•GO•TO•THE•MOON Dashboard",
+    "externalUrl": "/dashboards/dog-go-to-the-moon"
   }
 ]
