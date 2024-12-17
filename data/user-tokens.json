@@ -1,24 +1,10 @@
 [
   {
-    "tokenName": "MAGA•FIGHT•FIGHT",
-    "requiredBalance": 10000,
-    "walletAddress": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
-    "associatedUrl": "/dashboards/maga-fight-fight",
-    "createdAt": "2024-12-12T23:00:28.954Z"
-  },
-  {
     "tokenName": "DOG•GO•TO•THE•MOON",
     "requiredBalance": 10000,
     "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
     "associatedUrl": "/dashboards/dog-go-to-the-moon",
     "createdAt": "2024-12-17T01:17:16.852Z"
-  },
-  {
-    "tokenName": "UNCOMMON•GOODS",
-    "requiredBalance": 5,
-    "walletAddress": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
-    "associatedUrl": "/dashboards/uncommon-goods",
-    "createdAt": "2024-12-17T01:43:08.060Z"
   },
   {
     "tokenName": "PUPS•WORLD•PEACE",
@@ -40,5 +26,19 @@
     "walletAddress": "bc1p3dt64xdexkyxs5g8yl2s4l0mfl29rr7nalvgqme0rw0t9cthnueq3ptkg6",
     "associatedUrl": "/dashboards/yolo-moon-runes",
     "createdAt": "2024-12-17T01:46:21.699Z"
+  },
+  {
+    "tokenName": "UNCOMMON•GOODS",
+    "requiredBalance": 5,
+    "walletAddress": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
+    "associatedUrl": "/dashboards/uncommon-goods",
+    "createdAt": "2024-12-17T19:51:54.239Z"
+  },
+  {
+    "tokenName": "MAGA•FIGHT•FIGHT",
+    "requiredBalance": 10000,
+    "walletAddress": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
+    "associatedUrl": "/dashboards/maga-fight-fight",
+    "createdAt": "2024-12-17T21:24:27.396Z"
   }
 ]

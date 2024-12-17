@@ -90,6 +90,7 @@ export default function TokenDashboard() {
   const [timeRemaining, setTimeRemaining] = useState<Record<string, string>>({});
   const [polls, setPolls] = useState<Poll[]>([]);
   const [showPollForm, setShowPollForm] = useState(false);
+  const [hasVoted, setHasVoted] = useState(false);
 
   const tokenName = "UNCOMMON•GOODS";
 
@@ -208,6 +209,7 @@ export default function TokenDashboard() {
         throw new Error(errorData.error || 'Failed to submit vote');
       }
 
+      setHasVoted(true);
       await fetchVotingSessions();
     } catch (error) {
       console.error('Failed to submit vote:', error);
@@ -341,6 +343,7 @@ export default function TokenDashboard() {
         throw new Error(errorData.error || 'Failed to submit vote');
       }
 
+      setHasVoted(true);
       await fetchPolls();
       toast.success('Vote submitted successfully');
     } catch (error) {

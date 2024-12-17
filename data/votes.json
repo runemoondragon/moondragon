@@ -159,5 +159,20 @@
     "choice": "yes",
     "tokenBalance": "100000",
     "timestamp": "2024-12-17T16:35:52.619Z"
+  },
+  {
+    "questionId": "q1734456888876",
+    "walletAddress": "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
+    "choice": "yes",
+    "tokenBalance": "390000",
+    "timestamp": "2024-12-17T17:54:25.195Z"
+  },
+  {
+    "questionId": "q1734456982084",
+    "walletAddress": "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
+    "choice": "no",
+    "tokenBalance": "390000",
+    "timestamp": "2024-12-17T17:54:30.402Z"
+  
   }
 ]

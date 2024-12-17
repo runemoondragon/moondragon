@@ -13,7 +13,7 @@
       ],
       "startTime": "2024-12-12T20:56:29.050Z",
       "endTime": "2024-12-13T21:55:00.000Z",
-      "status": "completed",
+      "status": "archived",
       "createdBy": "anonymous",
       "results": {
         "poll1": 2000000,
@@ -27,7 +27,9 @@
           "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
           "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5"
         ],
-        "hasEnded": true
+        "hasEnded": true,
+        "winner": "Excited! This could bring new opportunities.",
+        "winningPercentage": 100
       }
     },
     {
@@ -382,6 +384,108 @@
         "poll2": 0,
         "poll3": 0,
         "poll4": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
+        "hasEnded": false,
+        "voters": []
+      }
+    },
+    {
+      "id": "p1734456937328",
+      "token": "MAGA•FIGHT•FIGHT",
+      "pollQuestion": "Test 1",
+      "options": [
+        "op 1",
+        "op 2",
+        "op 3",
+        "op 4"
+      ],
+      "startTime": "2024-12-17T17:35:37.328Z",
+      "endTime": "2024-12-24T17:35:00.000Z",
+      "status": "active",
+      "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
+      "results": {
+        "poll1": 390000,
+        "poll2": 0,
+        "poll3": 0,
+        "poll4": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 390000,
+        "hasEnded": false,
+        "voters": [
+          "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj"
+        ]
+      }
+    },
+    {
+      "id": "p1734456952369",
+      "token": "MAGA•FIGHT•FIGHT",
+      "pollQuestion": "Test 2",
+      "options": [
+        "op 1",
+        "op 2",
+        "op 3",
+        "op 4"
+      ],
+      "startTime": "2024-12-17T17:35:52.369Z",
+      "endTime": "2024-12-24T17:35:00.000Z",
+      "status": "active",
+      "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
+      "results": {
+        "poll1": 0,
+        "poll2": 390000,
+        "poll3": 1000000,
+        "poll4": 0,
+        "totalVoters": 2,
+        "totalVotingPower": 1390000,
+        "hasEnded": false,
+        "voters": [
+          "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj"
+        ]
+      }
+    },
+    {
+      "id": "p1734456961036",
+      "token": "MAGA•FIGHT•FIGHT",
+      "pollQuestion": "Test 3",
+      "options": [
+        "op 1",
+        "op 2",
+        "op 3",
+        "op 4"
+      ],
+      "startTime": "2024-12-17T17:36:01.036Z",
+      "endTime": "2024-12-24T17:35:00.000Z",
+      "status": "active",
+      "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
+      "results": {
+        "poll1": 0,
+        "poll2": 0,
+        "poll3": 390000,
+        "poll4": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 390000,
+        "hasEnded": false,
+        "voters": [
+          "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj"
+        ]
+      }
+    },
+    {
+      "id": "p1734463160814",
+      "token": "UNCOMMON•GOODS",
+      "pollQuestion": "Test 1",
+      "options": [
+        "op 1",
+        "op 1"
+      ],
+      "startTime": "2024-12-17T19:19:20.814Z",
+      "endTime": "2024-12-24T19:19:00.000Z",
+      "status": "active",
+      "createdBy": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
+      "results": {
+        "poll1": 0,
+        "poll2": 0,
         "totalVoters": 0,
         "totalVotingPower": 0,
         "hasEnded": false,

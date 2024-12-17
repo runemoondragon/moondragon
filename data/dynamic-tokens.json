@@ -1,24 +1,10 @@
 [
   {
-    "name": "MAGA•FIGHT•FIGHT",
-    "requiredBalance": 10000,
-    "dashboardPath": "/dashboards/maga-fight-fight",
-    "description": "Access MAGA•FIGHT•FIGHT Dashboard",
-    "externalUrl": "/dashboards/maga-fight-fight"
-  },
-  {
     "name": "DOG•GO•TO•THE•MOON",
     "requiredBalance": 10000,
     "dashboardPath": "/dashboards/dog-go-to-the-moon",
     "description": "Access DOG•GO•TO•THE•MOON Dashboard",
     "externalUrl": "/dashboards/dog-go-to-the-moon"
-  },
-  {
-    "name": "UNCOMMON•GOODS",
-    "requiredBalance": 5,
-    "dashboardPath": "/dashboards/uncommon-goods",
-    "description": "Access UNCOMMON•GOODS Dashboard",
-    "externalUrl": "/dashboards/uncommon-goods"
   },
   {
     "name": "PUPS•WORLD•PEACE",
@@ -40,5 +26,19 @@
     "dashboardPath": "/dashboards/yolo-moon-runes",
     "description": "Access YOLO•MOON•RUNES Dashboard",
     "externalUrl": "/dashboards/yolo-moon-runes"
+  },
+  {
+    "name": "UNCOMMON•GOODS",
+    "requiredBalance": 5,
+    "dashboardPath": "/dashboards/uncommon-goods",
+    "description": "Access UNCOMMON•GOODS Dashboard",
+    "externalUrl": "/dashboards/uncommon-goods"
+  },
+  {
+    "name": "MAGA•FIGHT•FIGHT",
+    "requiredBalance": 10000,
+    "dashboardPath": "/dashboards/maga-fight-fight",
+    "description": "Access MAGA•FIGHT•FIGHT Dashboard",
+    "externalUrl": "/dashboards/maga-fight-fight"
   }
 ]

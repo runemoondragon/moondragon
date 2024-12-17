@@ -38,7 +38,7 @@
       "question": "Test 4 yes or no question",
       "startTime": "2024-12-05T16:45",
       "endTime": "2024-12-15T16:45",
-      "status": "completed",
+      "status": "archived",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
         "yesVotes": 150000,
@@ -173,6 +173,54 @@
         "noVotes": 0,
         "totalVoters": 1,
         "totalVotingPower": 100000,
+        "hasEnded": false
+      }
+    },
+    {
+      "id": "q1734456888876",
+      "token": "MAGA•FIGHT•FIGHT",
+      "question": "Test 1",
+      "startTime": "2024-12-17T11:35",
+      "endTime": "2024-12-24T11:34",
+      "status": "active",
+      "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
+      "results": {
+        "yesVotes": 1390000,
+        "noVotes": 0,
+        "totalVoters": 2,
+        "totalVotingPower": 1390000,
+        "hasEnded": false
+      }
+    },
+    {
+      "id": "q1734456982084",
+      "token": "MAGA•FIGHT•FIGHT",
+      "question": "Test 2",
+      "startTime": "2024-12-17T11:36",
+      "endTime": "2024-12-24T11:36",
+      "status": "active",
+      "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
+      "results": {
+        "yesVotes": 0,
+        "noVotes": 390000,
+        "totalVoters": 1,
+        "totalVotingPower": 390000,
+        "hasEnded": false
+      }
+    },
+    {
+      "id": "q1734463193126",
+      "token": "UNCOMMON•GOODS",
+      "question": "Test 1",
+      "startTime": "2024-12-17T13:20",
+      "endTime": "2024-12-24T13:19",
+      "status": "active",
+      "createdBy": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
+      "results": {
+        "yesVotes": 0,
+        "noVotes": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
         "hasEnded": false
       }
     }
