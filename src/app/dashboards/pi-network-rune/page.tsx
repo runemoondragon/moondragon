@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast';
 import { fetchOrdAddress } from "@/lib/runebalance";
 import { NavBar } from "@/components/NavBar";
 import { useRouter } from "next/navigation";
+import ParticipationPoints from '@/app/dashboards/[token]/components/ParticipationPoints';
 
 interface VotingSession {
   id: string;
@@ -91,7 +92,7 @@ export default function TokenDashboard() {
   const [polls, setPolls] = useState<Poll[]>([]);
   const [showPollForm, setShowPollForm] = useState(false);
 
-  const tokenName = "PUPS•WORLD•PEACE";
+  const tokenName = "PI•NETWORK•RUNE";
 
   useEffect(() => {
     setIsMounted(true);
@@ -207,6 +208,15 @@ export default function TokenDashboard() {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to submit vote');
       }
+
+      await fetch('/api/points', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: address,
+          type: 'voting'
+        })
+      });
 
       await fetchVotingSessions();
     } catch (error) {
@@ -340,6 +350,15 @@ export default function TokenDashboard() {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to submit vote');
       }
+
+      await fetch('/api/points', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: address,
+          type: 'polling'
+        })
+      });
 
       await fetchPolls();
       toast.success('Vote submitted successfully');
@@ -734,6 +753,9 @@ export default function TokenDashboard() {
           onSubmit={handleCreatePoll}
           tokenName={tokenName}
         />
+
+        {/* Add ParticipationPoints component */}
+        <ParticipationPoints address={address} isAdmin={isAdmin} token={tokenName} />
       </main>
     </div>
   );

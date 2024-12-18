@@ -173,6 +173,96 @@
     "choice": "no",
     "tokenBalance": "390000",
     "timestamp": "2024-12-17T17:54:30.402Z"
-  
+  },
+  {
+    "questionId": "q1734456888876",
+    "walletAddress": "bc1pzez6ptm2qxvv5llj7ulfjpp2ekhq9yl8qfpssx8w27uk6a22syysrlx5tm",
+    "choice": "yes",
+    "tokenBalance": "90000",
+    "timestamp": "2024-12-18T00:50:15.762Z"
+  },
+  {
+    "questionId": "q1734456982084",
+    "walletAddress": "bc1pzez6ptm2qxvv5llj7ulfjpp2ekhq9yl8qfpssx8w27uk6a22syysrlx5tm",
+    "choice": "no",
+    "tokenBalance": "90000",
+    "timestamp": "2024-12-18T00:50:18.163Z"
+  },
+  {
+    "questionId": "q1734456888876",
+    "walletAddress": "bc1p6qt76pl3al7zr5ctz2g2qyfj0cpdypka9rrnl7zeyx0cmshlhuhqv209th",
+    "choice": "no",
+    "tokenBalance": "70000",
+    "timestamp": "2024-12-18T00:54:47.419Z"
+  },
+  {
+    "questionId": "q1734456888876",
+    "walletAddress": "bc1pfg6lnszrz9dm2n99z6va0shlv06hq0pkq6mje7dlsmdgp73sw4dspztcrr",
+    "choice": "no",
+    "tokenBalance": "150000",
+    "timestamp": "2024-12-18T01:04:05.475Z"
+  },
+  {
+    "questionId": "q1734456982084",
+    "walletAddress": "bc1pfg6lnszrz9dm2n99z6va0shlv06hq0pkq6mje7dlsmdgp73sw4dspztcrr",
+    "choice": "no",
+    "tokenBalance": "150000",
+    "timestamp": "2024-12-18T01:04:26.252Z"
+  },
+  {
+    "questionId": "q1734456888876",
+    "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+    "choice": "yes",
+    "tokenBalance": "1000000",
+    "timestamp": "2024-12-18T01:38:31.402Z"
+  },
+  {
+    "questionId": "q1734487815526",
+    "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+    "choice": "yes",
+    "tokenBalance": "1000000",
+    "timestamp": "2024-12-18T02:16:48.807Z"
+  },
+  {
+    "questionId": "q1734487834861",
+    "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+    "choice": "no",
+    "tokenBalance": "1000000",
+    "timestamp": "2024-12-18T02:16:53.627Z"
+  },
+  {
+    "questionId": "q1734487815526",
+    "walletAddress": "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
+    "choice": "yes",
+    "tokenBalance": "390000",
+    "timestamp": "2024-12-18T02:17:48.538Z"
+  },
+  {
+    "questionId": "q1734487834861",
+    "walletAddress": "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
+    "choice": "no",
+    "tokenBalance": "390000",
+    "timestamp": "2024-12-18T02:17:50.978Z"
+  },
+  {
+    "questionId": "q1734487815526",
+    "walletAddress": "bc1pfg6lnszrz9dm2n99z6va0shlv06hq0pkq6mje7dlsmdgp73sw4dspztcrr",
+    "choice": "no",
+    "tokenBalance": "150000",
+    "timestamp": "2024-12-18T02:18:53.839Z"
+  },
+  {
+    "questionId": "q1734487815526",
+    "walletAddress": "bc1p6qt76pl3al7zr5ctz2g2qyfj0cpdypka9rrnl7zeyx0cmshlhuhqv209th",
+    "choice": "yes",
+    "tokenBalance": "70000",
+    "timestamp": "2024-12-18T02:19:45.409Z"
+  },
+  {
+    "questionId": "q1734487834861",
+    "walletAddress": "bc1p6qt76pl3al7zr5ctz2g2qyfj0cpdypka9rrnl7zeyx0cmshlhuhqv209th",
+    "choice": "yes",
+    "tokenBalance": "70000",
+    "timestamp": "2024-12-18T02:19:53.249Z"
   }
 ]

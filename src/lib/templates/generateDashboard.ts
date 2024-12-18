@@ -1,3 +1,4 @@
+
 export function generateDashboardContent(tokenName: string) {
   return `"use client";
 import { useEffect, useState } from 'react';
@@ -8,6 +9,7 @@ import { toast } from 'react-hot-toast';
 import { fetchOrdAddress } from "@/lib/runebalance";
 import { NavBar } from "@/components/NavBar";
 import { useRouter } from "next/navigation";
+import ParticipationPoints from '@/app/dashboards/[token]/components/ParticipationPoints';
 
 interface VotingSession {
   id: string;
@@ -209,7 +211,19 @@ export default function TokenDashboard() {
         throw new Error(errorData.error || 'Failed to submit vote');
       }
 
+      // Update points after voting
+      await fetch('/api/points', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: address,
+          token: tokenName,
+          type: 'voting'
+        })
+      });
+
       await fetchVotingSessions();
+      toast.success('Vote submitted successfully');
     } catch (error) {
       console.error('Failed to submit vote:', error);
       toast.error('Failed to submit vote');
@@ -326,20 +340,36 @@ export default function TokenDashboard() {
     if (!address || !votingPower) return;
     
     try {
-      const response = await fetch('/api/polls/vote', {
+      const voteResponse = await fetch('/api/polls/vote', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           pollId,
           optionId,
           walletAddress: address,
-          votingPower: votingPower
+          votingPower: votingPower,
+          token: tokenName
         })
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (!voteResponse.ok) {
+        const errorData = await voteResponse.json();
         throw new Error(errorData.error || 'Failed to submit vote');
+      }
+
+      // Update points after poll voting
+      const pointsResponse = await fetch('/api/points', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: address,
+          token: tokenName,
+          type: 'polling'
+        })
+      });
+
+      if (!pointsResponse.ok) {
+        console.error('Failed to update points');
       }
 
       await fetchPolls();
@@ -735,6 +765,8 @@ export default function TokenDashboard() {
           onSubmit={handleCreatePoll}
           tokenName={tokenName}
         />
+
+        <ParticipationPoints address={address} isAdmin={isAdmin} token={tokenName} />
       </main>
     </div>
   );

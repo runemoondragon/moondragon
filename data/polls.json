@@ -7,108 +7,164 @@
     "timestamp": "2024-12-13T21:02:06.726Z"
   },
   {
-    "pollId": "p1734124990586",
+    "pollId": "p1734487868610",
+    "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+    "choice": "poll1",
+    "tokenBalance": 1000000,
+    "timestamp": "2024-12-18T02:16:56.207Z"
+  },
+  {
+    "pollId": "p1734487883860",
     "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
     "choice": "poll2",
     "tokenBalance": 1000000,
-    "timestamp": "2024-12-13T21:27:05.310Z"
+    "timestamp": "2024-12-18T02:16:57.370Z"
   },
   {
-    "pollId": "p1734124990586",
+    "pollId": "p1734487891631",
+    "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+    "choice": "poll3",
+    "tokenBalance": 1000000,
+    "timestamp": "2024-12-18T02:16:58.513Z"
+  },
+  {
+    "pollId": "p1734487925418",
+    "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+    "choice": "poll3",
+    "tokenBalance": 1000000,
+    "timestamp": "2024-12-18T02:17:01.025Z"
+  },
+  {
+    "pollId": "p1734487918146",
+    "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+    "choice": "poll2",
+    "tokenBalance": 1000000,
+    "timestamp": "2024-12-18T02:17:02.082Z"
+  },
+  {
+    "pollId": "p1734487903018",
+    "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+    "choice": "poll1",
+    "tokenBalance": 1000000,
+    "timestamp": "2024-12-18T02:17:03.064Z"
+  },
+  {
+    "pollId": "p1734487868610",
+    "walletAddress": "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
+    "choice": "poll2",
+    "tokenBalance": 390000,
+    "timestamp": "2024-12-18T02:17:54.723Z"
+  },
+  {
+    "pollId": "p1734487883860",
+    "walletAddress": "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
+    "choice": "poll3",
+    "tokenBalance": 390000,
+    "timestamp": "2024-12-18T02:17:57.683Z"
+  },
+  {
+    "pollId": "p1734487891631",
+    "walletAddress": "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
+    "choice": "poll1",
+    "tokenBalance": 390000,
+    "timestamp": "2024-12-18T02:17:59.668Z"
+  },
+  {
+    "pollId": "p1734487903018",
+    "walletAddress": "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
+    "choice": "poll3",
+    "tokenBalance": 390000,
+    "timestamp": "2024-12-18T02:18:02.915Z"
+  },
+  {
+    "pollId": "p1734487925418",
+    "walletAddress": "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
+    "choice": "poll2",
+    "tokenBalance": 390000,
+    "timestamp": "2024-12-18T02:18:04.836Z"
+  },
+  {
+    "pollId": "p1734487918146",
+    "walletAddress": "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
+    "choice": "poll3",
+    "tokenBalance": 390000,
+    "timestamp": "2024-12-18T02:18:10.804Z"
+  },
+  {
+    "pollId": "p1734487918146",
     "walletAddress": "bc1pfg6lnszrz9dm2n99z6va0shlv06hq0pkq6mje7dlsmdgp73sw4dspztcrr",
-    "choice": "poll3",
+    "choice": "poll2",
     "tokenBalance": 150000,
-    "timestamp": "2024-12-13T22:03:06.936Z"
+    "timestamp": "2024-12-18T02:18:55.399Z"
   },
   {
-    "pollId": "p1734361488298",
-    "walletAddress": "bc1pqmcsatdcc52j2qrmhcm3fegwhhejxwnr743yw9knqrxqglhahr2q57jl3c",
+    "pollId": "p1734487925418",
+    "walletAddress": "bc1pfg6lnszrz9dm2n99z6va0shlv06hq0pkq6mje7dlsmdgp73sw4dspztcrr",
     "choice": "poll1",
-    "tokenBalance": 100000,
-    "timestamp": "2024-12-16T15:07:23.446Z"
+    "tokenBalance": 150000,
+    "timestamp": "2024-12-18T02:18:56.330Z"
   },
   {
-    "pollId": "p1734362825140",
-    "walletAddress": "bc1pqmcsatdcc52j2qrmhcm3fegwhhejxwnr743yw9knqrxqglhahr2q57jl3c",
-    "choice": "poll2",
-    "tokenBalance": 100000,
-    "timestamp": "2024-12-16T15:34:17.929Z"
-  },
-  {
-    "pollId": "p1734364140049",
-    "walletAddress": "bc1pqmcsatdcc52j2qrmhcm3fegwhhejxwnr743yw9knqrxqglhahr2q57jl3c",
+    "pollId": "p1734487903018",
+    "walletAddress": "bc1pfg6lnszrz9dm2n99z6va0shlv06hq0pkq6mje7dlsmdgp73sw4dspztcrr",
     "choice": "poll1",
-    "tokenBalance": 100000,
-    "timestamp": "2024-12-16T15:49:45.988Z"
+    "tokenBalance": 150000,
+    "timestamp": "2024-12-18T02:18:57.451Z"
   },
   {
-    "pollId": "p1734364269813",
-    "walletAddress": "bc1pqmcsatdcc52j2qrmhcm3fegwhhejxwnr743yw9knqrxqglhahr2q57jl3c",
+    "pollId": "p1734487883860",
+    "walletAddress": "bc1pfg6lnszrz9dm2n99z6va0shlv06hq0pkq6mje7dlsmdgp73sw4dspztcrr",
+    "choice": "poll4",
+    "tokenBalance": 150000,
+    "timestamp": "2024-12-18T02:19:07.195Z"
+  },
+  {
+    "pollId": "p1734487868610",
+    "walletAddress": "bc1pfg6lnszrz9dm2n99z6va0shlv06hq0pkq6mje7dlsmdgp73sw4dspztcrr",
+    "choice": "poll4",
+    "tokenBalance": 150000,
+    "timestamp": "2024-12-18T02:19:10.188Z"
+  },
+  {
+    "pollId": "p1734487918146",
+    "walletAddress": "bc1p6qt76pl3al7zr5ctz2g2qyfj0cpdypka9rrnl7zeyx0cmshlhuhqv209th",
     "choice": "poll1",
-    "tokenBalance": 100000,
-    "timestamp": "2024-12-16T15:51:30.837Z"
+    "tokenBalance": 70000,
+    "timestamp": "2024-12-18T02:19:57.990Z"
   },
   {
-    "pollId": "p1734365419364",
-    "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
-    "choice": "poll1",
-    "tokenBalance": 1000000,
-    "timestamp": "2024-12-16T16:10:37.387Z"
-  },
-  {
-    "pollId": "p1734366107999",
-    "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
-    "choice": "poll2",
-    "tokenBalance": 1000000,
-    "timestamp": "2024-12-16T16:28:46.799Z"
-  },
-  {
-    "pollId": "p1734366029470",
-    "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
-    "choice": "poll1",
-    "tokenBalance": 1000000,
-    "timestamp": "2024-12-16T16:28:51.798Z"
-  },
-  {
-    "pollId": "p1734397346502",
-    "walletAddress": "bc1pqmcsatdcc52j2qrmhcm3fegwhhejxwnr743yw9knqrxqglhahr2q57jl3c",
-    "choice": "poll1",
-    "tokenBalance": 100000,
-    "timestamp": "2024-12-17T01:23:32.419Z"
-  },
-  {
-    "pollId": "p1734398305824",
-    "walletAddress": "bc1pqmcsatdcc52j2qrmhcm3fegwhhejxwnr743yw9knqrxqglhahr2q57jl3c",
-    "choice": "poll2",
-    "tokenBalance": 100000,
-    "timestamp": "2024-12-17T01:23:34.691Z"
-  },
-  {
-    "pollId": "p1734398346622",
-    "walletAddress": "bc1pqmcsatdcc52j2qrmhcm3fegwhhejxwnr743yw9knqrxqglhahr2q57jl3c",
+    "pollId": "p1734487868610",
+    "walletAddress": "bc1p6qt76pl3al7zr5ctz2g2qyfj0cpdypka9rrnl7zeyx0cmshlhuhqv209th",
     "choice": "poll3",
-    "tokenBalance": 100000,
-    "timestamp": "2024-12-17T01:23:38.384Z"
+    "tokenBalance": 70000,
+    "timestamp": "2024-12-18T02:19:59.021Z"
   },
   {
-    "pollId": "p1734456937328",
-    "walletAddress": "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
-    "choice": "poll1",
-    "tokenBalance": 390000,
-    "timestamp": "2024-12-17T17:54:35.514Z"
-  },
-  {
-    "pollId": "p1734456952369",
-    "walletAddress": "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
+    "pollId": "p1734487925418",
+    "walletAddress": "bc1p6qt76pl3al7zr5ctz2g2qyfj0cpdypka9rrnl7zeyx0cmshlhuhqv209th",
     "choice": "poll2",
-    "tokenBalance": 390000,
-    "timestamp": "2024-12-17T17:54:41.841Z"
+    "tokenBalance": 70000,
+    "timestamp": "2024-12-18T02:20:00.900Z"
   },
   {
-    "pollId": "p1734456961036",
-    "walletAddress": "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
-    "choice": "poll3",
-    "tokenBalance": 390000,
-    "timestamp": "2024-12-17T17:54:45.153Z"
+    "pollId": "p1734487903018",
+    "walletAddress": "bc1p6qt76pl3al7zr5ctz2g2qyfj0cpdypka9rrnl7zeyx0cmshlhuhqv209th",
+    "choice": "poll4",
+    "tokenBalance": 70000,
+    "timestamp": "2024-12-18T02:20:12.603Z"
+  },
+  {
+    "pollId": "p1734487891631",
+    "walletAddress": "bc1p6qt76pl3al7zr5ctz2g2qyfj0cpdypka9rrnl7zeyx0cmshlhuhqv209th",
+    "choice": "poll2",
+    "tokenBalance": 70000,
+    "timestamp": "2024-12-18T02:20:37.004Z"
+  },
+  {
+    "pollId": "p1734487883860",
+    "walletAddress": "bc1p6qt76pl3al7zr5ctz2g2qyfj0cpdypka9rrnl7zeyx0cmshlhuhqv209th",
+    "choice": "poll4",
+    "tokenBalance": 70000,
+    "timestamp": "2024-12-18T02:20:49.583Z"
   }
 ]
