@@ -9,6 +9,7 @@ import VotingSection from './components/VotingSection';
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal';
 import { VotingSession } from '@/lib/types';
 import ParticipationPoints from './components/ParticipationPoints';
+import MessageBoard from '@/components/MessageBoard';
 
 interface RuneBalance {
   name: string;
@@ -211,6 +212,11 @@ export default function TokenDashboard({ params }: { params: { token: string } }
             <VotingSection walletAddress={address} />
           )}
         </div>
+        <MessageBoard
+          tokenName={tokenName}
+          isAdmin={isAdmin}
+          address={address}
+        />
       </main>
       <ParticipationPoints address={address} isAdmin={isAdmin} token={tokenName} />
     </div>

@@ -1,0 +1,30 @@
+{
+  "MAGA•FIGHT•FIGHT": [
+    {
+      "id": "f1784812-c5ea-4906-b75e-468ad6a02114",
+      "title": "Test ",
+      "message": "Hello world ",
+      "token": "MAGA•FIGHT•FIGHT",
+      "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
+      "timestamp": "2024-12-19T15:15:10.684Z"
+    },
+    {
+      "id": "73d6f43e-982e-4920-8fe0-4f7301bd7c64",
+      "title": "Test 2",
+      "message": "Hello world 2",
+      "token": "MAGA•FIGHT•FIGHT",
+      "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
+      "timestamp": "2024-12-19T16:26:59.504Z"
+    }
+  ],
+  "UNCOMMON•GOODS": [
+    {
+      "id": "badd262c-368d-4b69-828b-9d85a5c708d6",
+      "title": "Test AG",
+      "message": "Hello world",
+      "token": "UNCOMMON•GOODS",
+      "createdBy": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
+      "timestamp": "2024-12-19T15:21:12.861Z"
+    }
+  ]
+}
