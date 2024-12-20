@@ -765,21 +765,22 @@ export default function TokenDashboard() {
           tokenName={tokenName}
         />
     {/* Message Board and Participation Points Section */}
-<div className="mt-8 flex flex-col md:flex-row gap-4 w-full">
-  {/* Participation Points Section */}
-  <div className="flex-1 md:max-w-sm">
-    <ParticipationPoints
-      address={address}
-      isAdmin={isAdmin}
-      token={tokenName}
-    />
-  </div>
+    <div className="mt-8 flex flex-col md:flex-row gap-4 w-full">
+  
   {/* Message Board Section */}
   <div className="flex-1">
     <MessageBoard
       tokenName={tokenName}
       isAdmin={isAdmin}
       address={address || ''}
+    />
+  </div>
+  {/* Participation Points Section */}
+  <div className="flex-1 md:max-w-[16rem] self-end">
+    <ParticipationPoints
+      address={address}
+      isAdmin={isAdmin}
+      token={tokenName}
     />
   </div>
 </div>
