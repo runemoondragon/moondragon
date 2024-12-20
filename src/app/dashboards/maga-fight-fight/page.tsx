@@ -765,7 +765,7 @@ export default function TokenDashboard() {
           tokenName={tokenName}
         />
     {/* Message Board and Participation Points Section */}
-    <div className="mt-8 flex flex-col md:flex-row gap-4 w-full">
+<div className="mt-8 flex flex-col md:flex-row gap-4 w-full">
   
   {/* Message Board Section */}
   <div className="flex-1">

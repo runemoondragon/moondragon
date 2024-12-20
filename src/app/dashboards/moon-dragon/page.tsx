@@ -548,6 +548,8 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
   const [showTxDetails, setShowTxDetails] = useState(false);
   const [txDetails, setTxDetails] = useState<any>(null);
   const [psbt, setPsbt] = useState<string>('');
+  const [showParticipantModal, setShowParticipantModal] = useState(false);
+  const [pointsThreshold, setPointsThreshold] = useState(0);
   // Modify the fetchQuestions function to use the same data as List All Addresses
   const fetchQuestions = async () => {
     if (!tokenName) return;
@@ -819,6 +821,38 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
     }
   }, [address, isOpen]);
 
+  const importParticipants = async (threshold: number) => {
+    if (!tokenName) return;
+    
+    try {
+      const response = await fetch(`/api/points?token=${encodeURIComponent(tokenName)}`);
+      if (!response.ok) throw new Error('Failed to fetch participant details');
+      
+      const data = await response.json();
+      
+      // Filter participants based on threshold and token
+      const qualifiedParticipants = data
+        .filter((participant: any) => 
+          participant.token === tokenName && 
+          participant.totalPoints >= threshold &&
+          participant.walletAddress
+        )
+        .map((participant: any) => participant.walletAddress)
+        .join('\n');
+      
+      if (qualifiedParticipants) {
+        setAddresses(qualifiedParticipants);
+        setShowParticipantModal(false);
+        toast.success('Participant addresses imported successfully');
+      } else {
+        toast.error('No participants found meeting the points threshold');
+      }
+    } catch (error) {
+      console.error('Error importing participants:', error);
+      toast.error('Failed to import participants');
+    }
+  };
+
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
@@ -957,6 +991,13 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
                     className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors"
                   >
                     Import Voters
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowParticipantModal(true)}
+                    className="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg transition-colors"
+                  >
+                    Import Participants
                   </button>
                 </div>
                 <textarea
@@ -1113,6 +1154,52 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
                   onClick={() => importVoters(selectedQuestionId)}
                   disabled={!selectedQuestionId}
                   className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Import
+                </button>
+              </div>
+            </div>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
+
+      {/* Add Participant Import Modal */}
+      <Dialog open={showParticipantModal} onClose={() => setShowParticipantModal(false)} className="relative z-50">
+        <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
+        
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="w-full max-w-md rounded-lg bg-gray-900 p-6 text-white">
+            <Dialog.Title className="text-xl font-semibold mb-6">
+              Import Participants by Points
+            </Dialog.Title>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Minimum Points Required
+                </label>
+                <input
+                  type="number"
+                  value={pointsThreshold}
+                  onChange={(e) => setPointsThreshold(Number(e.target.value))}
+                  min="0"
+                  className="w-full p-3 bg-black border border-gray-700 rounded-lg text-white"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowParticipantModal(false)}
+                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => importParticipants(pointsThreshold)}
+                  disabled={pointsThreshold < 0}
+                  className="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Import
                 </button>

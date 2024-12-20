@@ -1,12 +1,5 @@
 [
   {
-    "name": "MAGA•FIGHT•FIGHT",
-    "requiredBalance": 25000,
-    "dashboardPath": "/dashboards/maga-fight-fight",
-    "description": "Access MAGA•FIGHT•FIGHT Dashboard",
-    "externalUrl": "/dashboards/maga-fight-fight"
-  },
-  {
     "name": "UNCOMMON•GOODS",
     "requiredBalance": 5,
     "dashboardPath": "/dashboards/uncommon-goods",
@@ -19,5 +12,12 @@
     "dashboardPath": "/dashboards/dog-go-to-the-moon",
     "description": "Access DOG•GO•TO•THE•MOON Dashboard",
     "externalUrl": "/dashboards/dog-go-to-the-moon"
+  },
+  {
+    "name": "MAGA•FIGHT•FIGHT",
+    "requiredBalance": 25000,
+    "dashboardPath": "/dashboards/maga-fight-fight",
+    "description": "Access MAGA•FIGHT•FIGHT Dashboard",
+    "externalUrl": "/dashboards/maga-fight-fight"
   }
 ]
