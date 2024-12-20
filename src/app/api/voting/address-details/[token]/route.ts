@@ -7,14 +7,12 @@ export async function GET(
   { params }: { params: { token: string } }
 ) {
   try {
-    // Read all necessary data files
+    // Read only necessary data files
     const votesPath = path.join(process.cwd(), 'data', 'votes.json');
-    const questionsPath = path.join(process.cwd(), 'data', 'voting-questions.json');
     const votingInputPath = path.join(process.cwd(), 'data', 'voting-input.json');
 
-    const [votesData, questionsData, votingInputData] = await Promise.all([
+    const [votesData, votingInputData] = await Promise.all([
       fs.readFile(votesPath, 'utf8').then(JSON.parse),
-      fs.readFile(questionsPath, 'utf8').then(JSON.parse),
       fs.readFile(votingInputPath, 'utf8').then(JSON.parse)
     ]);
 

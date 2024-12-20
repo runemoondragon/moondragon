@@ -42,9 +42,9 @@
       "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
       "results": {
         "yesVotes": 0,
-        "noVotes": 0,
-        "totalVoters": 0,
-        "totalVotingPower": 0,
+        "noVotes": 100000,
+        "totalVoters": 1,
+        "totalVotingPower": 100000,
         "hasEnded": false
       }
     },
@@ -57,10 +57,10 @@
       "status": "active",
       "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
       "results": {
-        "yesVotes": 0,
+        "yesVotes": 100000,
         "noVotes": 0,
-        "totalVoters": 0,
-        "totalVotingPower": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 100000,
         "hasEnded": false
       }
     },
@@ -93,6 +93,22 @@
         "noVotes": 1390000,
         "totalVoters": 3,
         "totalVotingPower": 1460000,
+        "hasEnded": false
+      }
+    },
+    {
+      "id": "q1734649847198",
+      "token": "MAGA•FIGHT•FIGHT",
+      "question": "Test 3",
+      "startTime": "2024-12-19T17:10",
+      "endTime": "2024-12-26T17:10",
+      "status": "active",
+      "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
+      "results": {
+        "yesVotes": 1000000,
+        "noVotes": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 1000000,
         "hasEnded": false
       }
     }

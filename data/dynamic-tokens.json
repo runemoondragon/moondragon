@@ -1,12 +1,5 @@
 [
   {
-    "name": "DOG•GO•TO•THE•MOON",
-    "requiredBalance": 10000,
-    "dashboardPath": "/dashboards/dog-go-to-the-moon",
-    "description": "Access DOG•GO•TO•THE•MOON Dashboard",
-    "externalUrl": "/dashboards/dog-go-to-the-moon"
-  },
-  {
     "name": "MAGA•FIGHT•FIGHT",
     "requiredBalance": 25000,
     "dashboardPath": "/dashboards/maga-fight-fight",
@@ -19,5 +12,12 @@
     "dashboardPath": "/dashboards/uncommon-goods",
     "description": "Access UNCOMMON•GOODS Dashboard",
     "externalUrl": "/dashboards/uncommon-goods"
+  },
+  {
+    "name": "DOG•GO•TO•THE•MOON",
+    "requiredBalance": 10000,
+    "dashboardPath": "/dashboards/dog-go-to-the-moon",
+    "description": "Access DOG•GO•TO•THE•MOON Dashboard",
+    "externalUrl": "/dashboards/dog-go-to-the-moon"
   }
 ]

@@ -8,6 +8,7 @@ import { fetchOrdAddress } from "@/lib/runebalance";
 import { NavBar } from "@/components/NavBar";
 import { useRouter } from "next/navigation";
 import ParticipationPoints from '@/app/dashboards/[token]/components/ParticipationPoints';
+import MessageBoard from '@/components/MessageBoard';
 
 interface VotingSession {
   id: string;
@@ -763,8 +764,25 @@ export default function TokenDashboard() {
           onSubmit={handleCreatePoll}
           tokenName={tokenName}
         />
-
-        <ParticipationPoints address={address} isAdmin={isAdmin} token={tokenName} />
+    {/* Message Board and Participation Points Section */}
+<div className="mt-8 flex flex-col md:flex-row gap-4 w-full">
+  {/* Participation Points Section */}
+  <div className="flex-1 md:max-w-sm">
+    <ParticipationPoints
+      address={address}
+      isAdmin={isAdmin}
+      token={tokenName}
+    />
+  </div>
+  {/* Message Board Section */}
+  <div className="flex-1">
+    <MessageBoard
+      tokenName={tokenName}
+      isAdmin={isAdmin}
+      address={address || ''}
+    />
+  </div>
+</div>
       </main>
     </div>
   );

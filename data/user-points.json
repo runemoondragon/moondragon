@@ -16,9 +16,9 @@
   {
     "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
     "token": "MAGA•FIGHT•FIGHT",
-    "votingPoints": 2,
+    "votingPoints": 3,
     "pollingPoints": 6,
-    "totalPoints": 8
+    "totalPoints": 9
   },
   {
     "walletAddress": "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
@@ -33,5 +33,12 @@
     "votingPoints": 2,
     "pollingPoints": 6,
     "totalPoints": 8
+  },
+  {
+    "walletAddress": "bc1pqmcsatdcc52j2qrmhcm3fegwhhejxwnr743yw9knqrxqglhahr2q57jl3c",
+    "token": "DOG•GO•TO•THE•MOON",
+    "votingPoints": 2,
+    "pollingPoints": 3,
+    "totalPoints": 5
   }
 ]

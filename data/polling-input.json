@@ -48,13 +48,15 @@
       "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
       "results": {
         "poll1": 0,
-        "poll2": 0,
+        "poll2": 100000,
         "poll3": 0,
         "poll4": 0,
-        "totalVoters": 0,
-        "totalVotingPower": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 100000,
         "hasEnded": false,
-        "voters": []
+        "voters": [
+          "bc1pqmcsatdcc52j2qrmhcm3fegwhhejxwnr743yw9knqrxqglhahr2q57jl3c"
+        ]
       }
     },
     {
@@ -72,14 +74,16 @@
       "status": "active",
       "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
       "results": {
-        "poll1": 0,
+        "poll1": 100000,
         "poll2": 0,
         "poll3": 0,
         "poll4": 0,
-        "totalVoters": 0,
-        "totalVotingPower": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 100000,
         "hasEnded": false,
-        "voters": []
+        "voters": [
+          "bc1pqmcsatdcc52j2qrmhcm3fegwhhejxwnr743yw9knqrxqglhahr2q57jl3c"
+        ]
       }
     },
     {
@@ -99,12 +103,14 @@
       "results": {
         "poll1": 0,
         "poll2": 0,
-        "poll3": 0,
+        "poll3": 100000,
         "poll4": 0,
-        "totalVoters": 0,
-        "totalVotingPower": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 100000,
         "hasEnded": false,
-        "voters": []
+        "voters": [
+          "bc1pqmcsatdcc52j2qrmhcm3fegwhhejxwnr743yw9knqrxqglhahr2q57jl3c"
+        ]
       }
     },
     {

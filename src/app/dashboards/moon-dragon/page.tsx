@@ -405,22 +405,25 @@ const AddressDetails = ({
 }) => {
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
+      {/* Background overlay */}
       <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
-      
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="w-full max-h-[70vh] overflow-y-auto rounded-lg bg-white dark:bg-gray-900 p-6 text-gray-900 dark:text-white">
+        {/* Modal Panel */}
+        <Dialog.Panel className="w-full max-w-4xl rounded-lg bg-white dark:bg-gray-900 p-6 text-gray-900 dark:text-white">
+          {/* Modal Header */}
           <Dialog.Title className="text-xl font-semibold mb-4">
             Voting Address Details
           </Dialog.Title>
-          
-          <div className="space-y-6 max-h-[70vh] overflow-y-auto">
+  
+          {/* Scrollable Container */}
+          <div className="max-h-[60vh] overflow-y-auto space-y-6">
             {Object.entries(votingDetails).map(([questionId, questionData]) => (
-              <div key={questionId} className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
+              <div
+                key={questionId}
+                className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4"
+              >
                 <h3 className="font-medium mb-3">
-                  {questionData.pollQuestion}
-                  <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
-                    (ID: {questionId})
-                  </span>
+                  (ID: {questionId})
                 </h3>
                 <div className="overflow-x-auto">
                   <table className="min-w-full">
@@ -434,10 +437,15 @@ const AddressDetails = ({
                     </thead>
                     <tbody>
                       {questionData.votes.map((vote, index) => (
-                        <tr key={index} className="border-t border-gray-200 dark:border-gray-700">
+                        <tr
+                          key={index}
+                          className="border-t border-gray-200 dark:border-gray-700"
+                        >
                           <td className="py-2 text-sm">{vote.walletAddress}</td>
                           <td className="py-2 text-sm">{vote.choice}</td>
-                          <td className="py-2 text-sm">{vote.tokenBalance.toLocaleString()}</td>
+                          <td className="py-2 text-sm">
+                            {vote.tokenBalance.toLocaleString()}
+                          </td>
                           <td className="py-2 text-sm">
                             {new Date(vote.timestamp).toLocaleString()}
                           </td>
@@ -449,10 +457,13 @@ const AddressDetails = ({
               </div>
             ))}
             {Object.keys(votingDetails).length === 0 && (
-              <p className="text-center text-gray-500 dark:text-gray-400">No voting data available</p>
+              <p className="text-center text-gray-500 dark:text-gray-400">
+                No voting data available
+              </p>
             )}
           </div>
-
+  
+          {/* Modal Footer */}
           <div className="mt-6 flex justify-end">
             <button
               onClick={onClose}
