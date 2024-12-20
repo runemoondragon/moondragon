@@ -5,7 +5,7 @@ import { useLaserEyes } from "@omnisat/lasereyes";
 import { AccessToken } from "@/lib/const";
 import { TokenAssociation } from "@/lib/types";
 import { NavBar } from "@/components/NavBar";
-import { FiEdit2, FiSave, FiX, FiTrash2 } from 'react-icons/fi';
+import { FiEdit2, FiSave, FiX, FiTrash2, FiChevronDown } from 'react-icons/fi';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import * as AlertDialog from '@radix-ui/react-alert-dialog';
 import { CreateVotingForm, VotingFormData } from "@/components/CreateVotingForm";
@@ -550,6 +550,7 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
   const [psbt, setPsbt] = useState<string>('');
   const [showParticipantModal, setShowParticipantModal] = useState(false);
   const [pointsThreshold, setPointsThreshold] = useState(0);
+  const [showImportDropdown, setShowImportDropdown] = useState(false);
   // Modify the fetchQuestions function to use the same data as List All Addresses
   const fetchQuestions = async () => {
     if (!tokenName) return;
@@ -961,50 +962,75 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
 
             {/* Addresses textarea */}
             <div>
-              <label className="block text-sm font-medium mb-2">
-                PASTE ADDRESSES OR UPLOAD CSV FILE (MAX. 1000)
-              </label>
               <div className="relative">
-                <div className="flex gap-2 mb-2">
-                  <input
-                    type="file"
-                    accept=".csv"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                          const text = e.target?.result as string;
-                          setAddresses(text);
-                        };
-                        reader.readAsText(file);
-                      }
-                    }}
-                    className="flex-1"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      fetchQuestions();
-                      setShowVoterModal(true);
-                    }}
-                    className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors"
-                  >
-                    Import Voters
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowParticipantModal(true)}
-                    className="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg transition-colors"
-                  >
-                    Import Participants
-                  </button>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setShowImportDropdown(!showImportDropdown)}
+                      className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors flex items-center gap-2"
+                    >
+                      Import <FiChevronDown />
+                    </button>
+                    
+                    {showImportDropdown && (
+                      <div className="absolute left-0 mt-1 w-48 rounded-lg bg-gray-900 shadow-lg z-50">
+                        <div className="py-1">
+                          
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowImportDropdown(false);
+                              setShowParticipantModal(true);
+                            }}
+                            className="w-full px-4 py-2 text-left hover:bg-gray-700 transition-colors text-sm"
+                          >
+                            Filter By Participation Point
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowImportDropdown(false);
+                              fetchQuestions();
+                              setShowVoterModal(true);
+                            }}
+                            className="w-full px-4 py-2 text-left hover:bg-gray-700 transition-colors text-sm"
+                          >
+                            Filter By Question
+                          </button>
+                          <label className="w-full px-4 py-2 hover:bg-gray-700 transition-colors cursor-pointer text-sm">
+                            Choose CSV File
+                            <input
+                              type="file"
+                              accept=".csv"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  const reader = new FileReader();
+                                  reader.onload = (e) => {
+                                    const text = e.target?.result as string;
+                                    setAddresses(text);
+                                  };
+                                  reader.readAsText(file);
+                                }
+                                setShowImportDropdown(false);
+                              }}
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-sm font-medium text-gray-400 text-right flex-1">
+                    PASTE ADDRESSES OR UPLOAD CSV FILE (MAX. 1000)
+                  </span>
                 </div>
                 <textarea
                   value={addresses}
                   onChange={(e) => setAddresses(e.target.value)}
                   className="w-full h-[15vh] p-3 bg-black border border-gray-700 rounded-lg"
-                  placeholder="Paste or drop CSV file"
+                  placeholder="Paste addresses here"
                   required
                 />
               </div>
@@ -1311,6 +1337,7 @@ export default function MoonDragonDashboard() {
   const [pollAddressDetails, setPollAddressDetails] = useState<any[]>([]);
   const [showPollArchiveModal, setShowPollArchiveModal] = useState(false);
   const [archivedPolls, setArchivedPolls] = useState<Poll[]>([]);
+  const [showImportDropdown, setShowImportDropdown] = useState(false);
 
   useEffect(() => {
     const fetchUserToken = async () => {
