@@ -500,6 +500,7 @@ interface UTXO {
   value: number;
   rune: {
     name: string;
+    id: string;
     amount: string;
     status: string;
     timestamp: number;
@@ -510,6 +511,7 @@ interface UTXO {
 // Update this interface for token selection
 interface TokenBalance {
   name: string;
+  id: string;
   balance: string;
   symbol: string;
   divisibility: number;
@@ -551,6 +553,29 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
   const [showParticipantModal, setShowParticipantModal] = useState(false);
   const [pointsThreshold, setPointsThreshold] = useState(0);
   const [showImportDropdown, setShowImportDropdown] = useState(false);
+  const [btcUtxos, setBtcUtxos] = useState<any[]>([]);
+  const [btcUtxo, setBtcUtxo] = useState<UTXO | null>(null);
+
+  const fetchBtcUtxos = async () => {
+    try {
+      const response = await fetch(`/api/get-btc-utxos?address=${paymentAddress}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch BTC UTXOs");
+      }
+      const utxos = await response.json();
+      setBtcUtxos(utxos);
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch BTC UTXOs');
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen && paymentAddress) {
+      fetchBtcUtxos();
+    }
+  }, [isOpen, paymentAddress]);
+
   // Modify the fetchQuestions function to use the same data as List All Addresses
   const fetchQuestions = async () => {
     if (!tokenName) return;
@@ -636,6 +661,7 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
     // Add divisibility when setting the token
     setSelectedToken({
       name: rune.name,
+      id: rune.id,
       balance: rune.balance,
       symbol: rune.symbol,
       divisibility: 0  // Set default or get from API response if available
@@ -680,7 +706,12 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
   // Calculate combined total amount
   const totalAmount = selectedUTXOs.reduce((sum, utxo) => sum + Number(utxo.rune.amount), 0);
 
-  // Add this back to the DistributeRewardsForm component, right after the importVoters function
+  // Function to handle BTC UTXO selection
+  const handleSelectBtcUtxo = (selectedUtxo: UTXO) => {
+    setBtcUtxo(selectedUtxo);
+  };
+
+  // In your handleSubmit function, validate btcUtxo before using it
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -691,6 +722,28 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
         throw new Error('Please select at least one UTXO');
       }
 
+      // Fetch and validate BTC UTXO
+      const btcUtxosResponse = await fetch(`/api/get-btc-utxos?address=${paymentAddress}`);
+      if (!btcUtxosResponse.ok) {
+        throw new Error("Failed to fetch BTC UTXOs");
+      }
+
+      const { utxos: btcUtxoList } = await btcUtxosResponse.json();
+      console.log("Available BTC UTXOs:", btcUtxoList);
+
+      if (!btcUtxoList?.length) {
+        throw new Error("No BTC UTXOs available");
+      }
+
+      // Use the first BTC UTXO
+      const btcUtxo = btcUtxoList[0];
+      console.log("Selected BTC UTXO:", btcUtxo);
+
+      if (!btcUtxo.txid || btcUtxo.vout === undefined) {
+        throw new Error("Invalid BTC UTXO format");
+      }
+
+      // Rest of your existing Rune logic remains unchanged
       const selectedRune = selectedUTXOs[0];
       const recipientList = addresses
         .split('\n')
@@ -722,18 +775,18 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
           ...selectedUTXOs.map(utxo => ({
             location: `${utxo.txid}_${utxo.vout}`,
             active: true,
-            id: utxo.rune.name,
+            id: utxo.rune.id,
             name: utxo.rune.name,
-            symbol: selectedToken?.symbol || '',
+            symbol: selectedToken?.symbol || "",
             amount: utxo.rune.amount,
-            divisibility: selectedToken?.divisibility || 0
+            divisibility: selectedToken?.divisibility || 0,
           })),
-          // BTC input
+          // Updated BTC input
           {
-            location: 'payment_input',
+            location: `${btcUtxo.txid}_${btcUtxo.vout}`,
             active: true,
-            id: 'btc',
-            amount: ((Number(balance || '0')) / 100000000).toString()
+            id: "btc",
+            amount: btcUtxo.value.toString()
           }
         ],
         outputs: [
@@ -766,25 +819,26 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
         feerate: feeRate
       };
 
-      const response = await fetch('/api/distribute-rewards', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestData)
+      const response = await fetch("/api/distribute-rewards", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestData),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.details || 'Failed to create transaction');
+        throw new Error(error.details || "Failed to create transaction");
       }
 
       const data = await response.json();
-      setPsbt(data.psbtBase64);
+      console.log("Transaction created:", data);
       setTxDetails(data);
       setShowTxDetails(true);
-
-    } catch (err) {
-      console.error('Transaction creation error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to create transaction');
+      setPsbt(data.psbtBase64);
+    } catch (error) {
+      console.error("Transaction creation error:", error);
+      setError(error instanceof Error ? error.message : "Unknown error");
+      toast.error(error instanceof Error ? error.message : "Failed to create transaction");
     }
   };
 
@@ -859,8 +913,8 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
       <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
       
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-lg bg-[#0B1018] p-6 text-white">
-          <Dialog.Title className="text-xl font-semibold mb-6">
+        <Dialog.Panel className="w-full max-w-2xl rounded-lg bg-white dark:bg-gray-900 p-6 text-gray-900 dark:text-white">
+          <Dialog.Title className="text-xl font-semibold mb-4">
             Distribute Rewards
           </Dialog.Title>
 

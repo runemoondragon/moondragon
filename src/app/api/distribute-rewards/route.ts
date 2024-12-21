@@ -6,20 +6,17 @@ import * as ecc from '@bitcoinerlab/secp256k1';
 // Initialize ECC library
 bitcoin.initEccLib(ecc);
 
-// Interfaces
+const DUST_LIMIT = 546;
+
 interface PsbtInput {
-  location: string;
-  active: boolean;
-  id: string;
-  name?: string; // For Rune inputs
-  symbol?: string; // For Rune inputs
-  amount: string;
-  divisibility?: number;
+  location: string; // e.g., txid_vout
+  id: string; // Identifier for the input (e.g., 'btc', 'rune')
+  name?: string; // Optional: Name for Rune inputs
+  symbol?: string; // Optional: Symbol for Rune inputs
+  amount?: string; // Optional: Amount as a string
+  divisibility?: number; // Optional: Divisibility for Rune inputs
 }
-// Extend PsbtInput to include an optional `address` field
-interface PsbtInputExtended extends PsbtInput {
-  address?: string; // Optional: Only needed in specific cases
-}
+
 interface PsbtOutput {
   address: string;
   rune?: {
@@ -28,37 +25,7 @@ interface PsbtOutput {
     amount: string;
     divisibility: number;
   };
-  value?: number; // For BTC outputs
-}
-
-const DUST_LIMIT = 546;
-
-function calculateTxSize(numInputs: number, numOutputs: number): number {
-  const baseTxSize = 10;
-  const inputSize = 180;
-  const outputSize = 34;
-  return baseTxSize + inputSize * numInputs + outputSize * numOutputs;
-}
-
-function calculateFee(txSize: number, feeRate: number): number {
-  return Math.ceil(txSize * feeRate);
-}
-
-async function createPsbt(params: {
-  inputs: PsbtInput[];
-  outputs: PsbtOutput[];
-  ordinalAddress: string;
-  ordinalPubkey: string;
-  paymentAddress?: string;
-  paymentPubkey?: string;
-  feerate: number;
-}) {
-  // Simulated PSBT creation (replace with actual PSBT creation logic)
-  return {
-    psbtBase64: "example_psbt_base64",
-    paymentIndexes: [0],
-    ordinalIndexes: [1],
-  };
+  value?: number; // Optional: For BTC outputs only
 }
 
 export async function POST(req: Request) {
@@ -70,8 +37,6 @@ export async function POST(req: Request) {
       ordinalAddress,
       ordinalPubkey,
       paymentAddress,
-      paymentPublicKey,
-      balance,
       feerate,
     }: {
       sendAmount: number;
@@ -80,194 +45,147 @@ export async function POST(req: Request) {
       ordinalAddress: string;
       ordinalPubkey: string;
       paymentAddress: string;
-      paymentPublicKey: string;
-      balance: number;
       feerate: number;
     } = await req.json();
 
     // Validate required fields
     if (
+      !sendAmount ||
       !addressList?.length ||
       !inputs?.length ||
       !ordinalAddress ||
       !ordinalPubkey ||
-      !feerate ||
-      !balance ||
-      !paymentAddress
+      !paymentAddress ||
+      !feerate
     ) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     // Separate Rune and BTC inputs
-    const runeInput = inputs.find((input: PsbtInput) => input.name && input.symbol);
-    const btcInput = inputs.find((input: PsbtInput) => !input.name && !input.symbol);
+    const runeInput = inputs.find(input => input.name && input.symbol);
+    const btcInput = inputs.find(input => input.id === 'btc');
 
     if (!runeInput || !btcInput) {
       throw new Error("Missing required Rune or BTC input");
     }
 
-    // Calculate total Rune from all inputs
-    const totalRune = inputs.reduce((sum, input) => sum + Number(input.amount), 0);
+    // Calculate total Rune and validate
+    const totalRune = inputs.reduce((sum, input) => sum + Number(input.amount || 0), 0);
     const requiredRune = sendAmount * addressList.length;
 
-    // Validate total amount
     if (requiredRune > totalRune) {
-      throw new Error(`Insufficient Rune balance. Need ${requiredRune} but have ${totalRune}`);
+      throw new Error(`Insufficient Rune balance. Need ${requiredRune}, have ${totalRune}`);
     }
 
-    // Calculate correct change
+    // Calculate Rune change
     const runeChange = totalRune - requiredRune;
 
-    // Validate BTC input
-    const totalBTC = Math.floor(Number(btcInput.amount) * 100000000); // Convert BTC to sats
-    const txSize = calculateTxSize(inputs.length, addressList.length + 2); // +2 for Rune change and BTC change outputs
-    const txFee = calculateFee(txSize, feerate);
+    // Validate BTC input for dust and fees
+    const totalBTC = Math.floor(Number(btcInput.amount || '0')); // Convert BTC to sats
+    const txSize = 10 + inputs.length * 180 + (addressList.length + 2) * 34; // Basic size calculation
+    const txFee = Math.ceil(txSize * feerate);
     const totalBTCRequired = addressList.length * DUST_LIMIT + txFee;
 
     if (totalBTC < totalBTCRequired) {
       throw new Error("Insufficient BTC balance for dust and fees");
     }
 
-    // Calculate BTC change
     const btcChange = totalBTC - totalBTCRequired;
-    console.log('BTC Change:', btcChange, 'Sats');
-    console.log('Total BTC Required:', totalBTCRequired, 'Sats');
 
-    // Create outputs with correct amounts
+    // Prepare outputs
     const outputs: PsbtOutput[] = [
-      // Recipient outputs
-      ...addressList.map((address: string) => ({
+      // Rune recipient outputs
+      ...addressList.map(address => ({
         address,
         rune: {
-          name: runeInput.name!,
-          symbol: runeInput.symbol!,
+          name: runeInput.name || "", // Fallback to empty string if undefined
+          symbol: runeInput.symbol || "", // Fallback to empty string if undefined
           amount: sendAmount.toString(),
           divisibility: runeInput.divisibility || 0,
         },
       })),
-      // Change output with correct amount
+      // Rune change output
       {
         address: ordinalAddress,
         rune: {
-          name: runeInput.name!,
-          symbol: runeInput.symbol!,
+          name: runeInput.name || "", // Fallback to empty string if undefined
+          symbol: runeInput.symbol || "", // Fallback to empty string if undefined
           amount: runeChange.toString(),
           divisibility: runeInput.divisibility || 0,
         },
-      }
+      },
     ];
 
-    // Add BTC change output
+    // Add BTC change output if applicable
     if (btcChange > DUST_LIMIT) {
       outputs.push({
         address: paymentAddress,
-        value: btcChange,
-      });
-      console.log('BTC Change Output Added:', {
-        address: paymentAddress,
-        value: btcChange,
+        value: btcChange, // Only add 'value' for BTC outputs
       });
     }
 
     // Create PSBT
     const network = networks.bitcoin;
     const psbt = new bitcoin.Psbt({ network });
+    
 
     // Add inputs
-    inputs.forEach(input => {
-      if (input.location === 'payment_input') {
-        // Handle BTC payment input
-        psbt.addInput({
-          hash: Buffer.alloc(32), // 32-byte buffer for txid
-          index: 0,
-          witnessUtxo: {
-            script: bitcoin.address.toOutputScript(paymentAddress, network),
-            value: totalBTC
-          }
+    inputs.forEach((input: PsbtInput) => {
+      const [txid, vout] = input.location.split(':');
+    
+      if (!txid || txid.length !== 64) {
+        throw new Error(`Invalid txid: ${txid}`);
+      }
+    
+      if (!vout || isNaN(parseInt(vout))) {
+        throw new Error(`Invalid vout: ${vout}`);
+      }
+    
+      psbt.addInput({
+        hash: Buffer.from(txid, 'hex').reverse(), // txid must be 32 bytes
+        index: parseInt(vout),
+        witnessUtxo: {
+          script: bitcoin.address.toOutputScript(
+            input.id === 'btc' ? paymentAddress : ordinalAddress,
+            network
+          ),
+          value: input.id === 'btc' ? totalBTC : DUST_LIMIT,
+        },
+      });
+    });
+    
+
+    // Add outputs
+    outputs.forEach(output => {
+      if (output.value) {
+        // BTC output
+        psbt.addOutput({
+          address: output.address,
+          value: output.value,
         });
-        
-      } else {
-        // Handle Rune input
-        const [txid, vout] = input.location.split('_');
-        if (!txid) {
-          throw new Error('Invalid UTXO location');
-        }
-        psbt.addInput({
-          hash: Buffer.from(txid, 'hex').reverse(),
-          index: parseInt(vout),
-          witnessUtxo: {
-            script: bitcoin.address.toOutputScript(ordinalAddress, network),
-            value: DUST_LIMIT
-          }
+      } else if (output.rune) {
+        // Rune output
+        psbt.addOutput({
+          address: output.address,
+          value: DUST_LIMIT,
         });
       }
     });
 
-    // Add outputs
-    outputs.forEach(output => {
-      psbt.addOutput({
-        address: output.address,
-        value: output.value || 546 // Use specified value or dust limit for Rune outputs
-      });
-    });
-
     return NextResponse.json({
       psbtBase64: psbt.toBase64(),
-      paymentIndexes: inputs.map((_, i) => i).filter(i => inputs[i].id === 'btc'),
-      ordinalIndexes: inputs.map((_, i) => i).filter(i => inputs[i].id !== 'btc'),
-      transfers: {
-        send: addressList.map((address: string) => ({
-          to: address,
-          bundle: {
-            size: DUST_LIMIT,
-            runes: {
-              name: runeInput.name!,
-              symbol: runeInput.symbol!,
-              amount: sendAmount,
-              divisibility: runeInput.divisibility || 0,
-            },
-          },
-        })),
-        receive: [
-          ...(runeChange > 0
-            ? [
-                {
-                  to: ordinalAddress,
-                  bundle: {
-                    size: DUST_LIMIT,
-                    runes: {
-                      name: runeInput.name!,
-                      symbol: runeInput.symbol!,
-                      amount: runeChange,
-                      divisibility: runeInput.divisibility || 0,
-                    },
-                  },
-                },
-              ]
-            : []),
-        ],
-        
-      },
       btcDetails: {
         inputAmount: totalBTC,
         fee: txFee,
         dustTotal: addressList.length * DUST_LIMIT,
         change: btcChange,
-        txSize: txSize,
-        feeRate: feerate,
-        paymentAddress: paymentAddress,
       },
     });
   } catch (error) {
-    console.error("Error in distribute-rewards:", error);
+    console.error("Error in mass send:", error);
+    
     return NextResponse.json(
-      {
-        error: "Failed to create transaction",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
+      { error: "Failed to create transaction", details: error instanceof Error ? error.message : "Unknown error" },
       { status: 500 }
     );
   }

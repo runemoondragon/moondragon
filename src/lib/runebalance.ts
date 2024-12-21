@@ -4,6 +4,7 @@ export interface RuneBalance {
   name: string;
   balance: string;
   symbol: string;
+  id: string;
 }
 
 export const fetchOrdAddress = async (address: string) => {
