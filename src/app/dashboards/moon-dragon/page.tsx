@@ -722,7 +722,17 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
         throw new Error('Please select at least one UTXO');
       }
 
-      // Fetch and validate BTC UTXO
+      // Get recipient list first
+      const recipientList = addresses
+        .split('\n')
+        .map(addr => addr.trim())
+        .filter(addr => addr);
+
+      if (!recipientList.length) {
+        throw new Error('No valid recipient addresses found');
+      }
+
+      // Now BTC UTXO handling
       const btcUtxosResponse = await fetch(`/api/get-btc-utxos?address=${paymentAddress}`);
       if (!btcUtxosResponse.ok) {
         throw new Error("Failed to fetch BTC UTXOs");
@@ -735,24 +745,22 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
         throw new Error("No BTC UTXOs available");
       }
 
-      // Use the first BTC UTXO
-      const btcUtxo = btcUtxoList[0];
-      console.log("Selected BTC UTXO:", btcUtxo);
+      // Calculate required BTC amount
+      const dustAmount = recipientList.length * 546;  // dust for each recipient
+      const estimatedFee = Math.ceil((10 + selectedUTXOs.length * 180 + (recipientList.length + 2) * 34) * feeRate);
+      const requiredBTC = dustAmount + estimatedFee;
 
-      if (!btcUtxo.txid || btcUtxo.vout === undefined) {
-        throw new Error("Invalid BTC UTXO format");
+      // Find suitable BTC UTXO
+      const btcUtxo = btcUtxoList.find((utxo: { value: number; txid: string; vout: number }) => 
+        utxo.value >= requiredBTC
+      );
+
+      if (!btcUtxo) {
+        throw new Error(`No suitable BTC UTXO found. Need ${requiredBTC} sats for fees and dust`);
       }
 
       // Rest of your existing Rune logic remains unchanged
       const selectedRune = selectedUTXOs[0];
-      const recipientList = addresses
-        .split('\n')
-        .map(addr => addr.trim())
-        .filter(addr => addr);
-
-      if (!recipientList.length) {
-        throw new Error('No valid recipient addresses found');
-      }
 
       // Calculate amount per recipient
       const outputAmount = Math.floor(Number(selectedRune.rune.amount) / recipientList.length);
@@ -768,55 +776,32 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
 
       // Format the request data
       const requestData = {
-        sendAmount: Number(amount),
+        sendAmount: amount.toString(),
         addressList: recipientList,
         inputs: [
-          // Rune inputs from selected UTXOs
+          // Include ALL selected Rune UTXOs
           ...selectedUTXOs.map(utxo => ({
-            location: `${utxo.txid}_${utxo.vout}`,
+            location: `${utxo.txid}:${utxo.vout}`,
             active: true,
             id: utxo.rune.id,
             name: utxo.rune.name,
             symbol: selectedToken?.symbol || "",
             amount: utxo.rune.amount,
-            divisibility: selectedToken?.divisibility || 0,
+            divisibility: selectedToken?.divisibility || 0
           })),
-          // Updated BTC input
+          // BTC input
           {
-            location: `${btcUtxo.txid}_${btcUtxo.vout}`,
+            location: `${btcUtxo.txid}:${btcUtxo.vout}`,
             active: true,
-            id: "btc",
+            id: 'btc',
             amount: btcUtxo.value.toString()
-          }
-        ],
-        outputs: [
-          // Recipient outputs
-          ...recipientList.map(addr => ({
-            address: addr,
-            rune: {
-              name: selectedUTXOs[0].rune.name,
-              symbol: selectedToken?.symbol || '',
-              amount: amount.toString(),
-              divisibility: selectedToken?.divisibility || 0
-            }
-          })),
-          // Add Rune change output with correct calculation
-          {
-            address: address,
-            rune: {
-              name: selectedUTXOs[0].rune.name,
-              symbol: selectedToken?.symbol || '',
-              amount: runeChange.toString(), // Use the correctly calculated change
-              divisibility: selectedToken?.divisibility || 0
-            }
           }
         ],
         ordinalAddress: address,
         ordinalPubkey: publicKey,
         paymentAddress,
         paymentPubkey: paymentPublicKey,
-        balance,
-        feerate: feeRate
+        feerate: feeRate.toString()
       };
 
       const response = await fetch("/api/distribute-rewards", {
@@ -918,282 +903,280 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
             Distribute Rewards
           </Dialog.Title>
 
-          {/* Token Selection Section */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium mb-2">
-              SELECT RUNE
-            </label>
-            <div className="max-h-[50vh] overflow-y-auto space-y-2">
-              {runeBalances.map((rune) => (
-                <div key={rune.name}>
-                  <div
-                    onClick={() => handleTokenSelect(rune)}
-                    className={`p-4 bg-black/50 rounded-lg border border-gray-700 mb-2 cursor-pointer ${
-                      selectedToken?.name === rune.name ? 'border-orange-500' : ''
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs">{rune.symbol}</span>
+          <div className="max-h-[80vh] overflow-y-auto pr-2">
+            {/* Token Selection Section */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium mb-2">
+                SELECT RUNE
+              </label>
+              <div className="space-y-2">
+                {runeBalances.map((rune) => (
+                  <div key={rune.name}>
+                    <div
+                      onClick={() => handleTokenSelect(rune)}
+                      className={`p-4 bg-black/50 rounded-lg border border-gray-700 mb-2 cursor-pointer ${
+                        selectedToken?.name === rune.name ? 'border-orange-500' : ''
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                            <span className="text-white text-xs">{rune.symbol}</span>
+                          </div>
+                          <div>
+                            <div className="font-medium">{rune.name}</div>
+                          </div>
                         </div>
-                        <div>
-                          <div className="font-medium">{rune.name}</div>
+                        <div className="text-right">
+                          <div className="font-medium">{parseInt(rune.balance).toLocaleString()}</div>
+                          <div className="text-sm text-gray-400">Balance</div>
                         </div>
                       </div>
+                    </div>
+                    
+                    {/* Show UTXOs directly under each token when selected */}
+                    {selectedToken?.name === rune.name && availableUTXOs.map((utxo) => (
+                      <div
+                        key={`${utxo.txid}-${utxo.vout}`}
+                        onClick={() => {
+                          const isSelected = selectedUTXOs.some(
+                            u => u.txid === utxo.txid && u.vout === utxo.vout
+                          );
+                          if (isSelected) {
+                            setSelectedUTXOs(selectedUTXOs.filter(
+                              u => u.txid !== utxo.txid || u.vout !== utxo.vout
+                            ));
+                          } else {
+                            setSelectedUTXOs([...selectedUTXOs, utxo]);
+                          }
+                        }}
+                        className={`ml-8 p-3 mb-2 bg-black/30 rounded-lg border cursor-pointer transition-colors ${
+                          selectedUTXOs.some(u => u.txid === utxo.txid && u.vout === utxo.vout)
+                            ? 'border-orange-500 bg-orange-500/10'
+                            : 'border-gray-800 hover:border-orange-500/50'
+                        }`}
+                      >
+                        <div className="flex justify-between items-center">
+                          <div className="text-sm">
+                            <div className="font-medium truncate w-48">
+                              {utxo.txid.substring(0, 8)}...
+                            </div>
+                            <div className="text-gray-400">
+                              Output: {utxo.vout}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-medium">
+                              {parseInt(utxo.rune.amount).toLocaleString()}
+                            </div>
+                            <div className="text-sm text-gray-400">Amount</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Amount per address input */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  AMOUNT PER ADDRESS
+                </label>
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(Number(e.target.value))}
+                  className="w-full p-3 bg-black border border-gray-700 rounded-lg"
+                  min="1"
+                  step="1"
+                  required
+                />
+              </div>
+
+              {/* Addresses textarea */}
+              <div>
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setShowImportDropdown(!showImportDropdown)}
+                        className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors flex items-center gap-2"
+                      >
+                        Import <FiChevronDown />
+                      </button>
+                      
+                      {showImportDropdown && (
+                        <div className="absolute left-0 mt-1 w-48 rounded-lg bg-gray-900 shadow-lg z-50">
+                          <div className="py-1">
+                            
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setShowImportDropdown(false);
+                                setShowParticipantModal(true);
+                              }}
+                              className="w-full px-4 py-2 text-left hover:bg-gray-700 transition-colors text-sm"
+                            >
+                              Filter By Participation Point
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setShowImportDropdown(false);
+                                fetchQuestions();
+                                setShowVoterModal(true);
+                              }}
+                              className="w-full px-4 py-2 text-left hover:bg-gray-700 transition-colors text-sm"
+                            >
+                              Filter By Question
+                            </button>
+                            <label className="w-full px-4 py-2 hover:bg-gray-700 transition-colors cursor-pointer text-sm">
+                              Choose CSV File
+                              <input
+                                type="file"
+                                accept=".csv"
+                                className="hidden"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    const reader = new FileReader();
+                                    reader.onload = (e) => {
+                                      const text = e.target?.result as string;
+                                      setAddresses(text);
+                                    };
+                                    reader.readAsText(file);
+                                  }
+                                  setShowImportDropdown(false);
+                                }}
+                              />
+                            </label>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-sm font-medium text-gray-400 text-right flex-1">
+                      PASTE ADDRESSES OR UPLOAD CSV FILE (MAX. 1000)
+                    </span>
+                  </div>
+                  <textarea
+                    value={addresses}
+                    onChange={(e) => setAddresses(e.target.value)}
+                    className="w-full h-[15vh] p-3 bg-black border border-gray-700 rounded-lg"
+                    placeholder="Paste addresses here"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Fee rate input */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  FEE RATE (SAT/VB)
+                </label>
+                <input
+                  type="number"
+                  value={feeRate}
+                  onChange={(e) => setFeeRate(Number(e.target.value))}
+                  className="w-full p-3 bg-black border border-gray-700 rounded-lg"
+                  min="1"
+                  required
+                />
+              </div>
+
+              {/* Warning message */}
+              <div className="text-yellow-500 text-sm">
+                ⚠️ Check the transaction (PSBT) before signing. We are not responsible for any errors or lost funds.
+              </div>
+
+              {error && (
+                <p className="text-red-500 text-sm">{error}</p>
+              )}
+
+              <div>
+                <h4>Total Selected Amount: {totalAmount.toLocaleString()} Runes</h4>
+              </div>
+
+              {showTxDetails && txDetails && (
+                <div className="mt-6 space-y-4">
+                  <h3 className="text-lg font-semibold">Transaction Details</h3>
+                  <div className="space-y-2 text-sm">
+                    {/* Input Amount */}
+                    <div className="flex justify-between">
+                      <span>Input Amount:</span>
+                      <span>{txDetails.btcDetails.inputAmount} sats</span>
+                    </div>
+
+                    {/* Transaction Fee */}
+                    <div className="flex justify-between">
+                      <span>TX fee:</span>
+                      <span>{txDetails.btcDetails.fee} sats</span>
+                    </div>
+
+                    {/* Dust Total */}
+                    <div className="flex justify-between">
+                      <span>Dust Total:</span>
+                      <span>{txDetails.btcDetails.dustTotal} sats</span>
+                    </div>
+
+                    {/* Change */}
+                    <div className="flex justify-between">
+                      <span>Change:</span>
+                      <span>
+                        {(txDetails.btcDetails.inputAmount -
+                          (txDetails.btcDetails.dustTotal + txDetails.btcDetails.fee)) || 0}{' '}
+                        sats
+                      </span>
+                    </div>
+
+                    {/* Total */}
+                    <div className="flex justify-between font-semibold">
+                      <span>Total:</span>
                       <div className="text-right">
-                        <div className="font-medium">{parseInt(rune.balance).toLocaleString()}</div>
-                        <div className="text-sm text-gray-400">Balance</div>
+                        <div>
+                          {(
+                            (txDetails.btcDetails.dustTotal + txDetails.btcDetails.fee) /
+                            100000000
+                          ).toFixed(8)}{' '}
+                          BTC
+                        </div>
+                        <div className="text-sm text-gray-400">
+                          $
+                          {(
+                            ((txDetails.btcDetails.dustTotal + txDetails.btcDetails.fee) /
+                              100000000) *
+                            btcPrice
+                          ).toFixed(2)}{' '}
+                          USD
+                        </div>
                       </div>
                     </div>
                   </div>
                   
-                  {/* Show UTXOs directly under each token when selected */}
-                  {selectedToken?.name === rune.name && availableUTXOs.map((utxo) => (
-                    <div
-                      key={`${utxo.txid}-${utxo.vout}`}
-                      onClick={() => {
-                        const isSelected = selectedUTXOs.some(
-                          u => u.txid === utxo.txid && u.vout === utxo.vout
-                        );
-                        if (isSelected) {
-                          setSelectedUTXOs(selectedUTXOs.filter(
-                            u => u.txid !== utxo.txid || u.vout !== utxo.vout
-                          ));
-                        } else {
-                          setSelectedUTXOs([...selectedUTXOs, utxo]);
-                        }
-                      }}
-                      className={`ml-8 p-3 mb-2 bg-black/30 rounded-lg border cursor-pointer transition-colors ${
-                        selectedUTXOs.some(u => u.txid === utxo.txid && u.vout === utxo.vout)
-                          ? 'border-orange-500 bg-orange-500/10'
-                          : 'border-gray-800 hover:border-orange-500/50'
-                      }`}
-                    >
-                      <div className="flex justify-between items-center">
-                        <div className="text-sm">
-                          <div className="font-medium truncate w-48">
-                            {utxo.txid.substring(0, 8)}...
-                          </div>
-                          <div className="text-gray-400">
-                            Output: {utxo.vout}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-medium">
-                            {parseInt(utxo.rune.amount).toLocaleString()}
-                          </div>
-                          <div className="text-sm text-gray-400">Amount</div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-            <div className="mt-2 text-sm text-gray-400">
-              Selecting 1 bundle (UTXO) is more economical than multiple bundles.
-            </div>
-          </div>
-
-          {/* Existing form content */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Amount per address input */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                AMOUNT PER ADDRESS
-              </label>
-              <input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(Number(e.target.value))}
-                className="w-full p-3 bg-black border border-gray-700 rounded-lg"
-                min="1"
-                step="1"
-                required
-              />
-            </div>
-
-            {/* Addresses textarea */}
-            <div>
-              <div className="relative">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="relative">
+                  <div className="flex gap-4">
                     <button
                       type="button"
-                      onClick={() => setShowImportDropdown(!showImportDropdown)}
-                      className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors flex items-center gap-2"
+                      onClick={handleSignTransaction}
+                      className="flex-1 p-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
                     >
-                      Import <FiChevronDown />
+                      Sign Transaction
                     </button>
-                    
-                    {showImportDropdown && (
-                      <div className="absolute left-0 mt-1 w-48 rounded-lg bg-gray-900 shadow-lg z-50">
-                        <div className="py-1">
-                          
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setShowImportDropdown(false);
-                              setShowParticipantModal(true);
-                            }}
-                            className="w-full px-4 py-2 text-left hover:bg-gray-700 transition-colors text-sm"
-                          >
-                            Filter By Participation Point
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setShowImportDropdown(false);
-                              fetchQuestions();
-                              setShowVoterModal(true);
-                            }}
-                            className="w-full px-4 py-2 text-left hover:bg-gray-700 transition-colors text-sm"
-                          >
-                            Filter By Question
-                          </button>
-                          <label className="w-full px-4 py-2 hover:bg-gray-700 transition-colors cursor-pointer text-sm">
-                            Choose CSV File
-                            <input
-                              type="file"
-                              accept=".csv"
-                              className="hidden"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                  const reader = new FileReader();
-                                  reader.onload = (e) => {
-                                    const text = e.target?.result as string;
-                                    setAddresses(text);
-                                  };
-                                  reader.readAsText(file);
-                                }
-                                setShowImportDropdown(false);
-                              }}
-                            />
-                          </label>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <span className="text-sm font-medium text-gray-400 text-right flex-1">
-                    PASTE ADDRESSES OR UPLOAD CSV FILE (MAX. 1000)
-                  </span>
-                </div>
-                <textarea
-                  value={addresses}
-                  onChange={(e) => setAddresses(e.target.value)}
-                  className="w-full h-[15vh] p-3 bg-black border border-gray-700 rounded-lg"
-                  placeholder="Paste addresses here"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Fee rate input */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                FEE RATE (SAT/VB)
-              </label>
-              <input
-                type="number"
-                value={feeRate}
-                onChange={(e) => setFeeRate(Number(e.target.value))}
-                className="w-full p-3 bg-black border border-gray-700 rounded-lg"
-                min="1"
-                required
-              />
-            </div>
-
-            {/* Warning message */}
-            <div className="text-yellow-500 text-sm">
-              ⚠️ Check the transaction (PSBT) before signing. We are not responsible for any errors or lost funds.
-            </div>
-
-            {error && (
-              <p className="text-red-500 text-sm">{error}</p>
-            )}
-
-            <div>
-              <h4>Total Selected Amount: {totalAmount.toLocaleString()} Runes</h4>
-            </div>
-
-            {showTxDetails && txDetails && (
-              <div className="mt-6 space-y-4">
-                <h3 className="text-lg font-semibold">Transaction Details</h3>
-                <div className="space-y-2 text-sm">
-                  {/* Input Amount */}
-                  <div className="flex justify-between">
-                    <span>Input Amount:</span>
-                    <span>{txDetails.btcDetails.inputAmount} sats</span>
-                  </div>
-
-                  {/* Transaction Fee */}
-                  <div className="flex justify-between">
-                    <span>TX fee:</span>
-                    <span>{txDetails.btcDetails.fee} sats</span>
-                  </div>
-
-                  {/* Dust Total */}
-                  <div className="flex justify-between">
-                    <span>Dust Total:</span>
-                    <span>{txDetails.btcDetails.dustTotal} sats</span>
-                  </div>
-
-                  {/* Change */}
-                  <div className="flex justify-between">
-                    <span>Change:</span>
-                    <span>
-                      {(txDetails.btcDetails.inputAmount -
-                        (txDetails.btcDetails.dustTotal + txDetails.btcDetails.fee)) || 0}{' '}
-                      sats
-                    </span>
-                  </div>
-
-                  {/* Total */}
-                  <div className="flex justify-between font-semibold">
-                    <span>Total:</span>
-                    <div className="text-right">
-                      <div>
-                        {(
-                          (txDetails.btcDetails.dustTotal + txDetails.btcDetails.fee) /
-                          100000000
-                        ).toFixed(8)}{' '}
-                        BTC
-                      </div>
-                      <div className="text-sm text-gray-400">
-                        $
-                        {(
-                          ((txDetails.btcDetails.dustTotal + txDetails.btcDetails.fee) /
-                            100000000) *
-                          btcPrice
-                        ).toFixed(2)}{' '}
-                        USD
-                      </div>
-                    </div>
                   </div>
                 </div>
-                
-                <div className="flex gap-4">
-                  <button
-                    type="button"
-                    onClick={handleSignTransaction}
-                    className="flex-1 p-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
-                  >
-                    Sign Transaction
-                  </button>
-                </div>
-              </div>
-            )}
+              )}
 
-            {/* Submit button */}
-            <button
-              type="submit"
-              className="w-full p-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
-            >
-              CREATE TRANSACTION
-            </button>
-          </form>
+              {/* Submit button */}
+              <button
+                type="submit"
+                className="w-full p-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
+              >
+                CREATE TRANSACTION
+              </button>
+            </form>
+          </div>
         </Dialog.Panel>
       </div>
 
@@ -1392,6 +1375,7 @@ export default function MoonDragonDashboard() {
   const [showPollArchiveModal, setShowPollArchiveModal] = useState(false);
   const [archivedPolls, setArchivedPolls] = useState<Poll[]>([]);
   const [showImportDropdown, setShowImportDropdown] = useState(false);
+  const [btcUtxo, setBtcUtxo] = useState<UTXO | null>(null);
 
   useEffect(() => {
     const fetchUserToken = async () => {

@@ -34,20 +34,28 @@ export async function GET(request: Request) {
       });
     }
 
+    // Add debug logging
+    console.log("Rune Entry:", runeEntry); // See the full runeEntry object
+
     // Transform the outputs into our UTXO format
     const runeUTXOs = runeEntry.outputs.map((output: any) => {
       const [txid, vout] = output.location.split(':');
-      return {
+      const runeData = {
         txid,
         vout: parseInt(vout),
         value: output.amount,
         rune: {
           name: runeEntry.runeName,
+          id: runeEntry.id, // Make sure this matches the API response format "852092:505"
+          symbol: runeEntry.symbol || "⚡",
           amount: output.amount.toString(),
           status: "unspent",
           timestamp: Date.now(),
+          divisibility: runeEntry.divisibility || 0
         }
       };
+      console.log("Mapped UTXO:", runeData); // Debug the transformed data
+      return runeData;
     });
 
     return NextResponse.json({
