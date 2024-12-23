@@ -5,9 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "export": "next export",
     "start": "next start",
     "lint": "next lint",
-    "deploy": "next build && touch out/.nojekyll && gh-pages -d out",
+    "deploy": "next build && next export && touch out/.nojekyll && gh-pages -d out",
     "clean": "rm -rf .next out node_modules"
   },
   "dependencies": {
