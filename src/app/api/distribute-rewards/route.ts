@@ -24,9 +24,9 @@ interface PsbtOutput {
     amount: string;
     divisibility: number;
     location: string;
-    isBundle?: boolean;
+    isBundle: boolean;
   };
-  value?: number; // For BTC outputs
+  value: number;
 }
 
 interface BTCUtxo {
@@ -206,16 +206,13 @@ export async function POST(req: Request) {
       const protocolId = Buffer.from([0x13]); // '13'
     
       // Rune ID (first part of the id field, hex-encoded)
-      const runeId = Buffer.from(runeInputs[0].id.split(':')[0], 'hex'); // Assumes 'id' is hex.
+      const runeId = Buffer.from(runeInputs[0].id.split(':')[0], 'hex');
     
       // Amount (encoded as 8 bytes, little-endian)
-      const amount = Buffer.alloc(8); // Allocate an 8-byte buffer for the amount.
-      amount.writeBigUInt64LE(BigInt(totalNeeded)); // Little-endian format.
+      const amount = Buffer.alloc(8);
+      // Use per-recipient amount instead of total
+      amount.writeBigUInt64LE(BigInt(sendAmountNum));  // Changed from totalNeeded
     
-      // Separator (optional empty buffer, if needed)
-      const separator = Buffer.from([]); // Add if necessary.
-    
-      // Combine all parts: protocol identifier, Rune ID, separator, and amount.
       return Buffer.concat([protocolId, runeId, amount]);
     };
     
@@ -245,6 +242,8 @@ export async function POST(req: Request) {
         value: DUST_LIMIT
       };
       outputs.push(bundleOutput);
+
+      // Add standard PSBT output
       psbt.addOutput({
         address: bundleOutput.address,
         value: DUST_LIMIT
