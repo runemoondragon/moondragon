@@ -530,6 +530,7 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
   const { 
     address, 
     signPsbt, 
+    pushPsbt,
     getBalance, 
     paymentAddress,
     publicKey,
@@ -742,6 +743,7 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
         throw new Error(`Insufficient Rune balance. Need ${totalNeeded}, have ${totalAvailable}`);
       }
 
+      console.log('Frontend amount:', amount);
       const requestData = {
         amount: amount.toString(),
         addressList: recipientList,
@@ -774,15 +776,16 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
           fee: result.estimatedTxFee,
           dustTotal: result.runesOutputs * result.runesSatValue,
           change: (result.costs + result.estimatedTxFee) - 
-                  (result.estimatedTxFee + (result.runesOutputs * result.runesSatValue))
+                 (result.estimatedTxFee + (result.runesOutputs * result.runesSatValue))
         };
 
-        // Add btcDetails to result
-        result.btcDetails = btcDetails;
-        
-        setTxDetails(result);
+        // Add btcDetails to result before setting state
+        setTxDetails({
+          ...result,
+          btcDetails
+        });
         setShowTxDetails(true);
-        setPsbt(result.psbtBase64);
+        setPsbt(result.psbtHex);
       }
     } catch (error) {
       console.error("Transaction creation error:", error);
@@ -796,15 +799,29 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
       if (!psbt) {
         throw new Error('No PSBT available to sign');
       }
+
+      console.log('Signing PSBT:', psbt);
       
-      const signedPsbt = await signPsbt(psbt);
-      if (signedPsbt) {
-        toast.success('Transaction signed successfully!');
-        // You can add broadcast logic here if needed
+      // Sign the PSBT using LaserEyes wallet
+      const result = await signPsbt(psbt, true, false);
+      
+      if (!result?.signedPsbtHex) {
+        throw new Error('Failed to get signed PSBT');
+      }
+
+      console.log('Signed PSBT:', result.signedPsbtHex);
+      
+      // Push the signed PSBT to network
+      const broadcastTxId = await pushPsbt(result.signedPsbtHex);
+      
+      if (broadcastTxId) {
+        toast.success(`Transaction broadcast! TxID: ${broadcastTxId}`);
+      } else {
+        throw new Error('Transaction push failed');
       }
     } catch (err) {
       console.error('Signing error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to sign transaction');
+      toast.error(err instanceof Error ? err.message : 'Failed to sign transaction');
     }
   };
 
@@ -1306,7 +1323,7 @@ const PollAddressDetails = ({
               </div>
             ))}
             {pollDetails.length === 0 && (
-              <p className="text-center text-gray-500 dark:text-gray-400">
+              <p className="text-center text-gray-500 dark:text-gray-400 py-4">
                 No poll participation data available
               </p>
             )}

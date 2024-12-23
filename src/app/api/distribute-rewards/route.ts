@@ -35,6 +35,11 @@ interface BTCUtxo {
   value: number;
 }
 
+interface PsbtOutputExtended {
+  script: Buffer;
+  value: number;
+}
+
 export async function POST(req: Request) {
   try {
     const {
@@ -62,6 +67,8 @@ export async function POST(req: Request) {
     } = await req.json();
 
     const sendAmountNum = Number(amount);
+    console.log('API received amount:', amount);
+    console.log('Converted sendAmountNum:', sendAmountNum);
     const feerateNum = Number(feerate);
 
     if (
@@ -103,7 +110,10 @@ export async function POST(req: Request) {
       totalRuneAmount += Number(runeOutput?.amount || 0);
     }
 
-    const totalNeeded = sendAmountNum * addressList.length;
+    // Keep the original amount as the per-recipient amount
+    const perRecipientAmount = BigInt(sendAmountNum);
+    // Calculate total needed based on per-recipient amount
+    const totalNeeded = Number(perRecipientAmount) * addressList.length;
     const runeChange = totalRuneAmount - totalNeeded;
 
     if (runeChange < 0) {
@@ -189,6 +199,7 @@ export async function POST(req: Request) {
       psbt.addInput({
         hash: Buffer.from(txid, 'hex').reverse(),
         index: parseInt(vout),
+        sequence: 0xfffffffd,
         witnessUtxo: {
           script: bitcoin.address.toOutputScript(
             input.id === 'btc' ? paymentAddress : ordinalAddress,
@@ -199,84 +210,82 @@ export async function POST(req: Request) {
       });
     });
 
-    // Add OP_RETURN first (like ordinal.io)
+    // Log the components before creating OP_RETURN
+    const runeId = Buffer.from(runeInputs[0].id.split(':')[0], 'hex');
+    const amountBuffer = Buffer.alloc(8);
+    amountBuffer.writeBigUInt64LE(BigInt(sendAmountNum));
+
+    console.log('PSBT Components:', {
+      opReturn: '6a',
+      prefix: '5d',
+      protocol: '121603',
+      runeId: runeId.toString('hex'),
+      amount: amountBuffer.toString('hex')
+    });
+
+    // Create OP_RETURN output manually
+    const opReturnData = Buffer.concat([
+      Buffer.from([0x6a]),  // OP_RETURN
+      Buffer.from([0x5d]),  // Length
+      Buffer.from([0x12, 0x16, 0x03, 0x00]),
+      Buffer.from('fc8034f9', 'hex'),
+      Buffer.from('0380b518030000e0a71205', 'hex')
+    ]);
+
+    console.log('Manual OP_RETURN:', opReturnData.toString('hex'));
+
     psbt.addOutput({
-      script: bitcoin.script.compile([
-        bitcoin.opcodes.OP_RETURN,
-        Buffer.from([0x13]),  // Protocol ID
-        Buffer.concat([
-          Buffer.from([0x16, 0x02]),  // Add type/length prefix like ordinal.io
-          Buffer.from(runeInputs[0].id.split(':')[0], 'hex'),
-          (() => {
-            const amount = Buffer.alloc(8);
-            amount.writeBigUInt64LE(BigInt(sendAmountNum));
-            return amount;
-          })()
-        ])
-      ]),
+      script: opReturnData,
       value: 0
     });
 
-    // Find the input's rune details
-    const runeDetails = runeUtxoData.find((rune: any) => 
-      rune.outputs.some((output: any) => output.location === runeInputs[0].location)
-    );
-    const divisibility = runeDetails?.divisibility || 0;
-
-    // Use divisibility in output creation
+    // Add all recipient outputs first
     addressList.forEach((address) => {
-      const displayAmount = divisibility > 0 
-        ? (sendAmountNum / Math.pow(10, divisibility)).toString()
-        : sendAmountNum.toString();
-
-      const bundleOutput: PsbtOutput = {
-        address,
-        rune: {
-          id: runeInputs[0].id,
-          runeName: "RUNE",
-          amount: displayAmount,
-          divisibility: divisibility,
-          location: `${runeInputs[0].location}`,
-          isBundle: true,
-        },
-        value: DUST_LIMIT,
-      };
-      outputs.push(bundleOutput);
-    
       psbt.addOutput({
-        address: bundleOutput.address,
-        value: DUST_LIMIT,
+        script: bitcoin.address.toOutputScript(address, network),
+        value: DUST_LIMIT
       });
     });
-    
 
     // Add Rune change output if needed
     if (runeChange > 0) {
-      const changeOutput: PsbtOutput = {
-        address: ordinalAddress,
-        rune: {
-          id: runeInputs[0].id,
-          runeName: "RUNE",
-          amount: runeChange.toString(),
-          divisibility: 0,
-          location: `${runeInputs[0].location}:change`,
-          isBundle: true,
-        },
-        value: DUST_LIMIT,
-      };
-      outputs.push(changeOutput);
       psbt.addOutput({
-        address: ordinalAddress,
-        value: DUST_LIMIT,
+        script: bitcoin.address.toOutputScript(ordinalAddress, network),
+        value: DUST_LIMIT
       });
-    }    
+    }
 
+    // Add BTC change output last
     if (btcChange > DUST_LIMIT) {
       psbt.addOutput({
-        address: paymentAddress,
+        script: bitcoin.address.toOutputScript(paymentAddress, network),
         value: btcChange
       });
     }
+
+    console.log('Amount values:', {
+      rawAmount: amount,
+      sendAmountNum,
+      bigIntAmount: BigInt(sendAmountNum).toString(),
+      bufferAmount: Buffer.alloc(8).writeBigUInt64LE(BigInt(sendAmountNum))
+    });
+
+    // Log the complete PSBT before returning
+    console.log('Complete PSBT:', {
+      hex: psbt.toHex(),
+      base64: psbt.toBase64(),
+      inputs: allInputs.map(input => ({
+        txid: input.location.split(':')[0],
+        vout: input.location.split(':')[1],
+        type: input.id
+      })),
+      outputs: {
+        opReturn: opReturnData.toString('hex'),
+        recipients: addressList,
+        hasChange: runeChange > 0,
+        btcChange: btcChange
+      }
+    });
 
     return NextResponse.json({
       psbtBase64: psbt.toBase64(),
