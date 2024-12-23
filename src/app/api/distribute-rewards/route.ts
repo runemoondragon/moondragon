@@ -203,8 +203,9 @@ export async function POST(req: Request) {
     psbt.addOutput({
       script: bitcoin.script.compile([
         bitcoin.opcodes.OP_RETURN,
-        Buffer.from([0x13]),  // Protocol ID as separate push
-        Buffer.concat([       // Rest of data as separate push
+        Buffer.from([0x13]),  // Protocol ID
+        Buffer.concat([
+          Buffer.from([0x16, 0x02]),  // Add type/length prefix like ordinal.io
           Buffer.from(runeInputs[0].id.split(':')[0], 'hex'),
           (() => {
             const amount = Buffer.alloc(8);
