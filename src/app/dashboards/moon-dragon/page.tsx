@@ -746,7 +746,7 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
         amount: amount.toString(),
         addressList: recipientList,
         feerate: feeRate.toString(),
-        inputs: selectedUTXOs.map(utxo => ({  // Map ALL selected UTXOs
+        inputs: selectedUTXOs.map(utxo => ({
           location: `${utxo.txid}:${utxo.vout}`,
           active: true,
           id: utxo.rune.id

@@ -202,22 +202,12 @@ export async function POST(req: Request) {
 
     // Add OP_RETURN first (like ordinal.io)
     const constructRuneOpReturn = () => {
-      // Protocol identifier (1 byte)
-      const protocolId = Buffer.from([0x13]); // '13'
-    
-      // Rune ID (first part of the id field, hex-encoded)
+      const protocolId = Buffer.from([0x13]);
       const runeId = Buffer.from(runeInputs[0].id.split(':')[0], 'hex');
-    
-      // Amount (encoded as 8 bytes, little-endian)
       const amount = Buffer.alloc(8);
-      // Use per-recipient amount instead of total
-      amount.writeBigUInt64LE(BigInt(sendAmountNum));  // Changed from totalNeeded
-    
+      amount.writeBigUInt64LE(BigInt(sendAmountNum));
       return Buffer.concat([protocolId, runeId, amount]);
     };
-    
-    
-    
 
     psbt.addOutput({
       script: bitcoin.script.compile([
@@ -228,7 +218,7 @@ export async function POST(req: Request) {
     });
 
     // Add recipient outputs with bundles
-    addressList.forEach((address, index) => {
+    addressList.forEach((address) => {
       const bundleOutput: PsbtOutput = {
         address,
         rune: {
@@ -236,19 +226,19 @@ export async function POST(req: Request) {
           runeName: "RUNE",
           amount: sendAmountNum.toString(),
           divisibility: 0,
-          location: `${runeInputs[0].location}:${index}`,
-          isBundle: true
+          location: `${runeInputs[0].location}`,
+          isBundle: true,
         },
-        value: DUST_LIMIT
+        value: DUST_LIMIT,
       };
       outputs.push(bundleOutput);
-
-      // Add standard PSBT output
+    
       psbt.addOutput({
         address: bundleOutput.address,
-        value: DUST_LIMIT
+        value: DUST_LIMIT,
       });
     });
+    
 
     // Add Rune change output if needed
     if (runeChange > 0) {
@@ -260,16 +250,16 @@ export async function POST(req: Request) {
           amount: runeChange.toString(),
           divisibility: 0,
           location: `${runeInputs[0].location}:change`,
-          isBundle: true
+          isBundle: true,
         },
-        value: DUST_LIMIT
+        value: DUST_LIMIT,
       };
       outputs.push(changeOutput);
       psbt.addOutput({
         address: ordinalAddress,
-        value: DUST_LIMIT
+        value: DUST_LIMIT,
       });
-    }
+    }    
 
     if (btcChange > DUST_LIMIT) {
       psbt.addOutput({
