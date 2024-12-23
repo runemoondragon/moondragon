@@ -731,55 +731,33 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
         throw new Error('No valid recipient addresses found');
       }
 
-      // Keep original BTC UTXO handling
-      const btcUtxosResponse = await fetch(`/api/get-btc-utxos?address=${paymentAddress}`);
-      if (!btcUtxosResponse.ok) {
-        throw new Error("Failed to fetch BTC UTXOs");
-      }
-
-      const { utxos: btcUtxoList } = await btcUtxosResponse.json();
-      console.log("Available BTC UTXOs:", btcUtxoList);
-
-      if (!btcUtxoList?.length) {
-        throw new Error("No BTC UTXOs available");
-      }
-
-      // Calculate required BTC amount
-      const dustAmount = recipientList.length * 546;
-      const estimatedFee = Math.ceil(10 + selectedUTXOs.length * 180 + (recipientList.length + 2) * 34) * feeRate;
-      const requiredBTC = dustAmount + estimatedFee;
-
-      // Find suitable BTC UTXO
-      const btcUtxo = btcUtxoList.find((utxo: { value: number; txid: string; vout: number }) => 
-        utxo.value >= requiredBTC
+      // Calculate total from all selected UTXOs
+      const totalAvailable = selectedUTXOs.reduce(
+        (sum, utxo) => sum + Number(utxo.rune.amount), 
+        0
       );
+      const totalNeeded = amount * recipientList.length;
 
-      if (!btcUtxo) {
-        throw new Error(`No suitable BTC UTXO found. Need ${requiredBTC} sats for fees and dust`);
+      if (totalNeeded > totalAvailable) {
+        throw new Error(`Insufficient Rune balance. Need ${totalNeeded}, have ${totalAvailable}`);
       }
 
-      // Only modify the Rune amount handling
       const requestData = {
         amount: amount.toString(),
         addressList: recipientList,
         feerate: feeRate.toString(),
-        inputs: [
-          {
-            location: `${selectedUTXOs[0].txid}:${selectedUTXOs[0].vout}`,
-            active: true,
-            id: selectedUTXOs[0].rune.id
-          },
-          {
-            location: `${btcUtxo.txid}:${btcUtxo.vout}`,
-            active: true,
-            id: 'btc'
-          }
-        ],
+        inputs: selectedUTXOs.map(utxo => ({  // Map ALL selected UTXOs
+          location: `${utxo.txid}:${utxo.vout}`,
+          active: true,
+          id: utxo.rune.id
+        })),
         ordinalAddress: address,
         ordinalPubkey: publicKey,
         paymentAddress,
         paymentPubkey: paymentPublicKey
       };
+
+      console.log("Request data:", requestData); // Debug log
 
       const response = await fetch("/api/distribute-rewards", {
         method: "POST",
