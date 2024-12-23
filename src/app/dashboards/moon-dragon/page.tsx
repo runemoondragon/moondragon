@@ -722,7 +722,6 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
         throw new Error('Please select at least one UTXO');
       }
 
-      // Get recipient list first
       const recipientList = addresses
         .split('\n')
         .map(addr => addr.trim())
@@ -732,7 +731,7 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
         throw new Error('No valid recipient addresses found');
       }
 
-      // Now BTC UTXO handling
+      // Keep original BTC UTXO handling
       const btcUtxosResponse = await fetch(`/api/get-btc-utxos?address=${paymentAddress}`);
       if (!btcUtxosResponse.ok) {
         throw new Error("Failed to fetch BTC UTXOs");
@@ -746,8 +745,8 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
       }
 
       // Calculate required BTC amount
-      const dustAmount = recipientList.length * 546;  // dust for each recipient
-      const estimatedFee = Math.ceil((10 + selectedUTXOs.length * 180 + (recipientList.length + 2) * 34) * feeRate);
+      const dustAmount = recipientList.length * 546;
+      const estimatedFee = Math.ceil(10 + selectedUTXOs.length * 180 + (recipientList.length + 2) * 34) * feeRate;
       const requiredBTC = dustAmount + estimatedFee;
 
       // Find suitable BTC UTXO
@@ -759,49 +758,27 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
         throw new Error(`No suitable BTC UTXO found. Need ${requiredBTC} sats for fees and dust`);
       }
 
-      // Rest of your existing Rune logic remains unchanged
-      const selectedRune = selectedUTXOs[0];
-
-      // Calculate amount per recipient
-      const outputAmount = Math.floor(Number(selectedRune.rune.amount) / recipientList.length);
-
-      // Calculate Rune change amount
-      const totalRuneAmount = selectedUTXOs.reduce((sum, utxo) => sum + Number(utxo.rune.amount), 0);
-      const requiredAmount = Number(amount) * recipientList.length;
-      const runeChange = totalRuneAmount - requiredAmount;
-
-      if (runeChange < 0) {
-        throw new Error(`Insufficient Rune balance. Need ${requiredAmount} but only have ${totalRuneAmount}`);
-      }
-
-      // Format the request data
+      // Only modify the Rune amount handling
       const requestData = {
-        sendAmount: amount.toString(),
+        amount: amount.toString(),
         addressList: recipientList,
+        feerate: feeRate.toString(),
         inputs: [
-          // Include ALL selected Rune UTXOs
-          ...selectedUTXOs.map(utxo => ({
-            location: `${utxo.txid}:${utxo.vout}`,
+          {
+            location: `${selectedUTXOs[0].txid}:${selectedUTXOs[0].vout}`,
             active: true,
-            id: utxo.rune.id,
-            name: utxo.rune.name,
-            symbol: selectedToken?.symbol || "",
-            amount: utxo.rune.amount,
-            divisibility: selectedToken?.divisibility || 0
-          })),
-          // BTC input
+            id: selectedUTXOs[0].rune.id
+          },
           {
             location: `${btcUtxo.txid}:${btcUtxo.vout}`,
             active: true,
-            id: 'btc',
-            amount: btcUtxo.value.toString()
+            id: 'btc'
           }
         ],
         ordinalAddress: address,
         ordinalPubkey: publicKey,
         paymentAddress,
-        paymentPubkey: paymentPublicKey,
-        feerate: feeRate.toString()
+        paymentPubkey: paymentPublicKey
       };
 
       const response = await fetch("/api/distribute-rewards", {

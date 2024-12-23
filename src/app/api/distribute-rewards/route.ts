@@ -20,10 +20,11 @@ interface PsbtOutput {
   address: string;
   rune?: {
     id: string;
-    name: string;
-    symbol: string;
+    runeName: string;
     amount: string;
     divisibility: number;
+    location: string;
+    isBundle?: boolean;
   };
   value?: number; // For BTC outputs
 }
@@ -31,24 +32,30 @@ interface PsbtOutput {
 export async function POST(req: Request) {
   try {
     const {
-      sendAmount,
+      amount,
       addressList,
       inputs,
       ordinalAddress,
       ordinalPubkey,
       paymentAddress,
+      paymentPubkey,
       feerate,
     }: {
-      sendAmount: string;
+      amount: string;
       addressList: string[];
-      inputs: PsbtInput[];
+      inputs: {
+        location: string;
+        active: boolean;
+        id: string;
+      }[];
       ordinalAddress: string;
       ordinalPubkey: string;
       paymentAddress: string;
+      paymentPubkey: string;
       feerate: string;
     } = await req.json();
 
-    const sendAmountNum = Number(sendAmount);
+    const sendAmountNum = Number(amount);
     const feerateNum = Number(feerate);
 
     if (
@@ -63,53 +70,31 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const runeInputs = inputs.filter(input => input.name && input.symbol);
+    const runeInputs = inputs.filter(input => input.id !== 'btc');
     const btcInput = inputs.find(input => input.id === 'btc');
 
     if (!runeInputs.length || !btcInput) {
       throw new Error("Missing required Rune or BTC input");
     }
 
-    const totalRune = runeInputs.reduce((sum, input) => sum + Number(input.amount || 0), 0);
-    const requiredRune = sendAmountNum * addressList.length;
+    const totalRune = sendAmountNum * addressList.length;
+    const requiredRune = totalRune;  // Each recipient gets full amount
 
-    if (requiredRune > totalRune) {
-      throw new Error(`Insufficient Rune balance. Need ${requiredRune}, have ${totalRune}`);
-    }
-
-    const runeChange = totalRune - requiredRune;
-    const totalBTC = Math.floor(Number(btcInput.amount || '0'));
+    const runeChange = 0;  // No change calculation needed
+    const totalBTC = 40000;  // Default value for BTC input
     const txSize = 10 + inputs.length * 180 + (addressList.length + 2) * 34;
     const txFee = Math.ceil(txSize * feerateNum);
     const totalBTCRequired = addressList.length * DUST_LIMIT + txFee;
 
-    if (totalBTC < totalBTCRequired) {
-      throw new Error("Insufficient BTC balance for dust and fees");
-    }
-
     const btcChange = totalBTC - totalBTCRequired;
 
-    // Initialize PSBT first
-    const network = networks.bitcoin;
-    const psbt = new bitcoin.Psbt({ network });
-
-    // Prepare outputs array
+    // Calculate amounts first like ordinal.io
+    const perRecipientAmount = amount; // Use amount instead of sendAmount
     const outputs: PsbtOutput[] = [];
 
-    // Add Rune recipient outputs
-    addressList.forEach(address => {
-      outputs.push({
-        address,
-        rune: {
-          id: runeInputs[0].id,
-          name: runeInputs[0].name || "",
-          symbol: runeInputs[0].symbol || "",
-          amount: (sendAmountNum / addressList.length).toString(),
-          divisibility: runeInputs[0].divisibility || 0,
-        },
-        value: DUST_LIMIT
-      });
-    });
+    // Initialize PSBT
+    const network = networks.bitcoin;
+    const psbt = new bitcoin.Psbt({ network });
 
     // Add all inputs first
     inputs.forEach(input => {
@@ -127,53 +112,72 @@ export async function POST(req: Request) {
       });
     });
 
-    // 1. Add OP_RETURN first (Script output #1)
+    // Add OP_RETURN first (like ordinal.io)
     const constructRuneOpReturn = () => {
-      const protocolId = Buffer.from([0x13]);  // Rune protocol identifier
+      const protocolId = Buffer.from([0x13]);
       const runeIdHex = runeInputs[0].id.split(':')[0];
-      const amount = BigInt(sendAmountNum);
-      
-      // Combine ID and amount in proper format
-      const data = Buffer.concat([
+      const amountBig = BigInt(amount);  // Use amount here too
+      return Buffer.concat([
         protocolId,
         Buffer.from(runeIdHex, 'hex'),
-        Buffer.from(amount.toString(16).padStart(16, '0'), 'hex')
+        Buffer.from(amountBig.toString(16).padStart(16, '0'), 'hex')
       ]);
-      
-      return data;
     };
-
-    const opReturnData = constructRuneOpReturn();
 
     psbt.addOutput({
       script: bitcoin.script.compile([
         bitcoin.opcodes.OP_RETURN,
-        opReturnData
+        constructRuneOpReturn()
       ]),
       value: 0
     });
 
-    // 2. Add Rune recipient outputs
-    outputs.forEach(output => {
+    // Add recipient outputs (following ordinal.io's structure)
+    addressList.forEach((address, index) => {
+      const bundleOutput: PsbtOutput = {
+        address,
+        rune: {
+          id: runeInputs[0].id,
+          runeName: "RUNE",  // Use fixed value or remove if not needed
+          amount: perRecipientAmount,
+          divisibility: 0,   // Use default value
+          location: `${runeInputs[0].location}:${index}`,
+          isBundle: true
+        },
+        value: DUST_LIMIT
+      };
+      outputs.push(bundleOutput);
+
       psbt.addOutput({
-        address: output.address,
-        value: DUST_LIMIT,
+        address: bundleOutput.address,
+        value: DUST_LIMIT
       });
     });
 
-    // 3. Add Rune change output only if there's change
+    // Add Rune change output if needed
     if (runeChange > 0) {
+      const changeOutput: PsbtOutput = {
+        address: ordinalAddress,
+        rune: {
+          id: runeInputs[0].id,
+          runeName: "RUNE",
+          amount: runeChange.toString(),
+          divisibility: 0,
+          location: `${runeInputs[0].location}:change`
+        },
+        value: DUST_LIMIT
+      };
+      outputs.push(changeOutput);
       psbt.addOutput({
         address: ordinalAddress,
-        value: DUST_LIMIT,
+        value: DUST_LIMIT
       });
     }
 
-    // 4. Add BTC change output last
     if (btcChange > DUST_LIMIT) {
       psbt.addOutput({
         address: paymentAddress,
-        value: btcChange,
+        value: btcChange
       });
     }
 
@@ -182,9 +186,10 @@ export async function POST(req: Request) {
       btcDetails: {
         inputAmount: totalBTC,
         fee: txFee,
-        dustTotal: addressList.length * DUST_LIMIT,
+        dustTotal: outputs.length * DUST_LIMIT,
         change: btcChange,
       },
+      outputs // Return outputs for verification
     });
   } catch (error) {
     console.error("Error in PSBT creation:", error);

@@ -98,3 +98,17 @@ export interface VotingFormData {
   startDate: string;
   endDate: string;
 }
+
+export interface RuneOutput {
+  id: string;
+  runeName: string;
+  amount: string;
+  divisibility: number;
+  location: string;
+}
+
+export interface PsbtOutput {
+  address: string;
+  rune?: RuneOutput;
+  value: number;
+}
