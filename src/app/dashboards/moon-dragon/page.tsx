@@ -765,16 +765,25 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
         body: JSON.stringify(requestData),
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.details || "Failed to create transaction");
-      }
+      if (response.status === 200) {
+        const result = await response.json();
+        
+        // Calculate btcDetails from PSBT values
+        const btcDetails = {
+          inputAmount: result.costs + result.estimatedTxFee,
+          fee: result.estimatedTxFee,
+          dustTotal: result.runesOutputs * result.runesSatValue,
+          change: (result.costs + result.estimatedTxFee) - 
+                  (result.estimatedTxFee + (result.runesOutputs * result.runesSatValue))
+        };
 
-      const data = await response.json();
-      console.log("Transaction created:", data);
-      setTxDetails(data);
-      setShowTxDetails(true);
-      setPsbt(data.psbtBase64);
+        // Add btcDetails to result
+        result.btcDetails = btcDetails;
+        
+        setTxDetails(result);
+        setShowTxDetails(true);
+        setPsbt(result.psbtBase64);
+      }
     } catch (error) {
       console.error("Transaction creation error:", error);
       setError(error instanceof Error ? error.message : "Unknown error");

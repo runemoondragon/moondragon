@@ -110,7 +110,7 @@ export async function POST(req: Request) {
       throw new Error(`Insufficient Rune balance. Need ${totalNeeded}, have ${totalRuneAmount}`);
     }
 
-    // Define cost data for fee calculation
+    // Define cost data for fee calculation like ordinal.io
     const costData = [
       { addresses: 1, size: 338 },
       { addresses: 2, size: 191 },
@@ -140,12 +140,11 @@ export async function POST(req: Request) {
       return currentDiff < closestDiff ? current : closest;
     });
 
-    // Calculate total costs using ordinal.io's formula with input adjustment
     const sizePerAddress = closestData.size;
     const baseSize = sizePerAddress * addressList.length;
     const inputAdjustment = (runeInputs.length - 1) * 58;  // Additional size for each extra input
-    
     const txFee = feerateNum * (baseSize + inputAdjustment);
+
     const runesCost = addressList.length * DUST_LIMIT;
     const platformFee = addressList.length > 1000 
       ? (1000 * 33) + 5000 
@@ -201,31 +200,41 @@ export async function POST(req: Request) {
     });
 
     // Add OP_RETURN first (like ordinal.io)
-    const constructRuneOpReturn = () => {
-      const protocolId = Buffer.from([0x13]);
-      const runeId = Buffer.from(runeInputs[0].id.split(':')[0], 'hex');
-      const amount = Buffer.alloc(8);
-      amount.writeBigUInt64LE(BigInt(sendAmountNum));
-      return Buffer.concat([protocolId, runeId, amount]);
-    };
-
     psbt.addOutput({
       script: bitcoin.script.compile([
         bitcoin.opcodes.OP_RETURN,
-        constructRuneOpReturn()
+        Buffer.from([0x13]),  // Protocol ID as separate push
+        Buffer.concat([       // Rest of data as separate push
+          Buffer.from(runeInputs[0].id.split(':')[0], 'hex'),
+          (() => {
+            const amount = Buffer.alloc(8);
+            amount.writeBigUInt64LE(BigInt(sendAmountNum));
+            return amount;
+          })()
+        ])
       ]),
       value: 0
     });
 
-    // Add recipient outputs with bundles
+    // Find the input's rune details
+    const runeDetails = runeUtxoData.find((rune: any) => 
+      rune.outputs.some((output: any) => output.location === runeInputs[0].location)
+    );
+    const divisibility = runeDetails?.divisibility || 0;
+
+    // Use divisibility in output creation
     addressList.forEach((address) => {
+      const displayAmount = divisibility > 0 
+        ? (sendAmountNum / Math.pow(10, divisibility)).toString()
+        : sendAmountNum.toString();
+
       const bundleOutput: PsbtOutput = {
         address,
         rune: {
           id: runeInputs[0].id,
           runeName: "RUNE",
-          amount: sendAmountNum.toString(),
-          divisibility: 0,
+          amount: displayAmount,
+          divisibility: divisibility,
           location: `${runeInputs[0].location}`,
           isBundle: true,
         },
@@ -270,13 +279,20 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       psbtBase64: psbt.toBase64(),
-      btcDetails: {
-        inputAmount: btcUtxo.value,
-        fee: txFee,
-        dustTotal: outputs.length * DUST_LIMIT,
-        change: btcChange,
-      },
-      outputs // Return outputs for verification
+      psbtHex: psbt.toHex(),
+      paymentIndexes: [1],
+      paymentSigHash: 1,
+      ordinalIndexes: [0],
+      ordinalSigHash: 1,
+      estimatedTxSize: baseSize + inputAdjustment,
+      estimatedTxFee: txFee,
+      estimatedSizePerAddress: sizePerAddress,
+      platformFee: platformFee,
+      runesOutputs: outputs.length - (runeChange > 0 ? 1 : 0),
+      runesChangeOutputs: runeChange > 0 ? 1 : 0,
+      runesSatValue: DUST_LIMIT,
+      costs: totalBTCRequired,
+      id: crypto.randomUUID(),
     });
   } catch (error) {
     console.error("Error in PSBT creation:", error);
