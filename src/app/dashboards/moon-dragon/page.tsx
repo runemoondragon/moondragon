@@ -939,16 +939,18 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
               <div>
                 <label className="block text-sm font-medium mb-2">
                   AMOUNT PER ADDRESS
-                </label>
-                <input
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(Number(e.target.value))}
-                  className="w-full p-3 bg-black border border-gray-700 rounded-lg"
-                  min="1"
-                  step="1"
-                  required
-                />
+                </label><input
+  type="number"
+  value={amount === 0 ? '' : amount} // Allows empty state when value is 0
+  onChange={(e) => {
+    const value = e.target.value;
+    setAmount(value === '' ? 0 : Number(value)); // Allow clearing the field or setting a numeric value
+  }}
+  className="w-full p-3 bg-black border border-gray-700 rounded-lg"
+  min="1"
+  step="1"
+  required
+/>
               </div>
 
               {/* Addresses textarea */}
@@ -1032,14 +1034,17 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
                 <label className="block text-sm font-medium mb-2">
                   FEE RATE (SAT/VB)
                 </label>
-                <input
-                  type="number"
-                  value={feeRate}
-                  onChange={(e) => setFeeRate(Number(e.target.value))}
-                  className="w-full p-3 bg-black border border-gray-700 rounded-lg"
-                  min="1"
-                  required
-                />
+            <input
+  type="number"
+  value={feeRate === 0 ? '' : feeRate} // Allows the field to show as empty when feeRate is 0
+  onChange={(e) => {
+    const value = e.target.value;
+    setFeeRate(value === '' ? 0 : Number(value)); // Set feeRate to 0 if cleared, otherwise parse as a number
+  }}
+  className="w-full p-3 bg-black border border-gray-700 rounded-lg"
+  min="1"
+  required
+/>
               </div>
 
               {/* Warning message */}
@@ -1197,12 +1202,16 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
                   Minimum Points Required
                 </label>
                 <input
-                  type="number"
-                  value={pointsThreshold}
-                  onChange={(e) => setPointsThreshold(Number(e.target.value))}
-                  min="0"
-                  className="w-full p-3 bg-black border border-gray-700 rounded-lg text-white"
-                />
+  type="number"
+  value={pointsThreshold === 0 ? '' : pointsThreshold} // Show as empty when pointsThreshold is 0
+  onChange={(e) => {
+    const value = e.target.value;
+    setPointsThreshold(value === '' ? 0 : Number(value)); // Set pointsThreshold to 0 if cleared, otherwise parse as number
+  }}
+  min="0"
+  className="w-full p-3 bg-black border border-gray-700 rounded-lg text-white"
+/>
+
               </div>
 
               <div className="flex justify-end gap-3">
