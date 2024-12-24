@@ -133,7 +133,7 @@ export default function ConnectWallet({ className }: { className?: string }) {
       case "unisat":
         return `unisat://request?method=connect&from=BitBoard&nonce=xxxxx`;
       case "xverse":
-        return `https://connect.xverse.app/browser?url=${encodeURIComponent('https://bitboard.me')}`;
+        return `https://connect.xverse.app/browser?url=https://bitboard.me')}`;
       case "leather":
         return "leather://";
       case "okx":
@@ -155,6 +155,34 @@ export default function ConnectWallet({ className }: { className?: string }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      {address ? (
+        <Button
+          onClick={() => disconnect()}
+          className={cn(
+            "text-black dark:text-white font-medium px-6 py-2 rounded-lg",
+            "bg-orange-100 dark:bg-orange-900/20",
+            "hover:bg-orange-200 dark:hover:bg-orange-800/30",
+            "transition-colors",
+            className
+          )}
+        >
+          Disconnect
+        </Button>
+      ) : (
+        <DialogTrigger asChild>
+          <Button
+            className={cn(
+              "text-white font-medium px-6 py-2 rounded-lg",
+              "bg-orange-500",
+              "hover:bg-orange-600",
+              "transition-colors",
+              className
+            )}
+          >
+            {isConnecting ? "Connecting..." : "Connect Wallet"}
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="dialog-content">
         <style jsx>{`
           @media (max-width: 768px) {
