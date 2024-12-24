@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Link from 'next/link';
-import { FiCopy, FiTwitter } from 'react-icons/fi';
+import { FiCopy } from 'react-icons/fi';
 import ConnectWallet from "@/components/ConnectWallet";
 
 const truncateAddress = (address: string) => {
@@ -14,9 +14,9 @@ const truncateAddress = (address: string) => {
 
 export function NavBar({ address }: { address?: string }) {
   return (
-    <nav className="fixed top-0 left-0 right-0 flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-50">
-      <div className="flex items-center gap-2">
-        <Image 
+    <nav className="flex items-center justify-between px-4 md:px-6 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+      <Link href="/" className="flex items-center gap-2">
+        <Image
           src="/logo.png"
           alt="BitBoard Logo"
           width={32}
@@ -25,16 +25,15 @@ export function NavBar({ address }: { address?: string }) {
           priority
           unoptimized
         />
-        <Link href="/" className="font-bold text-xl hover:text-orange-500 transition-colors flex items-center gap-2">
+        <span className="hidden md:flex items-center font-bold text-xl hover:text-orange-500 transition-colors gap-2">
           BitBoard
           <span className="text-xs px-2 py-0.5 bg-orange-500 text-white rounded-full">Beta</span>
-        </Link>
-      </div>
-      
-      <div className="flex items-center gap-6">
+        </span>
+      </Link>
 
+      <div className="flex items-center gap-3 md:gap-6">
         {address && (
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 px-4 py-2 rounded-lg">
+          <div className="hidden md:block bg-yellow-50 dark:bg-yellow-900/20 px-4 py-2 rounded-lg">
             <div className="flex items-center gap-2">
               <span className="text-gray-600 dark:text-gray-300">
                 {truncateAddress(address)}
@@ -48,7 +47,15 @@ export function NavBar({ address }: { address?: string }) {
             </div>
           </div>
         )}
-
+        {/* Mobile address display */}
+        {address && (
+          <button 
+            onClick={() => navigator.clipboard.writeText(address)}
+            className="md:hidden text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+          >
+            <FiCopy size={20} />
+          </button>
+        )}
         <ConnectWallet />
         <ThemeToggle />
       </div>
