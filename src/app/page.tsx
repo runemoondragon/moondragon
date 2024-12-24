@@ -40,6 +40,7 @@ export default function Home() {
   const [tokenRequirements, setTokenRequirements] = useState<Record<string, boolean>>({});
   const [filteredTokens, setFilteredTokens] = useState<AccessToken[]>([]);
   const [dynamicTokens, setDynamicTokens] = useState<AccessToken[]>([]);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -247,14 +248,14 @@ export default function Home() {
           {/* Hero Section */}
           <div className="text-center space-y-4 mb-8">
             <h1 className="text-5xl font-bold">
-            Unlock Access with Your Rune Tokens
+              Unlock Access with Your Rune Tokens
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300">
-            Bitboard verifies rune wallet balance to grant exclusive access to governance, voting, and other privileges.
+              Bitboard verifies rune wallet balance to grant exclusive access to governance, voting, and other privileges.
             </p>
           </div>
-           {/* Connect Wallet Button */}
-           {!address && (
+          {/* Connect Wallet Button */}
+          {!address && (
             <div className="flex justify-center mb-15">
               <ConnectWallet />
             </div>
@@ -372,23 +373,28 @@ export default function Home() {
                   {/* About Card */}
                   <Tooltip.Root>
                     <Tooltip.Trigger asChild>
-                      <div className="p-6 rounded-lg bg-white/10 backdrop-blur-sm border border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-white/20 transition-colors">
+                      <div
+                        className="p-6 rounded-lg bg-white/10 backdrop-blur-sm border border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-white/20 transition-colors"
+                        onClick={() => setShowTooltip(!showTooltip)}
+                      >
                         <h2 className="text-xl font-semibold text-center">About</h2>
                       </div>
                     </Tooltip.Trigger>
-                    <Tooltip.Portal>
-                      <Tooltip.Content
-                        className="max-w-xs p-4 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
-                        sideOffset={5}
-                      >
-                        <p className="space-y-2">
-                        Create dashboards restricted to specific Rune token holders, enabling secure and exclusive access to platform features.
-                          <br /><br />
-                          Allow users to participate in voting, manage proposals, and track results without on-chain transaction costs, ensuring a cost-effective and scalable governance solution.
-                        </p>
-                        <Tooltip.Arrow className="fill-gray-900" />
-                      </Tooltip.Content>
-                    </Tooltip.Portal>
+                    {showTooltip && (
+                      <Tooltip.Portal>
+                        <Tooltip.Content
+                          className="max-w-xs p-4 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
+                          sideOffset={5}
+                        >
+                          <p className="space-y-2">
+                            Create dashboards restricted to specific Rune token holders, enabling secure and exclusive access to platform features.
+                            <br /><br />
+                            Allow users to participate in voting, manage proposals, and track results without on-chain transaction costs, ensuring a cost-effective and scalable governance solution.
+                          </p>
+                          <Tooltip.Arrow className="fill-gray-900" />
+                        </Tooltip.Content>
+                      </Tooltip.Portal>
+                    )}
                   </Tooltip.Root>
 
                   {/* Creating Dashboards Card */}
@@ -404,12 +410,9 @@ export default function Home() {
                         sideOffset={5}
                       >
                         <p className="space-y-2">
-                        Use BITBOARD•DASH to integrate your token and establish a tailored governance system.
+                          Use BITBOARD•DASH to integrate your token and establish a tailored governance system.
                           <br /><br />
                           Set minimum requirements, initiate voting sessions, and effortlessly distribute Rune tokens to participants using the built-in mass Rune send feature.
-          
-      
-
                         </p>
                         <Tooltip.Arrow className="fill-gray-900" />
                       </Tooltip.Content>
@@ -429,9 +432,9 @@ export default function Home() {
                         sideOffset={5}
                       >
                         <p className="space-y-2">
-                        A minimum balance of BITBOARD•DASH token is required to access the main dashboard and add your project token.
+                          A minimum balance of BITBOARD•DASH token is required to access the main dashboard and add your project token.
                           <br /><br />
-                        Only users who meet the token requirements you set can interact with the dashboards you create.
+                          Only users who meet the token requirements you set can interact with the dashboards you create.
                         </p>
                         <Tooltip.Arrow className="fill-gray-900" />
                       </Tooltip.Content>

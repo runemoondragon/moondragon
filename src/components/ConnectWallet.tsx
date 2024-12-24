@@ -106,10 +106,50 @@ export default function ConnectWallet({ className }: { className?: string }) {
 
   const handleConnect = async (provider: WalletProvider) => {
     try {
+      if (isMobileDevice()) {
+        // Use deep linking for mobile devices
+        const deepLinkUrl = getDeepLinkUrl(provider);
+        if (deepLinkUrl) {
+          window.location.href = deepLinkUrl;
+          return;
+        }
+      }
+      // Fallback to the default connect method for non-mobile devices
       await connect(provider);
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to connect:", error);
+    }
+  };
+
+  // Helper function to determine if the device is mobile
+  const isMobileDevice = () => {
+    return /Mobi|Android/i.test(navigator.userAgent);
+  };
+
+  // Helper function to get the deep link URL for a wallet provider
+  const getDeepLinkUrl = (provider: WalletProvider) => {
+    switch (provider) {
+      case "unisat":
+        return `unisat://request?method=signMessage&data=[text,type]&from=yourAppName&nonce=xxxxx`;
+      case "xverse":
+        return `https://connect.xverse.app/browser?url=${encodeURIComponent(window.location.href)}`;
+      case "leather":
+        return "leather://";
+      case "okx":
+        return "okx://";
+      case "oyl":
+        return "oyl://";
+      case "magic-eden":
+        return "magiceden://";
+      case "phantom":
+        return "phantom://";
+      case "wizz":
+        return "wizz://";
+      case "orange":
+        return "orange://";
+      default:
+        return null;
     }
   };
 
@@ -143,15 +183,7 @@ export default function ConnectWallet({ className }: { className?: string }) {
           </Button>
         </DialogTrigger>
       )}
-      <DialogContent
-        className={cn(
-          "bg-white dark:bg-gray-900 border-none",
-          "text-black dark:text-white rounded-3xl mx-auto",
-          "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
-          "w-[480px] max-h-[560px]",
-          "flex flex-col overflow-hidden p-0"
-        )}
-      >
+      <DialogContent className="dialog-content">
         <DialogHeader className="px-6 pt-5 pb-3">
           <DialogTitle className="text-center text-[22px] font-medium text-black dark:text-white">
             Connect Wallet

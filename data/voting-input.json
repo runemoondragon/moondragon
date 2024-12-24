@@ -111,6 +111,22 @@
         "totalVotingPower": 1000000,
         "hasEnded": false
       }
+    },
+    {
+      "id": "q1735062249959",
+      "token": "MAGA•FIGHT•FIGHT",
+      "question": "Test vote 4",
+      "startTime": "2024-12-24T11:44",
+      "endTime": "2024-12-31T11:44",
+      "status": "active",
+      "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+      "results": {
+        "yesVotes": 0,
+        "noVotes": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
+        "hasEnded": false
+      }
     }
   ]
 }

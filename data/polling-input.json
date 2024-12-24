@@ -291,6 +291,83 @@
           "bc1p6qt76pl3al7zr5ctz2g2qyfj0cpdypka9rrnl7zeyx0cmshlhuhqv209th"
         ]
       }
+    },
+    {
+      "id": "p1735062321125",
+      "token": "MAGA•FIGHT•FIGHT",
+      "pollQuestion": "Test poll 7",
+      "options": [
+        "op 1",
+        "op 2",
+        "op 3",
+        "op 4"
+      ],
+      "startTime": "2024-12-24T17:45:21.125Z",
+      "endTime": "2024-12-25T17:45:00.000Z",
+      "status": "active",
+      "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+      "results": {
+        "poll1": 0,
+        "poll2": 0,
+        "poll3": 0,
+        "poll4": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
+        "hasEnded": false,
+        "voters": []
+      }
+    },
+    {
+      "id": "p1735062374231",
+      "token": "MAGA•FIGHT•FIGHT",
+      "pollQuestion": "Test poll 8",
+      "options": [
+        "op 1",
+        "op 2",
+        "op 3",
+        "op 4"
+      ],
+      "startTime": "2024-12-24T17:46:14.231Z",
+      "endTime": "2024-12-25T17:45:00.000Z",
+      "status": "active",
+      "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+      "results": {
+        "poll1": 0,
+        "poll2": 0,
+        "poll3": 1000000,
+        "poll4": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 1000000,
+        "hasEnded": false,
+        "voters": [
+          "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5"
+        ]
+      }
+    },
+    {
+      "id": "p1735062380472",
+      "token": "MAGA•FIGHT•FIGHT",
+      "pollQuestion": "Test poll 9",
+      "options": [
+        "op 1",
+        "op 2",
+        "op 3",
+        "op 4"
+      ],
+      "startTime": "2024-12-24T17:46:20.472Z",
+      "endTime": "2024-12-25T17:45:00.000Z",
+      "status": "active",
+      "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+      "results": {
+        "poll1": 0,
+        "poll2": 0,
+        "poll3": 0,
+        "poll4": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
+        "hasEnded": false,
+        "voters": []
+      }
     }
   ]
 }

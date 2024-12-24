@@ -210,32 +210,28 @@ export async function POST(req: Request) {
       });
     });
 
-    // Log the components before creating OP_RETURN
-    const runeId = Buffer.from(runeInputs[0].id.split(':')[0], 'hex');
-    const amountBuffer = Buffer.alloc(8);
-    amountBuffer.writeBigUInt64LE(BigInt(sendAmountNum));
+    // Remove the hardcoded OP_RETURN and create it dynamically
+    const constructOpReturn = () => {
+      // Protocol ID (0x13)
+      const protocolId = Buffer.from([0x13]);
+      
+      // Get rune ID from the first input
+      const runeId = Buffer.from(runeInputs[0].id.split(':')[0], 'hex');
+      
+      // Convert amount to Buffer (8 bytes, little-endian)
+      const amount = Buffer.alloc(8);
+      amount.writeBigUInt64LE(BigInt(sendAmountNum));
 
-    console.log('PSBT Components:', {
-      opReturn: '6a',
-      prefix: '5d',
-      protocol: '121603',
-      runeId: runeId.toString('hex'),
-      amount: amountBuffer.toString('hex')
-    });
+      // Combine all parts
+      return Buffer.concat([protocolId, runeId, amount]);
+    };
 
-    // Create OP_RETURN output manually
-    const opReturnData = Buffer.concat([
-      Buffer.from([0x6a]),  // OP_RETURN
-      Buffer.from([0x5d]),  // Length
-      Buffer.from([0x12, 0x16, 0x03, 0x00]),
-      Buffer.from('fc8034f9', 'hex'),
-      Buffer.from('0380b518030000e0a71205', 'hex')
-    ]);
-
-    console.log('Manual OP_RETURN:', opReturnData.toString('hex'));
-
+    // Add OP_RETURN output
     psbt.addOutput({
-      script: opReturnData,
+      script: bitcoin.script.compile([
+        bitcoin.opcodes.OP_RETURN,
+        constructOpReturn()
+      ]),
       value: 0
     });
 
@@ -280,7 +276,7 @@ export async function POST(req: Request) {
         type: input.id
       })),
       outputs: {
-        opReturn: opReturnData.toString('hex'),
+        opReturn: constructOpReturn().toString('hex'),
         recipients: addressList,
         hasChange: runeChange > 0,
         btcChange: btcChange
