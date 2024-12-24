@@ -252,16 +252,19 @@ export default function ConnectWallet({ className }: { className?: string }) {
                       <ChevronRight className="w-5 h-5 text-gray-400 hidden group-hover:block" />
                     </div>
                   ) : (
-                    <a
-                      href={wallet.downloadUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-blue-500 hover:text-blue-600"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                      <span className="text-sm">Install</span>
-                    </a>
+                    <div className="flex items-center gap-2">
+                      <ChevronRight className="w-4 h-4 md:hidden" />
+                      <a
+                        href={wallet.downloadUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hidden md:flex items-center gap-2 text-blue-500 hover:text-blue-600"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                        <span className="text-sm">Install</span>
+                      </a>
+                    </div>
                   )}
                 </Button>
               );
