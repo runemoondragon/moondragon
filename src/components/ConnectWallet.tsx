@@ -127,13 +127,19 @@ export default function ConnectWallet({ className }: { className?: string }) {
     return /Mobi|Android/i.test(navigator.userAgent);
   };
 
+  // Add this function to generate a random nonce
+  const generateNonce = () => {
+    return Math.random().toString(36).substring(2, 15);
+  };
+
   // Helper function to get the deep link URL for a wallet provider
   const getDeepLinkUrl = (provider: WalletProvider) => {
     switch (provider) {
       case "unisat":
-        return `unisat://request?method=connect&from=BitBoard&nonce=xxxxx`;
+        const nonce = generateNonce();
+        return `unisat://request?method=connect&from=BitBoard&nonce=${nonce}`;
       case "xverse":
-        return `https://connect.xverse.app/browser?url=https://bitboard.me')}`;
+        return `https://connect.xverse.app/browser?url=${encodeURIComponent('https://bitboard.me')}`;
       case "leather":
         return "leather://";
       case "okx":
@@ -183,7 +189,7 @@ export default function ConnectWallet({ className }: { className?: string }) {
           </Button>
         </DialogTrigger>
       )}
-      <DialogContent className="dialog-content w-full h-full md:w-auto md:h-auto max-w-[75%] max-h-[75%] md:max-w-md mx-auto my-auto">
+      <DialogContent className="dialog-content w-full h-full md:w-auto md:h-auto max-w-[85%] max-h-[85%] md:max-w-md mx-auto my-auto">
         <DialogHeader className="px-6 pt-5 pb-3">
           <DialogTitle className="text-center text-[22px] font-medium text-black dark:text-white">
             Connect Wallet
