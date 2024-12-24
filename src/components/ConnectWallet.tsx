@@ -131,9 +131,9 @@ export default function ConnectWallet({ className }: { className?: string }) {
   const getDeepLinkUrl = (provider: WalletProvider) => {
     switch (provider) {
       case "unisat":
-        return `unisat://request?method=signMessage&data=[text,type]&from=yourAppName&nonce=xxxxx`;
+        return `unisat://request?method=signMessage&data=[${encodeURIComponent('Sign in to BitBoard')},text]&from=BitBoard&nonce=xxxxx`;
       case "xverse":
-        return `https://connect.xverse.app/browser?url=${encodeURIComponent(window.location.href)}`;
+        return `https://connect.xverse.app/browser?url=${encodeURIComponent('https://bitboard.me/')}`;
       case "leather":
         return "leather://";
       case "okx":
