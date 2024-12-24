@@ -107,10 +107,20 @@ export default function ConnectWallet({ className }: { className?: string }) {
   const handleConnect = async (provider: WalletProvider) => {
     try {
       if (isMobileDevice()) {
-        // Use deep linking for mobile devices
         const deepLinkUrl = getDeepLinkUrl(provider);
         if (deepLinkUrl) {
-          window.location.href = deepLinkUrl;
+          // For iOS, we need to use window.location.href
+          if (/(iPhone|iPod|iPad)/i.test(navigator.userAgent)) {
+            window.location.href = deepLinkUrl;
+          } else {
+            // For Android, we can try to open in a new window first
+            const newWindow = window.open(deepLinkUrl, '_blank');
+            
+            // If window.open fails, fallback to location.href
+            if (!newWindow) {
+              window.location.href = deepLinkUrl;
+            }
+          }
           return;
         }
       }
@@ -124,7 +134,7 @@ export default function ConnectWallet({ className }: { className?: string }) {
 
   // Helper function to determine if the device is mobile
   const isMobileDevice = () => {
-    return /Mobi|Android/i.test(navigator.userAgent);
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   };
 
   // Add this function to generate a random nonce
@@ -134,12 +144,26 @@ export default function ConnectWallet({ className }: { className?: string }) {
 
   // Helper function to get the deep link URL for a wallet provider
   const getDeepLinkUrl = (provider: WalletProvider) => {
+    // Get the current URL for the return URL
+    const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+    
     switch (provider) {
       case "unisat":
         const nonce = generateNonce();
-        return `unisat://request?method=connect&from=BitBoard&nonce=${nonce}`;
+        // Using the recommended format from UniSat docs
+        return isMobileDevice() 
+          ? `unisat://v1/connect?origin=${encodeURIComponent(currentUrl)}`
+          : `unisat://request?method=connect&from=BitBoard&nonce=${nonce}`;
+      
       case "xverse":
-        return `https://connect.xverse.app/browser?url=${encodeURIComponent('https://bitboard.me')}`;
+        // Using the recommended format from Xverse docs
+        const params = new URLSearchParams({
+          url: currentUrl,
+          chain: 'bitcoin',
+          network: 'mainnet',
+        });
+        return `https://wallet.xverse.app/connect?${params.toString()}`;
+      
       case "leather":
         return "leather://";
       case "okx":
