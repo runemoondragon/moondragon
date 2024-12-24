@@ -183,15 +183,7 @@ export default function ConnectWallet({ className }: { className?: string }) {
           </Button>
         </DialogTrigger>
       )}
-      <DialogContent className="dialog-content">
-        <style jsx>{`
-          @media (max-width: 768px) {
-            .dialog-content {
-              max-width: 75%;
-              margin: 0 auto;
-            }
-          }
-        `}</style>
+      <DialogContent className="dialog-content w-full h-full md:w-auto md:h-auto max-w-[75%] max-h-[75%] md:max-w-md mx-auto my-auto">
         <DialogHeader className="px-6 pt-5 pb-3">
           <DialogTitle className="text-center text-[22px] font-medium text-black dark:text-white">
             Connect Wallet
