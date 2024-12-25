@@ -292,11 +292,8 @@ export async function POST(req: Request) {
       ordinalSigHash: 1,
       estimatedTxSize: baseSize + inputAdjustment,
       estimatedTxFee: txFee,
-      estimatedSizePerAddress: sizePerAddress,
       platformFee: platformFee,
-      runesOutputs: outputs.length - (runeChange > 0 ? 1 : 0),
-      runesChangeOutputs: runeChange > 0 ? 1 : 0,
-      runesSatValue: DUST_LIMIT,
+      btcInputAmount: btcUtxo.value,
       costs: totalBTCRequired,
       id: crypto.randomUUID(),
     });

@@ -15,6 +15,8 @@ import { Dialog, DialogTitle, DialogPanel } from '@headlessui/react';
 import { RuneBalance, fetchOrdAddress } from "@/lib/runebalance";
 import { PollForm, PollFormData } from '@/components/PollForm';
 
+const DUST_LIMIT = 546;
+
 interface Poll {
   id: string;
   pollQuestion: string;
@@ -770,16 +772,29 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
       if (response.status === 200) {
         const result = await response.json();
         
-        // Calculate btcDetails from PSBT values
-        const btcDetails = {
-          inputAmount: result.costs + result.estimatedTxFee,
-          fee: result.estimatedTxFee,
-          dustTotal: result.runesOutputs * result.runesSatValue,
-          change: (result.costs + result.estimatedTxFee) - 
-                 (result.estimatedTxFee + (result.runesOutputs * result.runesSatValue))
-        };
+        // Debug logs
+        console.log('API Response:', {
+          costs: result.costs,
+          estimatedTxFee: result.estimatedTxFee,
+          runesOutputs: result.runesOutputs,
+          runesSatValue: result.runesSatValue
+        });
 
-        // Add btcDetails to result before setting state
+        const btcDetails = {
+          inputAmount: result.btcInputAmount,
+          fee: result.estimatedTxFee,
+          dustTotal: recipientList.length * DUST_LIMIT,
+          change: result.btcInputAmount - 
+                 (result.estimatedTxFee + (recipientList.length * DUST_LIMIT))
+        };
+        
+        console.log('Transaction Details:', {
+          btcInput: result.btcInputAmount,
+          fee: result.estimatedTxFee,
+          dustTotal: recipientList.length * DUST_LIMIT,
+          recipientCount: recipientList.length
+        });
+
         setTxDetails({
           ...result,
           btcDetails
