@@ -691,16 +691,28 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
   // Update the UTXO selection handler
   const handleUTXOSelect = (utxo: UTXO) => {
     setSelectedUTXOs(prev => {
-      // Check if trying to select a different rune
-      if (prev.length > 0 && prev[0].rune.name !== utxo.rune.name) {
-        toast.error("Can't process multiple runes at the same time. Select only UTXOs from a single rune.");
-        return prev;
+      // If this is the first UTXO being selected, allow it
+      if (prev.length === 0) {
+        return [utxo];
       }
 
+      // Check if the new UTXO matches the token type of already selected UTXOs
+      const currentTokenId = prev[0].rune.id;
+      const newTokenId = utxo.rune.id;
+
+      // If selecting a different token, clear previous selection and start with new one
+      if (currentTokenId !== newTokenId) {
+        toast("Switched to selecting different token UTXOs");
+        return [utxo];
+      }
+
+      // Check if this UTXO is already selected
       const isSelected = prev.some(selected => selected.txid === utxo.txid);
       if (isSelected) {
+        // If already selected, remove it
         return prev.filter(selected => selected.txid !== utxo.txid);
       } else {
+        // If not selected and matches token type, add it
         return [...prev, utxo];
       }
     });
@@ -723,6 +735,14 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
     try {
       if (!selectedUTXOs?.length) {
         throw new Error('Please select at least one UTXO');
+      }
+
+      // Validate all UTXOs are from the same token
+      const firstTokenId = selectedUTXOs[0].rune.id;
+      const hasMultipleTokens = selectedUTXOs.some(utxo => utxo.rune.id !== firstTokenId);
+      
+      if (hasMultipleTokens) {
+        throw new Error('Cannot process UTXOs from different tokens. Please select UTXOs from the same token only.');
       }
 
       const recipientList = addresses
@@ -1323,7 +1343,10 @@ const PollAddressDetails = ({
                     </thead>
                     <tbody>
                       {data.votes.map((vote: any, index: number) => (
-                        <tr key={index} className="border-t border-gray-200 dark:border-gray-700">
+                        <tr
+                          key={index}
+                          className="border-t border-gray-200 dark:border-gray-700"
+                        >
                           <td className="py-2 text-sm font-mono">{vote.walletAddress}</td>
                           <td className="py-2 text-sm">{vote.choice}</td>
                           <td className="py-2 text-sm">{vote.tokenBalance.toLocaleString()}</td>
@@ -1851,7 +1874,7 @@ export default function MoonDragonDashboard() {
                 {archivedSessions.map(session => (
                   <div key={session.id} className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
                     <h3 className="font-medium mb-2">{session.question}</h3>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-3">
                       <p>Ended: {new Date(session.endTime).toLocaleDateString()}</p>
                       <p>Yes: {((session.results.yesVotes / session.results.totalVotingPower) * 100).toFixed(1)}%</p>
                       <p>No: {((session.results.noVotes / session.results.totalVotingPower) * 100).toFixed(1)}%</p>
