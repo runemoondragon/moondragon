@@ -19,5 +19,26 @@
     "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
     "associatedUrl": "/dashboards/maga-fight-fight",
     "createdAt": "2024-12-20T14:50:38.166Z"
+  },
+  {
+    "tokenName": "RSIC•GENESIS•RUNE",
+    "requiredBalance": 10000,
+    "walletAddress": "bc1pn5dfs58jskhtswjhnfgrl8udanzcp75y07636wq55f6806gnq5ysyhfw3n",
+    "associatedUrl": "/dashboards/rsic-genesis-rune",
+    "createdAt": "2024-12-25T22:14:19.953Z"
+  },
+  {
+    "tokenName": "SATOSHI•NAKAMOTO",
+    "requiredBalance": 10000,
+    "walletAddress": "bc1phlumkse9gl6p6dja0x2j3g82cpdnrwq5j6mwd74f2ewxk85h0q3qs6rykl",
+    "associatedUrl": "/dashboards/satoshi-nakamoto",
+    "createdAt": "2024-12-25T22:14:47.482Z"
+  },
+  {
+    "tokenName": "YOLO•MOON•RUNES",
+    "requiredBalance": 2500000,
+    "walletAddress": "bc1py8f42rhvphg7afhdthl7rpp0duy27kferyqx200w68jladvcrj5qk7yz7h",
+    "associatedUrl": "/dashboards/yolo-moon-runes",
+    "createdAt": "2024-12-25T22:15:35.825Z"
   }
 ]

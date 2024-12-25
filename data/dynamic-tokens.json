@@ -19,5 +19,26 @@
     "dashboardPath": "/dashboards/maga-fight-fight",
     "description": "Access MAGA•FIGHT•FIGHT Dashboard",
     "externalUrl": "/dashboards/maga-fight-fight"
+  },
+  {
+    "name": "RSIC•GENESIS•RUNE",
+    "requiredBalance": 10000,
+    "dashboardPath": "/dashboards/rsic-genesis-rune",
+    "description": "Access RSIC•GENESIS•RUNE Dashboard",
+    "externalUrl": "/dashboards/rsic-genesis-rune"
+  },
+  {
+    "name": "SATOSHI•NAKAMOTO",
+    "requiredBalance": 10000,
+    "dashboardPath": "/dashboards/satoshi-nakamoto",
+    "description": "Access SATOSHI•NAKAMOTO Dashboard",
+    "externalUrl": "/dashboards/satoshi-nakamoto"
+  },
+  {
+    "name": "YOLO•MOON•RUNES",
+    "requiredBalance": 2500000,
+    "dashboardPath": "/dashboards/yolo-moon-runes",
+    "description": "Access YOLO•MOON•RUNES Dashboard",
+    "externalUrl": "/dashboards/yolo-moon-runes"
   }
 ]

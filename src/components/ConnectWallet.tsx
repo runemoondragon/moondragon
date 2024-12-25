@@ -139,7 +139,7 @@ export default function ConnectWallet({ className }: { className?: string }) {
   // Helper function to get the deep link URL for a wallet provider
   const getDeepLinkUrl = (provider: WalletProvider) => {
     // Get the current URL for the return URL
-    const appUrl = 'https://www.bitboard.me';
+    const appUrl = 'www.bitboard.me';
     
     switch (provider) {
       case "unisat":
@@ -151,10 +151,8 @@ export default function ConnectWallet({ className }: { className?: string }) {
       
       case "xverse":
         if (isMobile) {
-          if (isIOS) {
-            return `xverse://?action=connect&returnUrl=${encodeURIComponent(appUrl)}`;
-          }
-          return `intent://xverse/?action=connect&returnUrl=${encodeURIComponent(appUrl)}#Intent;scheme=xverse;package=com.xverse.wallet;end`;
+          // Use the browser connect URL for mobile
+          return `https://connect.xverse.app/browser?url=${encodeURIComponent(appUrl)}`;
         }
         // Desktop format
         const params = new URLSearchParams({
