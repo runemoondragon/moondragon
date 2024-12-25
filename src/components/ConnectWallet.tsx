@@ -152,7 +152,7 @@ export default function ConnectWallet({ className }: { className?: string }) {
       case "xverse":
         if (isMobile) {
           // Use the browser connect URL for mobile
-          return `https://connect.xverse.app/browser?url=${encodeURIComponent(appUrl)}`;
+          return `${encodeURIComponent(appUrl)}`;
         }
         // Desktop format
         const params = new URLSearchParams({
