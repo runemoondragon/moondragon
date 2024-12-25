@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import { isMobile, isIOS, isAndroid } from 'react-device-detect';
 
 import {
   LEATHER,
@@ -106,17 +107,15 @@ export default function ConnectWallet({ className }: { className?: string }) {
 
   const handleConnect = async (provider: WalletProvider) => {
     try {
-      if (isMobileDevice()) {
+      if (isMobile) {
         const deepLinkUrl = getDeepLinkUrl(provider);
         if (deepLinkUrl) {
-          // For iOS, we need to use window.location.href
-          if (/(iPhone|iPod|iPad)/i.test(navigator.userAgent)) {
+          // For iOS devices
+          if (isIOS) {
             window.location.href = deepLinkUrl;
-          } else {
-            // For Android, we can try to open in a new window first
+          } else if (isAndroid) {
+            // For Android devices
             const newWindow = window.open(deepLinkUrl, '_blank');
-            
-            // If window.open fails, fallback to location.href
             if (!newWindow) {
               window.location.href = deepLinkUrl;
             }
@@ -124,17 +123,12 @@ export default function ConnectWallet({ className }: { className?: string }) {
           return;
         }
       }
-      // Fallback to the default connect method for non-mobile devices
+      // Desktop connect
       await connect(provider);
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to connect:", error);
     }
-  };
-
-  // Helper function to determine if the device is mobile
-  const isMobileDevice = () => {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   };
 
   // Add this function to generate a random nonce
@@ -151,20 +145,16 @@ export default function ConnectWallet({ className }: { className?: string }) {
       case "unisat":
         const nonce = generateNonce();
         // Using the recommended format from UniSat docs
-        return isMobileDevice() 
+        return isMobile 
           ? `unisat://v1/connect?origin=${encodeURIComponent(appUrl)}`
           : `unisat://request?method=connect&from=BitBoard&nonce=${nonce}`;
       
       case "xverse":
-        // Using the correct format for Xverse mobile
-        if (isMobileDevice()) {
-          if (/(iPhone|iPod|iPad)/i.test(navigator.userAgent)) {
-            // iOS deep link with return URL
+        if (isMobile) {
+          if (isIOS) {
             return `xverse://?action=connect&returnUrl=${encodeURIComponent(appUrl)}`;
-          } else {
-            // Android intent with return URL
-            return `intent://xverse/?action=connect&returnUrl=${encodeURIComponent(appUrl)}#Intent;scheme=xverse;package=com.xverse.wallet;end`;
           }
+          return `intent://xverse/?action=connect&returnUrl=${encodeURIComponent(appUrl)}#Intent;scheme=xverse;package=com.xverse.wallet;end`;
         }
         // Desktop format
         const params = new URLSearchParams({

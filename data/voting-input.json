@@ -22,14 +22,14 @@
       "question": "Should we organize a virtual 'UNCOMMON•GOODS' community meetup to discuss future developments and ideas?",
       "startTime": "2024-12-17T13:20",
       "endTime": "2024-12-24T13:19",
-      "status": "active",
+      "status": "completed",
       "createdBy": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
       "results": {
         "yesVotes": 0,
         "noVotes": 0,
         "totalVoters": 0,
         "totalVotingPower": 0,
-        "hasEnded": false
+        "hasEnded": true
       }
     },
     {

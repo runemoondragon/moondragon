@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { NavBar } from "@/components/NavBar";
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { Footer } from "@/components/Footer";
+import { isMobile } from 'react-device-detect';
 
 const truncateAddress = (address: string) => {
   if (!address) return '';
@@ -268,6 +269,11 @@ export default function Home() {
                 <div
                   key={index}
                   className="p-6 rounded-lg bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 hover:border-gray-700 transition-colors"
+                  onClick={() => {
+                    if (isMobile) {
+                      window.location.href = 'https://connect.xverse.app/browser?url=www.bitborad.me';
+                    }
+                  }}
                 >
                   <h3 className="text-xl font-semibold mb-2">{token.name}</h3>
                   <p className="text-gray-400 mb-4">Required Balance: {token.requiredBalance.toLocaleString()}</p>
