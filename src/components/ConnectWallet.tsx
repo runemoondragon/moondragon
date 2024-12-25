@@ -139,7 +139,7 @@ export default function ConnectWallet({ className }: { className?: string }) {
   // Helper function to get the deep link URL for a wallet provider
   const getDeepLinkUrl = (provider: WalletProvider) => {
     // Get the current URL for the return URL
-    const appUrl = 'www.bitboard.me';
+    const appUrl = 'https://www.bitboard.me';
     
     switch (provider) {
       case "unisat":
