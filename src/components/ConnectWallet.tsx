@@ -108,27 +108,52 @@ export default function ConnectWallet({ className }: { className?: string }) {
   const handleConnect = async (provider: WalletProvider) => {
     try {
       if (isMobile) {
-        if (provider === "xverse") {
-          // Direct browser redirect for Xverse on mobile
-          window.location.href = "https://connect.xverse.app/browser?url=www.bitboard.me";
-          return;
-        }
-        
-        const deepLinkUrl = getDeepLinkUrl(provider);
-        if (deepLinkUrl) {
-          if (isIOS) {
-            window.location.href = deepLinkUrl;
-          } else if (isAndroid) {
-            window.location.href = deepLinkUrl;
-          }
-          return;
+        // Handle each wallet type for mobile
+        switch (provider) {
+          case "xverse":
+            window.location.href = "https://connect.xverse.app/browser?url=www.bitboard.me";
+            return;
+          
+          case "unisat":
+            window.location.href = `unisat://v1/connect?origin=${encodeURIComponent('https://www.bitboard.me')}`;
+            return;
+
+          case "leather":
+            window.location.href = "https://leather.io/download";
+            return;
+
+          case "okx":
+            window.location.href = "https://www.okx.com/web3";
+            return;
+
+          case "magic-eden":
+            window.location.href = "https://magiceden.io/wallet";
+            return;
+
+          case "phantom":
+            window.location.href = "https://phantom.app";
+            return;
+
+          default:
+            // For other wallets, try deep linking
+            const deepLinkUrl = getDeepLinkUrl(provider);
+            if (deepLinkUrl) {
+              window.location.href = deepLinkUrl;
+              return;
+            }
         }
       }
+
       // Desktop connect
       await connect(provider);
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to connect:", error);
+      // If connection fails, redirect to download page
+      const wallet = wallets.find(w => w.name === provider);
+      if (wallet) {
+        window.location.href = wallet.downloadUrl;
+      }
     }
   };
 
