@@ -108,34 +108,36 @@ export default function ConnectWallet({ className }: { className?: string }) {
   const handleConnect = async (provider: WalletProvider) => {
     try {
       if (isMobile) {
-        // Handle each wallet type for mobile
+        const appUrl = "www.bitboard.me";
+
         switch (provider) {
           case "xverse":
-            window.location.href = "https://connect.xverse.app/browser?url=www.bitboard.me";
-            return;
-          
-          case "unisat":
-            window.location.href = `unisat://v1/connect?origin=${encodeURIComponent('https://www.bitboard.me')}`;
+            const xverseLink = `https://connect.xverse.app/browser?url=${encodeURIComponent(appUrl)}`;
+            window.location.href = xverseLink;
             return;
 
-          case "leather":
-            window.location.href = "https://leather.io/download";
+          case "unisat":
+            const unisatLink = `unisat://v1/connect?origin=${encodeURIComponent(appUrl)}`;
+            window.location.href = unisatLink;
             return;
 
           case "okx":
-            window.location.href = "https://www.okx.com/web3";
+            window.location.href = "okx://";
+            return;
+
+          case "leather":
+            window.location.href = "leather://";
             return;
 
           case "magic-eden":
-            window.location.href = "https://magiceden.io/wallet";
+            window.location.href = "magiceden://";
             return;
 
           case "phantom":
-            window.location.href = "https://phantom.app";
+            window.location.href = "phantom://";
             return;
 
           default:
-            // For other wallets, try deep linking
             const deepLinkUrl = getDeepLinkUrl(provider);
             if (deepLinkUrl) {
               window.location.href = deepLinkUrl;
@@ -149,7 +151,6 @@ export default function ConnectWallet({ className }: { className?: string }) {
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to connect:", error);
-      // If connection fails, redirect to download page
       const wallet = wallets.find(w => w.name === provider);
       if (wallet) {
         window.location.href = wallet.downloadUrl;
@@ -246,11 +247,7 @@ export default function ConnectWallet({ className }: { className?: string }) {
               return (
                 <Button
                   key={wallet.name}
-                  onClick={
-                    isMissingWallet
-                      ? () => null
-                      : () => handleConnect(wallet.name as WalletProvider)
-                  }
+                  onClick={() => isMobile ? handleConnect(wallet.name) : (hasWallet[wallet.name] ? handleConnect(wallet.name) : null)}
                   variant="ghost"
                   className={cn(
                     "w-full bg-white dark:bg-gray-800",
