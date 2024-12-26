@@ -109,7 +109,16 @@ export default function ConnectWallet({ className }: { className?: string }) {
     try {
       if (isMobile) {
         const appUrl = "www.bitboard.me";
+        const isInWalletBrowser = !!(window as any).xverse || !!(window as any).unisat;
 
+        // If we're already in a wallet browser, use desktop-like connection
+        if (isInWalletBrowser) {
+          await connect(provider);
+          setIsOpen(false);
+          return;
+        }
+
+        // If not in wallet browser, redirect to wallet app
         switch (provider) {
           case "xverse":
             const xverseLink = `xverse://browser?url=${encodeURIComponent(appUrl)}`;
@@ -138,6 +147,7 @@ export default function ConnectWallet({ className }: { className?: string }) {
             return;
         }
       }
+
       // Desktop connect
       await connect(provider);
       setIsOpen(false);
