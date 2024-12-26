@@ -108,17 +108,18 @@ export default function ConnectWallet({ className }: { className?: string }) {
   const handleConnect = async (provider: WalletProvider) => {
     try {
       if (isMobile) {
+        if (provider === "xverse") {
+          // Direct browser redirect for Xverse on mobile
+          window.location.href = "https://connect.xverse.app/browser?url=www.bitboard.me";
+          return;
+        }
+        
         const deepLinkUrl = getDeepLinkUrl(provider);
         if (deepLinkUrl) {
-          // For iOS devices
           if (isIOS) {
             window.location.href = deepLinkUrl;
           } else if (isAndroid) {
-            // For Android devices
-            const newWindow = window.open(deepLinkUrl, '_blank');
-            if (!newWindow) {
-              window.location.href = deepLinkUrl;
-            }
+            window.location.href = deepLinkUrl;
           }
           return;
         }
@@ -138,23 +139,17 @@ export default function ConnectWallet({ className }: { className?: string }) {
 
   // Helper function to get the deep link URL for a wallet provider
   const getDeepLinkUrl = (provider: WalletProvider) => {
-    // Get the current URL for the return URL
     const appUrl = 'https://www.bitboard.me';
     
     switch (provider) {
       case "unisat":
         const nonce = generateNonce();
-        // Using the recommended format from UniSat docs
         return isMobile 
           ? `unisat://v1/connect?origin=${encodeURIComponent(appUrl)}`
           : `unisat://request?method=connect&from=BitBoard&nonce=${nonce}`;
       
       case "xverse":
-        if (isMobile) {
-          // Use the browser connect URL for mobile like Magic Eden
-          return `https://connect.xverse.app/browser?url=${encodeURIComponent(appUrl)}`;
-        }
-        // Desktop format
+        // Only handle desktop case here
         const params = new URLSearchParams({
           url: appUrl,
           chain: 'bitcoin',
