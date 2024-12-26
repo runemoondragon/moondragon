@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { isMobile, isIOS, isAndroid } from 'react-device-detect';
-
 import {
   LEATHER,
   MAGIC_EDEN,
@@ -106,59 +105,51 @@ export default function ConnectWallet({ className }: { className?: string }) {
   };
 
   const handleConnect = async (provider: WalletProvider) => {
+    // Declare this outside try block
+    const isRegularMobileBrowser = isMobile && !(window as any).xverse && !(window as any).unisat;
+    
     try {
-      if (isMobile) {
-        const appUrl = "www.bitboard.me";
-        const isInWalletBrowser = !!(window as any).xverse || !!(window as any).unisat;
-
-        // If we're already in a wallet browser, use desktop-like connection
-        if (isInWalletBrowser) {
-          await connect(provider);
-          setIsOpen(false);
-          return;
-        }
-
-        // If not in wallet browser, redirect to wallet app
+      if (isRegularMobileBrowser) {
+        const appUrl = "https://bitboard.me";
+        
+        // Handle redirects to wallet browsers
         switch (provider) {
           case "xverse":
-            const xverseLink = `xverse://browser?url=${encodeURIComponent(appUrl)}`;
-            window.location.href = xverseLink;
+            window.location.href = `xverse://browser?url=${encodeURIComponent(appUrl)}`;
             return;
-
           case "unisat":
-            const unisatLink = `unisat://v1/connect?origin=${encodeURIComponent(appUrl)}`;
-            window.location.href = unisatLink;
+            window.location.href = `unisat://v1/connect?origin=${encodeURIComponent(appUrl)}`;
             return;
-
           case "okx":
             window.location.href = "okx://";
             return;
-
           case "leather":
             window.location.href = "leather://";
             return;
-
           case "magic-eden":
             window.location.href = "magiceden://";
             return;
-
           case "phantom":
             window.location.href = "phantom://";
             return;
         }
       }
 
-      // Desktop connect
+      // Handle wallet connection (for desktop and wallet browsers)
       await connect(provider);
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to connect:", error);
-      const wallet = wallets.find(w => w.name === provider);
-      if (wallet) {
-        window.location.href = wallet.downloadUrl;
+      // Handle connection errors
+      if (isRegularMobileBrowser) {
+        const wallet = wallets.find(w => w.name === provider);
+        if (wallet) {
+          window.location.href = wallet.downloadUrl;
+        }
       }
     }
   };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       {address ? (
@@ -293,3 +284,4 @@ export default function ConnectWallet({ className }: { className?: string }) {
     </Dialog>
   );
 }
+
