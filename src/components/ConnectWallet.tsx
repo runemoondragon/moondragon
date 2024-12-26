@@ -112,7 +112,7 @@ export default function ConnectWallet({ className }: { className?: string }) {
 
         switch (provider) {
           case "xverse":
-            const xverseLink = `https://connect.xverse.app/browser?url=${encodeURIComponent(appUrl)}`;
+            const xverseLink = `xverse://browser?url=${encodeURIComponent(appUrl)}`;
             window.location.href = xverseLink;
             return;
 
@@ -136,16 +136,8 @@ export default function ConnectWallet({ className }: { className?: string }) {
           case "phantom":
             window.location.href = "phantom://";
             return;
-
-          default:
-            const deepLinkUrl = getDeepLinkUrl(provider);
-            if (deepLinkUrl) {
-              window.location.href = deepLinkUrl;
-              return;
-            }
         }
       }
-
       // Desktop connect
       await connect(provider);
       setIsOpen(false);
@@ -157,51 +149,6 @@ export default function ConnectWallet({ className }: { className?: string }) {
       }
     }
   };
-
-  // Add this function to generate a random nonce
-  const generateNonce = () => {
-    return Math.random().toString(36).substring(2, 15);
-  };
-
-  // Helper function to get the deep link URL for a wallet provider
-  const getDeepLinkUrl = (provider: WalletProvider) => {
-    const appUrl = 'https://www.bitboard.me';
-    
-    switch (provider) {
-      case "unisat":
-        const nonce = generateNonce();
-        return isMobile 
-          ? `unisat://v1/connect?origin=${encodeURIComponent(appUrl)}`
-          : `unisat://request?method=connect&from=BitBoard&nonce=${nonce}`;
-      
-      case "xverse":
-        // Only handle desktop case here
-        const params = new URLSearchParams({
-          url: appUrl,
-          chain: 'bitcoin',
-          network: 'mainnet',
-        });
-        return `https://wallet.xverse.app/connect?${params.toString()}`;
-      
-      case "leather":
-        return "leather://";
-      case "okx":
-        return "okx://";
-      case "oyl":
-        return "oyl://";
-      case "magic-eden":
-        return "magiceden://";
-      case "phantom":
-        return "phantom://";
-      case "wizz":
-        return "wizz://";
-      case "orange":
-        return "orange://";
-      default:
-        return null;
-    }
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       {address ? (
