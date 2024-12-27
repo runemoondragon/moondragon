@@ -105,14 +105,20 @@ export default function ConnectWallet({ className }: { className?: string }) {
   };
 
   const handleConnect = async (provider: WalletProvider) => {
-    // Declare this outside try block
-    const isRegularMobileBrowser = isMobile && !(window as any).xverse && !(window as any).unisat;
+    // More specific wallet browser detection
+    const isWalletBrowser = !!(
+      (window as any).xverse?.bitcoin || 
+      (window as any).unisat || 
+      document.documentElement.classList.contains('xverse-wallet') ||
+      window.location.href.includes('connect.xverse.app')
+    );
+    
+    const isRegularMobileBrowser = isMobile && !isWalletBrowser;
     
     try {
       if (isRegularMobileBrowser) {
         const appUrl = "https://bitboard.me";
         
-        // Handle redirects to wallet browsers
         switch (provider) {
           case "xverse":
             window.location.href = `xverse://browser?url=${encodeURIComponent(appUrl)}`;
@@ -135,12 +141,11 @@ export default function ConnectWallet({ className }: { className?: string }) {
         }
       }
 
-      // Handle wallet connection (for desktop and wallet browsers)
+      // If we're in wallet browser or desktop, use normal connect
       await connect(provider);
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to connect:", error);
-      // Handle connection errors
       if (isRegularMobileBrowser) {
         const wallet = wallets.find(w => w.name === provider);
         if (wallet) {
