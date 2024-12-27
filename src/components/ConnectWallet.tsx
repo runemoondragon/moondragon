@@ -105,53 +105,11 @@ export default function ConnectWallet({ className }: { className?: string }) {
   };
 
   const handleConnect = async (provider: WalletProvider) => {
-    // More specific wallet browser detection
-    const isWalletBrowser = !!(
-      (window as any).xverse?.bitcoin || 
-      (window as any).unisat || 
-      document.documentElement.classList.contains('xverse-wallet') ||
-      window.location.href.includes('connect.xverse.app')
-    );
-    
-    const isRegularMobileBrowser = isMobile && !isWalletBrowser;
-    
     try {
-      if (isRegularMobileBrowser) {
-        const appUrl = "https://bitboard.me";
-        
-        switch (provider) {
-          case "xverse":
-            window.location.href = `xverse://browser?url=${encodeURIComponent(appUrl)}`;
-            return;
-          case "unisat":
-            window.location.href = `unisat://v1/connect?origin=${encodeURIComponent(appUrl)}`;
-            return;
-          case "okx":
-            window.location.href = "okx://";
-            return;
-          case "leather":
-            window.location.href = "leather://";
-            return;
-          case "magic-eden":
-            window.location.href = "magiceden://";
-            return;
-          case "phantom":
-            window.location.href = "phantom://";
-            return;
-        }
-      }
-
-      // If we're in wallet browser or desktop, use normal connect
       await connect(provider);
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to connect:", error);
-      if (isRegularMobileBrowser) {
-        const wallet = wallets.find(w => w.name === provider);
-        if (wallet) {
-          window.location.href = wallet.downloadUrl;
-        }
-      }
     }
   };
 
