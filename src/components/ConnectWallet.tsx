@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { isMobile, isIOS, isAndroid } from 'react-device-detect';
+
 import {
   LEATHER,
   MAGIC_EDEN,
@@ -41,7 +42,7 @@ const wallets: Array<{
   },
   {
     name: "xverse",
-    downloadUrl: "https://www.xverse.app/download",
+    downloadUrl: "xverse://browser?url=www.bitboard.me",
   },
   {
     name: "leather",
@@ -106,13 +107,63 @@ export default function ConnectWallet({ className }: { className?: string }) {
 
   const handleConnect = async (provider: WalletProvider) => {
     try {
+      const appUrl = "www.bitboard.me";
+  
+      if (isMobile) {
+        const isInWalletBrowser = !!(window as any).xverse || !!(window as any).unisat;
+  
+        // If we're already in a wallet browser, use desktop-like connection
+        if (isInWalletBrowser) {
+          await connect(provider);
+          setIsOpen(false);
+          return;
+        }
+  
+        // If not in wallet browser, redirect to wallet app
+        switch (provider) {
+          case "xverse":
+            // Generate a WalletConnect URI
+            const wcUri = await connect("xverse"); // Trigger WalletConnect session for xverse
+  
+            // Redirect to xverse with WalletConnect URI
+            const xverseLink = `xverse://wc?uri=${encodeURIComponent(appUrl)}`;
+            window.location.href = xverseLink;
+            return;
+
+          case "unisat":
+            const unisatLink = `unisat://v1/connect?origin=${encodeURIComponent(appUrl)}`;
+            window.location.href = unisatLink;
+            return;
+
+          case "okx":
+            window.location.href = "okx://";
+            return;
+
+          case "leather":
+            window.location.href = "leather://";
+            return;
+
+          case "magic-eden":
+            window.location.href = "magiceden://";
+            return;
+
+          case "phantom":
+            window.location.href = "phantom://";
+            return;
+        }
+      }
+
+      // Desktop connect
       await connect(provider);
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to connect:", error);
+      const wallet = wallets.find(w => w.name === provider);
+      if (wallet) {
+        window.location.href = wallet.downloadUrl;
+      }
     }
   };
-
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       {address ? (
@@ -247,4 +298,3 @@ export default function ConnectWallet({ className }: { className?: string }) {
     </Dialog>
   );
 }
-
