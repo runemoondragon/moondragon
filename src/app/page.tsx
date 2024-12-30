@@ -42,6 +42,11 @@ export default function Home() {
   const [filteredTokens, setFilteredTokens] = useState<AccessToken[]>([]);
   const [dynamicTokens, setDynamicTokens] = useState<AccessToken[]>([]);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState<keyof typeof cardContents>('About');
+  const [showAboutTooltip, setShowAboutTooltip] = useState(false);
+  const [showDashboardsTooltip, setShowDashboardsTooltip] = useState(false);
+  const [showRequirementsTooltip, setShowRequirementsTooltip] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -78,20 +83,12 @@ export default function Home() {
           const currentBalance = runeBalance ? parseInt(runeBalance.balance.replace(/,/g, '')) : 0;
           const requiredBalance = token.requiredBalance;
 
-          console.log(`Checking ${token.name}:`, {
-            currentBalance,
-            requiredBalance,
-            hasEnough: currentBalance >= requiredBalance
-          });
-
           requirements[token.name] = currentBalance >= requiredBalance;
         } catch (error) {
-          console.error(`Error checking token ${token.name}:`, error);
           requirements[token.name] = false;
         }
       }
 
-      console.log('Final requirements:', requirements);
       setTokenRequirements(requirements);
     };
 
@@ -238,6 +235,30 @@ export default function Home() {
     }
   };
 
+  const cardContents = {
+    'About': {
+      title: 'About',
+      content: 'Bitboard enables token-gated dashboards for Rune tokens, providing exclusive access to holders. Users can vote, manage proposals, and track results seamlessly, all without on-chain costs, ensuring efficient and scalable governance.'
+    },
+    'Dashboards': {
+      title: 'Dashboards',
+      content: 'Use BITBOARD•DASH to access the main dashboard, add tokens, set participation requirements, start voting and polls, and distribute tokens with the mass Rune send feature—streamlining community engagement and rewards'
+    },
+    'Requirements': {
+      title: 'Requirements',
+      content: 'You’ll need BITBOARD•DASH tokens to add your project. Set custom token requirements for your dashboard, Only users who meet the token requirements you set can interact with the dashboards you create.'
+    }
+  };
+
+  const handleCardClick = (cardType: keyof typeof cardContents) => {
+    if (isModalOpen && modalContent === cardType) {
+      setIsModalOpen(false);
+    } else {
+      setModalContent(cardType);
+      setIsModalOpen(true);
+    }
+  };
+
   if (!isMounted) return null;
 
   return (
@@ -271,7 +292,7 @@ export default function Home() {
                   className="p-6 rounded-lg bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 hover:border-gray-700 transition-colors"
                   onClick={() => {
                     if (isMobile) {
-                      window.location.href = 'https://connect.xverse.app/browser?url=www.bitboard.me';
+                      window.location.href = 'https://luminex.io/rune/BITBOARD•DASH';
                     }
                   }}
                 >
@@ -381,9 +402,41 @@ export default function Home() {
                     <Tooltip.Trigger asChild>
                       <div
                         className="p-6 rounded-lg bg-white/10 backdrop-blur-sm border border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-white/20 transition-colors"
-                        onClick={() => setShowTooltip(!showTooltip)}
+                        onClick={() => handleCardClick('About')}
+                        onMouseEnter={() => {
+                          if (!isMobile) {
+                            setShowTooltip(true);
+                          }
+                        }}
+                        onMouseLeave={() => {
+                          if (!isMobile) {
+                            setShowTooltip(false);
+                          }
+                        }}
                       >
                         <h2 className="text-xl font-semibold text-center">About</h2>
+                      </div>
+                    </Tooltip.Trigger>
+                  </Tooltip.Root>
+                  
+
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <div
+                        className="p-6 rounded-lg bg-white/10 backdrop-blur-sm border border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-white/20 transition-colors"
+                        onClick={() => handleCardClick('Dashboards')}
+                        onMouseEnter={() => {
+                          if (!isMobile) {
+                            setShowTooltip(true);
+                          }
+                        }}
+                        onMouseLeave={() => {
+                          if (!isMobile) {
+                            setShowTooltip(false);
+                          }
+                        }}
+                      >
+                        <h2 className="text-xl font-semibold text-center">Dashboards</h2>
                       </div>
                     </Tooltip.Trigger>
                     {showTooltip && (
@@ -393,9 +446,9 @@ export default function Home() {
                           sideOffset={5}
                         >
                           <p className="space-y-2">
-                            Create dashboards restricted to specific Rune token holders, enabling secure and exclusive access to platform features.
+                            Use BITBOARD•DASH to integrate your token and establish a tailored governance system.
                             <br /><br />
-                            Allow users to participate in voting, manage proposals, and track results without on-chain transaction costs, ensuring a cost-effective and scalable governance solution.
+                            Set minimum requirements, initiate voting sessions, and effortlessly distribute Rune tokens to participants using the built-in mass Rune send feature.
                           </p>
                           <Tooltip.Arrow className="fill-gray-900" />
                         </Tooltip.Content>
@@ -403,48 +456,27 @@ export default function Home() {
                     )}
                   </Tooltip.Root>
 
-                  {/* Creating Dashboards Card */}
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <div className="p-6 rounded-lg bg-white/10 backdrop-blur-sm border border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-white/20 transition-colors">
-                        <h2 className="text-xl font-semibold text-center">Dashboards</h2>
-                      </div>
-                    </Tooltip.Trigger>
-                    <Tooltip.Portal>
-                      <Tooltip.Content
-                        className="max-w-xs p-4 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
-                        sideOffset={5}
-                      >
-                        <p className="space-y-2">
-                          Use BITBOARD•DASH to integrate your token and establish a tailored governance system.
-                          <br /><br />
-                          Set minimum requirements, initiate voting sessions, and effortlessly distribute Rune tokens to participants using the built-in mass Rune send feature.
-                        </p>
-                        <Tooltip.Arrow className="fill-gray-900" />
-                      </Tooltip.Content>
-                    </Tooltip.Portal>
-                  </Tooltip.Root>
-
                   {/* Requirements Card */}
                   <Tooltip.Root>
                     <Tooltip.Trigger asChild>
-                      <div className="p-6 rounded-lg bg-white/10 backdrop-blur-sm border border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-white/20 transition-colors">
+                      <div
+                        className="p-6 rounded-lg bg-white/10 backdrop-blur-sm border border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-white/20 transition-colors"
+                        onClick={() => handleCardClick('Requirements')}
+                        onMouseEnter={() => {
+                          if (!isMobile) {
+                            setShowTooltip(true);
+                          }
+                        }}
+                        onMouseLeave={() => {
+                          if (!isMobile) {
+                            setShowTooltip(false);
+                          }
+                        }}
+                      >
                         <h2 className="text-xl font-semibold text-center">Requirements</h2>
                       </div>
                     </Tooltip.Trigger>
-                    <Tooltip.Portal>
-                      <Tooltip.Content
-                        className="max-w-xs p-4 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
-                        sideOffset={5}
-                      >
-                        <p className="space-y-2">
-                          A minimum balance of BITBOARD•DASH token is required to access the main dashboard and add your project token.
-                          <br /><br />
-                          Only users who meet the token requirements you set can interact with the dashboards you create.
-                        </p>
-                        <Tooltip.Arrow className="fill-gray-900" />
-                      </Tooltip.Content>
-                    </Tooltip.Portal>
+                    
                   </Tooltip.Root>
                 </Tooltip.Provider>
               </div>
@@ -453,6 +485,25 @@ export default function Home() {
         </div>
       </main>
       <Footer />
+
+      {/* Modal for displaying content */}
+      {isModalOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsModalOpen(false);
+            }
+          }}
+        >
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg max-w-xs">
+            <h2 className="text-xl font-semibold mb-4">{cardContents[modalContent].title}</h2>
+            <p className="space-y-2">
+              {cardContents[modalContent].content}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
