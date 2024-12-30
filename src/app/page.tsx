@@ -403,7 +403,6 @@ export default function Home() {
                     )}
                   </Tooltip.Root>
 
-                  {/* Creating Dashboards Card */}
                   <Tooltip.Root>
                     <Tooltip.Trigger asChild>
                       <div className="p-6 rounded-lg bg-white/10 backdrop-blur-sm border border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-white/20 transition-colors">

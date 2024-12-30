@@ -70,14 +70,14 @@
       "question": "Test 1",
       "startTime": "2024-12-17T20:11",
       "endTime": "2024-12-24T20:10",
-      "status": "active",
+      "status": "completed",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
         "yesVotes": 1460000,
         "noVotes": 150000,
         "totalVoters": 4,
         "totalVotingPower": 1610000,
-        "hasEnded": false
+        "hasEnded": true
       }
     },
     {
@@ -86,14 +86,14 @@
       "question": "Test yes or no question",
       "startTime": "2024-12-17T20:11",
       "endTime": "2024-12-24T20:10",
-      "status": "active",
+      "status": "completed",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
         "yesVotes": 70000,
         "noVotes": 1390000,
         "totalVoters": 3,
         "totalVotingPower": 1460000,
-        "hasEnded": false
+        "hasEnded": true
       }
     },
     {
@@ -102,14 +102,14 @@
       "question": "Test 3",
       "startTime": "2024-12-19T17:10",
       "endTime": "2024-12-26T17:10",
-      "status": "active",
+      "status": "completed",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
         "yesVotes": 1000000,
         "noVotes": 0,
         "totalVoters": 1,
         "totalVotingPower": 1000000,
-        "hasEnded": false
+        "hasEnded": true
       }
     },
     {
