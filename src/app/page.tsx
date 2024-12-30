@@ -439,21 +439,7 @@ export default function Home() {
                         <h2 className="text-xl font-semibold text-center">Dashboards</h2>
                       </div>
                     </Tooltip.Trigger>
-                    {showTooltip && (
-                      <Tooltip.Portal>
-                        <Tooltip.Content
-                          className="max-w-xs p-4 bg-gray-900 text-white text-sm rounded-lg shadow-lg"
-                          sideOffset={5}
-                        >
-                          <p className="space-y-2">
-                            Use BITBOARD•DASH to integrate your token and establish a tailored governance system.
-                            <br /><br />
-                            Set minimum requirements, initiate voting sessions, and effortlessly distribute Rune tokens to participants using the built-in mass Rune send feature.
-                          </p>
-                          <Tooltip.Arrow className="fill-gray-900" />
-                        </Tooltip.Content>
-                      </Tooltip.Portal>
-                    )}
+                    
                   </Tooltip.Root>
 
                   {/* Requirements Card */}
