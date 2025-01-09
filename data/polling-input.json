@@ -125,7 +125,7 @@
       ],
       "startTime": "2024-12-18T02:11:08.610Z",
       "endTime": "2024-12-25T02:11:00.000Z",
-      "status": "active",
+      "status": "archived",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
         "poll1": 1000000,
@@ -134,13 +134,15 @@
         "poll4": 150000,
         "totalVoters": 4,
         "totalVotingPower": 1610000,
-        "hasEnded": false,
+        "hasEnded": true,
         "voters": [
           "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
           "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
           "bc1pfg6lnszrz9dm2n99z6va0shlv06hq0pkq6mje7dlsmdgp73sw4dspztcrr",
           "bc1p6qt76pl3al7zr5ctz2g2qyfj0cpdypka9rrnl7zeyx0cmshlhuhqv209th"
-        ]
+        ],
+        "winner": "op 1",
+        "winningPercentage": 62.11180124223602
       }
     },
     {
@@ -155,7 +157,7 @@
       ],
       "startTime": "2024-12-18T02:11:23.860Z",
       "endTime": "2024-12-25T02:11:00.000Z",
-      "status": "active",
+      "status": "archived",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
         "poll1": 0,
@@ -164,13 +166,15 @@
         "poll4": 220000,
         "totalVoters": 4,
         "totalVotingPower": 1610000,
-        "hasEnded": false,
+        "hasEnded": true,
         "voters": [
           "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
           "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
           "bc1pfg6lnszrz9dm2n99z6va0shlv06hq0pkq6mje7dlsmdgp73sw4dspztcrr",
           "bc1p6qt76pl3al7zr5ctz2g2qyfj0cpdypka9rrnl7zeyx0cmshlhuhqv209th"
-        ]
+        ],
+        "winner": "op 2",
+        "winningPercentage": 62.11180124223602
       }
     },
     {
@@ -185,7 +189,7 @@
       ],
       "startTime": "2024-12-18T02:11:31.631Z",
       "endTime": "2024-12-25T02:11:00.000Z",
-      "status": "active",
+      "status": "archived",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
         "poll1": 390000,
@@ -194,12 +198,14 @@
         "poll4": 0,
         "totalVoters": 3,
         "totalVotingPower": 1460000,
-        "hasEnded": false,
+        "hasEnded": true,
         "voters": [
           "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
           "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
           "bc1p6qt76pl3al7zr5ctz2g2qyfj0cpdypka9rrnl7zeyx0cmshlhuhqv209th"
-        ]
+        ],
+        "winner": "op 3",
+        "winningPercentage": 68.4931506849315
       }
     },
     {
@@ -214,7 +220,7 @@
       ],
       "startTime": "2024-12-18T02:11:43.018Z",
       "endTime": "2024-12-25T02:11:00.000Z",
-      "status": "active",
+      "status": "archived",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
         "poll1": 1150000,
@@ -223,13 +229,15 @@
         "poll4": 70000,
         "totalVoters": 4,
         "totalVotingPower": 1610000,
-        "hasEnded": false,
+        "hasEnded": true,
         "voters": [
           "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
           "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
           "bc1pfg6lnszrz9dm2n99z6va0shlv06hq0pkq6mje7dlsmdgp73sw4dspztcrr",
           "bc1p6qt76pl3al7zr5ctz2g2qyfj0cpdypka9rrnl7zeyx0cmshlhuhqv209th"
-        ]
+        ],
+        "winner": "op 1",
+        "winningPercentage": 71.42857142857143
       }
     },
     {
@@ -244,7 +252,7 @@
       ],
       "startTime": "2024-12-18T02:11:58.146Z",
       "endTime": "2024-12-25T02:11:00.000Z",
-      "status": "active",
+      "status": "archived",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
         "poll1": 70000,
@@ -253,13 +261,15 @@
         "poll4": 0,
         "totalVoters": 4,
         "totalVotingPower": 1610000,
-        "hasEnded": false,
+        "hasEnded": true,
         "voters": [
           "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
           "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
           "bc1pfg6lnszrz9dm2n99z6va0shlv06hq0pkq6mje7dlsmdgp73sw4dspztcrr",
           "bc1p6qt76pl3al7zr5ctz2g2qyfj0cpdypka9rrnl7zeyx0cmshlhuhqv209th"
-        ]
+        ],
+        "winner": "op 2",
+        "winningPercentage": 71.42857142857143
       }
     },
     {
@@ -274,7 +284,7 @@
       ],
       "startTime": "2024-12-18T02:12:05.418Z",
       "endTime": "2024-12-25T02:11:00.000Z",
-      "status": "active",
+      "status": "archived",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
         "poll1": 150000,
@@ -283,13 +293,15 @@
         "poll4": 0,
         "totalVoters": 4,
         "totalVotingPower": 1610000,
-        "hasEnded": false,
+        "hasEnded": true,
         "voters": [
           "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
           "bc1p8a92sj8ffz780elymv9a43rwzt9wdyzmlftmt2dhwan3dzqv706sgufsfj",
           "bc1pfg6lnszrz9dm2n99z6va0shlv06hq0pkq6mje7dlsmdgp73sw4dspztcrr",
           "bc1p6qt76pl3al7zr5ctz2g2qyfj0cpdypka9rrnl7zeyx0cmshlhuhqv209th"
-        ]
+        ],
+        "winner": "op 3",
+        "winningPercentage": 62.11180124223602
       }
     },
     {
@@ -304,7 +316,7 @@
       ],
       "startTime": "2024-12-24T17:45:21.125Z",
       "endTime": "2024-12-25T17:45:00.000Z",
-      "status": "active",
+      "status": "completed",
       "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
       "results": {
         "poll1": 0,
@@ -313,7 +325,7 @@
         "poll4": 0,
         "totalVoters": 0,
         "totalVotingPower": 0,
-        "hasEnded": false,
+        "hasEnded": true,
         "voters": []
       }
     },
@@ -329,7 +341,7 @@
       ],
       "startTime": "2024-12-24T17:46:14.231Z",
       "endTime": "2024-12-25T17:45:00.000Z",
-      "status": "active",
+      "status": "completed",
       "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
       "results": {
         "poll1": 0,
@@ -338,7 +350,7 @@
         "poll4": 0,
         "totalVoters": 1,
         "totalVotingPower": 1000000,
-        "hasEnded": false,
+        "hasEnded": true,
         "voters": [
           "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5"
         ]
@@ -356,7 +368,7 @@
       ],
       "startTime": "2024-12-24T17:46:20.472Z",
       "endTime": "2024-12-25T17:45:00.000Z",
-      "status": "active",
+      "status": "completed",
       "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
       "results": {
         "poll1": 0,
@@ -365,7 +377,7 @@
         "poll4": 0,
         "totalVoters": 0,
         "totalVotingPower": 0,
-        "hasEnded": false,
+        "hasEnded": true,
         "voters": []
       }
     },

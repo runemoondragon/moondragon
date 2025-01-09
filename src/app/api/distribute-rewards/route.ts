@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import * as bitcoin from 'bitcoinjs-lib';
 import { networks } from 'bitcoinjs-lib';
 import * as ecc from '@bitcoinerlab/secp256k1';
+import { Runestone, none, RuneId } from "runelib";
 
 bitcoin.initEccLib(ecc);
 
@@ -39,6 +40,24 @@ interface PsbtOutputExtended {
   script: Buffer;
   value: number;
 }
+
+const constructRuneOpReturn = (runeId: string, sendAmountNum: number, addressList: string[]) => {
+  try {
+    // Create edicts for each recipient
+    const edicts = addressList.map((_, index) => ({
+      id: new RuneId(+runeId.split(":")[0], +runeId.split(":")[1]),
+      amount: BigInt(sendAmountNum),
+      output: index + 1,
+    }));
+
+    // Create Runestone with edicts
+    const runestone = new Runestone(edicts, none(), none(), none());
+    return runestone.encipher();
+  } catch (error) {
+    console.error('Error constructing Runestone:', error);
+    throw new Error('Failed to construct Runestone OP_RETURN');
+  }
+};
 
 export async function POST(req: Request) {
   try {
@@ -210,27 +229,17 @@ export async function POST(req: Request) {
       });
     });
 
-    // Remove the hardcoded OP_RETURN and create it dynamically
-    const constructOpReturn = () => {
-      // Protocol ID (0x13)
-      const protocolId = Buffer.from([0x13]);
-      
-      // Get rune ID from the first input
-      const runeId = Buffer.from(runeInputs[0].id.split(':')[0], 'hex');
-      
-      // Convert amount to Buffer (8 bytes, little-endian)
-      const amount = Buffer.alloc(8);
-      amount.writeBigUInt64LE(BigInt(sendAmountNum));
+    // Create and add OP_RETURN output using Runestone
+    const opReturnData = constructRuneOpReturn(
+      runeInputs[0].id,
+      sendAmountNum,
+      addressList
+    );
 
-      // Combine all parts
-      return Buffer.concat([protocolId, runeId, amount]);
-    };
-
-    // Add OP_RETURN output
     psbt.addOutput({
       script: bitcoin.script.compile([
         bitcoin.opcodes.OP_RETURN,
-        constructOpReturn()
+        Buffer.from(opReturnData)
       ]),
       value: 0
     });
@@ -276,12 +285,51 @@ export async function POST(req: Request) {
         type: input.id
       })),
       outputs: {
-        opReturn: constructOpReturn().toString('hex'),
+        opReturn: opReturnData.toString('hex'),
         recipients: addressList,
         hasChange: runeChange > 0,
         btcChange: btcChange
       }
     });
+
+    // Add debug logging
+    console.log('Runestone transaction details:', {
+      runeId: runeInputs[0].id,
+      sendAmount: sendAmountNum,
+      recipientCount: addressList.length,
+      opReturnHex: opReturnData.toString('hex'),
+      outputOrder: [
+        'op_return',
+        ...addressList.map(() => 'recipient'),
+        runeChange > 0 ? 'rune_change' : null,
+        btcChange > DUST_LIMIT ? 'btc_change' : null
+      ].filter(Boolean)
+    });
+
+    // Debug: Decode OP_RETURN data
+    try {
+      const decodedPsbt = bitcoin.Psbt.fromBase64(psbt.toBase64());
+      const opReturnOutput = decodedPsbt.txOutputs.find(
+        output => output.script[0] === bitcoin.opcodes.OP_RETURN
+      );
+      
+      console.log('OP_RETURN Debug Info:', {
+        fullScript: opReturnOutput?.script.toString('hex'),
+        scriptLength: opReturnOutput?.script.length,
+        rawOpReturn: opReturnData.toString('hex'),
+        decodedEdicts: addressList.map((_, index) => ({
+          runeId: runeInputs[0].id,
+          amount: sendAmountNum,
+          outputIndex: index + 1
+        })),
+        outputCount: psbt.txOutputs.length,
+        allOutputTypes: psbt.txOutputs.map((out, i) => 
+          out.script[0] === bitcoin.opcodes.OP_RETURN ? 'OP_RETURN' : `Output ${i}`
+        )
+      });
+    } catch (error) {
+      console.error('Debug decode error:', error);
+    }
 
     return NextResponse.json({
       psbtBase64: psbt.toBase64(),
@@ -299,13 +347,12 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Error in PSBT creation:", error);
-  
-    // Assert that the error is an instance of Error
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-  
     return NextResponse.json(
-      { error: "Failed to create transaction", details: errorMessage },
+      { 
+        error: "Failed to create transaction", 
+        details: error instanceof Error ? error.message : "Unknown error"
+      },
       { status: 500 }
     );
-  }  
+  }
 }

@@ -21,15 +21,15 @@
       "token": "UNCOMMON•GOODS",
       "question": "Should we organize a virtual 'UNCOMMON•GOODS' community meetup to discuss future developments and ideas?",
       "startTime": "2024-12-17T13:20",
-      "endTime": "2024-12-24T13:19",
-      "status": "completed",
+      "endTime": "2025-01-24T13:19",
+      "status": "active",
       "createdBy": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
       "results": {
         "yesVotes": 0,
         "noVotes": 0,
         "totalVoters": 0,
         "totalVotingPower": 0,
-        "hasEnded": true
+        "hasEnded": false
       }
     },
     {
@@ -70,14 +70,14 @@
       "question": "Test 1",
       "startTime": "2024-12-17T20:11",
       "endTime": "2024-12-24T20:10",
-      "status": "active",
+      "status": "archived",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
         "yesVotes": 1460000,
         "noVotes": 150000,
         "totalVoters": 4,
         "totalVotingPower": 1610000,
-        "hasEnded": false
+        "hasEnded": true
       }
     },
     {
@@ -86,14 +86,14 @@
       "question": "Test yes or no question",
       "startTime": "2024-12-17T20:11",
       "endTime": "2024-12-24T20:10",
-      "status": "active",
+      "status": "archived",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
         "yesVotes": 70000,
         "noVotes": 1390000,
         "totalVoters": 3,
         "totalVotingPower": 1460000,
-        "hasEnded": false
+        "hasEnded": true
       }
     },
     {
@@ -102,14 +102,14 @@
       "question": "Test 3",
       "startTime": "2024-12-19T17:10",
       "endTime": "2024-12-26T17:10",
-      "status": "active",
+      "status": "archived",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
         "yesVotes": 1000000,
         "noVotes": 0,
         "totalVoters": 1,
         "totalVotingPower": 1000000,
-        "hasEnded": false
+        "hasEnded": true
       }
     },
     {
@@ -118,14 +118,14 @@
       "question": "Test vote 4",
       "startTime": "2024-12-24T11:44",
       "endTime": "2024-12-31T11:44",
-      "status": "active",
+      "status": "completed",
       "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
       "results": {
         "yesVotes": 0,
         "noVotes": 0,
         "totalVoters": 0,
         "totalVotingPower": 0,
-        "hasEnded": false
+        "hasEnded": true
       }
     },
     {
@@ -168,6 +168,22 @@
       "endTime": "2025-02-25T16:10",
       "status": "active",
       "createdBy": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
+      "results": {
+        "yesVotes": 0,
+        "noVotes": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
+        "hasEnded": false
+      }
+    },
+    {
+      "id": "q1736351378247",
+      "token": "MAGA•FIGHT•FIGHT",
+      "question": "Test 1",
+      "startTime": "2025-01-08T09:49",
+      "endTime": "2025-02-08T09:49",
+      "status": "active",
+      "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
       "results": {
         "yesVotes": 0,
         "noVotes": 0,
