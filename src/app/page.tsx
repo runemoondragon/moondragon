@@ -292,7 +292,7 @@ export default function Home() {
                   className="p-6 rounded-lg bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 hover:border-gray-700 transition-colors"
                   onClick={() => {
                     if (isMobile) {
-                      window.location.href = 'https://luminex.io/rune/BITBOARD•DASH';
+                      window.location.href = '#';
                     }
                   }}
                 >
