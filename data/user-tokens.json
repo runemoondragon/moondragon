@@ -40,5 +40,12 @@
     "walletAddress": "bc1py8f42rhvphg7afhdthl7rpp0duy27kferyqx200w68jladvcrj5qk7yz7h",
     "associatedUrl": "/dashboards/yolo-moon-runes",
     "createdAt": "2024-12-25T22:15:35.825Z"
+  },
+  {
+    "tokenName": "MANIA•MANIA•MANIA",
+    "requiredBalance": 1000000,
+    "walletAddress": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+    "associatedUrl": "/dashboards/mania-mania-mania",
+    "createdAt": "2025-01-14T04:46:04.353Z"
   }
 ]
