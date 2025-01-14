@@ -157,7 +157,7 @@
       ],
       "startTime": "2024-12-18T02:11:23.860Z",
       "endTime": "2024-12-25T02:11:00.000Z",
-      "status": "active",
+      "status": "completed",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
         "poll1": 0,
@@ -189,7 +189,7 @@
       ],
       "startTime": "2024-12-18T02:11:31.631Z",
       "endTime": "2024-12-25T02:11:00.000Z",
-      "status": "active",
+      "status": "completed",
       "createdBy": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
       "results": {
         "poll1": 390000,
@@ -457,5 +457,4 @@
       }
     }
   ]
-}
 }
