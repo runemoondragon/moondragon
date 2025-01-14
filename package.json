@@ -8,6 +8,7 @@
     "export": "next export",
     "start": "next start",
     "lint": "next lint",
+    "generate-dashboards": "node -r @swc-node/register src/scripts/generateDashboards.ts",
     "deploy": "next build && next export && touch out/.nojekyll && gh-pages -d out",
     "clean": "rm -rf .next out node_modules"
   },

@@ -93,7 +93,7 @@ export default function TokenDashboard() {
   const [polls, setPolls] = useState<Poll[]>([]);
   const [showPollForm, setShowPollForm] = useState(false);
 
-  const tokenName = "FRANK•FRANK•FRANK";
+  const tokenName = "MANIA•MANIA•MANIA";
 
   useEffect(() => {
     setIsMounted(true);

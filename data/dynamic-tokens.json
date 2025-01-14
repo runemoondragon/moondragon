@@ -42,10 +42,10 @@
     "externalUrl": "/dashboards/yolo-moon-runes"
   },
   {
-    "name": "FRANK•FRANK•FRANK",
-    "requiredBalance": 1000,
-    "dashboardPath": "/dashboards/frank-frank-frank",
-    "description": "Access FRANK•FRANK•FRANK Dashboard",
-    "externalUrl": "/dashboards/frank-frank-frank"
+    "name": "MANIA•MANIA•MANIA",
+    "requiredBalance": 10000,
+    "dashboardPath": "/dashboards/mania-mania-mania",
+    "description": "Access MANIA•MANIA•MANIA Dashboard",
+    "externalUrl": "/dashboards/mania-mania-mania"
   }
 ]

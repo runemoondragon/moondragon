@@ -24,6 +24,11 @@ rm -rf .next
 
 # Build the application
 echo "🔨 Building application..."
+
+# Generate dashboard pages
+echo "📄 Generating dashboard pages..."
+node -r @swc-node/register src/scripts/generateDashboards.ts
+
 npm run build
 
 # Create directory if it doesn't exist
@@ -48,6 +53,13 @@ echo "📁 Maintaining public directory..."
 sudo mkdir -p /var/www/bitboard/public
 sudo chown -R www-data:www-data /var/www/bitboard/public
 sudo chmod -R 755 /var/www/bitboard/public
+
+# Ensure data directory exists and copy files
+echo "📋 Setting up data files..."
+sudo mkdir -p /var/www/bitboard/data
+sudo cp -r data/*.json /var/www/bitboard/data/
+sudo chown -R www-data:www-data /var/www/bitboard/data
+sudo chmod -R 664 /var/www/bitboard/data/*.json
 
 # Restart the application with PM2
 echo "🔄 Restarting application..."
