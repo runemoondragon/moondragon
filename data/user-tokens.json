@@ -42,10 +42,10 @@
     "createdAt": "2024-12-25T22:15:35.825Z"
   },
   {
-    "tokenName": "MANIA•MANIA•MANIA",
-    "requiredBalance": 1000000,
+    "tokenName": "FRANK•FRANK•FRANK",
+    "requiredBalance": 1000,
     "walletAddress": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
-    "associatedUrl": "/dashboards/mania-mania-mania",
-    "createdAt": "2025-01-14T04:46:04.353Z"
+    "associatedUrl": "/dashboards/frank-frank-frank",
+    "createdAt": "2025-01-14T05:06:32.001Z"
   }
 ]
