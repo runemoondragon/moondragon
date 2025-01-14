@@ -38,14 +38,14 @@
       "question": "Should we organize a virtual 'DOG' community meetup to discuss future developments and ideas?",
       "startTime": "2024-12-17T20:06",
       "endTime": "2024-12-24T20:05",
-      "status": "active",
+      "status": "completed",
       "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
       "results": {
         "yesVotes": 0,
         "noVotes": 100000,
         "totalVoters": 1,
         "totalVotingPower": 100000,
-        "hasEnded": false
+        "hasEnded": true
       }
     },
     {
@@ -54,14 +54,14 @@
       "question": "Do you support the creation of a community fund to promote $DOG through various initiatives?",
       "startTime": "2024-12-17T20:06",
       "endTime": "2024-12-24T20:05",
-      "status": "active",
+      "status": "completed",
       "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
       "results": {
         "yesVotes": 100000,
         "noVotes": 0,
         "totalVoters": 1,
         "totalVotingPower": 100000,
-        "hasEnded": false
+        "hasEnded": true
       }
     },
     {
@@ -190,6 +190,118 @@
         "totalVoters": 0,
         "totalVotingPower": 0,
         "hasEnded": false
+      }
+    },
+    {
+      "id": "q1736865707811",
+      "token": "MANIA•MANIA•MANIA",
+      "question": "test 2",
+      "startTime": "2025-01-14T08:42",
+      "endTime": "2025-01-14T08:47",
+      "status": "archived",
+      "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+      "results": {
+        "yesVotes": 135000000,
+        "noVotes": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 135000000,
+        "hasEnded": true
+      }
+    },
+    {
+      "id": "q1736867460437",
+      "token": "MANIA•MANIA•MANIA",
+      "question": "Test 1",
+      "startTime": "2025-01-14T09:11",
+      "endTime": "2025-01-14T09:15",
+      "status": "archived",
+      "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+      "results": {
+        "yesVotes": 135000000,
+        "noVotes": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 135000000,
+        "hasEnded": true
+      }
+    },
+    {
+      "id": "q1736867479001",
+      "token": "MANIA•MANIA•MANIA",
+      "question": "Test 2",
+      "startTime": "2025-01-14T09:11",
+      "endTime": "2025-01-14T09:15",
+      "status": "archived",
+      "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+      "results": {
+        "yesVotes": 0,
+        "noVotes": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
+        "hasEnded": true
+      }
+    },
+    {
+      "id": "q1736870507288",
+      "token": "MANIA•MANIA•MANIA",
+      "question": "Test 3",
+      "startTime": "2025-01-14T10:01",
+      "endTime": "2025-01-14T10:05",
+      "status": "archived",
+      "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+      "results": {
+        "yesVotes": 135000000,
+        "noVotes": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 135000000,
+        "hasEnded": true
+      }
+    },
+    {
+      "id": "q1736870527078",
+      "token": "MANIA•MANIA•MANIA",
+      "question": "Test 4",
+      "startTime": "2025-01-14T10:02",
+      "endTime": "2025-01-14T10:05",
+      "status": "archived",
+      "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+      "results": {
+        "yesVotes": 0,
+        "noVotes": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
+        "hasEnded": true
+      }
+    },
+    {
+      "id": "q1736871317909",
+      "token": "MANIA•MANIA•MANIA",
+      "question": "test 6",
+      "startTime": "2025-01-14T10:15",
+      "endTime": "2025-01-14T10:20",
+      "status": "archived",
+      "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+      "results": {
+        "yesVotes": 0,
+        "noVotes": 135000000,
+        "totalVoters": 1,
+        "totalVotingPower": 135000000,
+        "hasEnded": true
+      }
+    },
+    {
+      "id": "q1736871341063",
+      "token": "MANIA•MANIA•MANIA",
+      "question": "Test 7",
+      "startTime": "2025-01-14T10:15",
+      "endTime": "2025-01-14T10:20",
+      "status": "archived",
+      "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+      "results": {
+        "yesVotes": 0,
+        "noVotes": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
+        "hasEnded": true
       }
     }
   ]

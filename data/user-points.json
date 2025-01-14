@@ -40,5 +40,12 @@
     "votingPoints": 2,
     "pollingPoints": 3,
     "totalPoints": 5
+  },
+  {
+    "walletAddress": "bc1py8f42rhvphg7afhdthl7rpp0duy27kferyqx200w68jladvcrj5qk7yz7h",
+    "token": "MANIA•MANIA•MANIA",
+    "votingPoints": 3,
+    "pollingPoints": 3,
+    "totalPoints": 6
   }
 ]

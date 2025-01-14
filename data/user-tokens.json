@@ -1,51 +1,44 @@
 [
   {
-    "tokenName": "UNCOMMON•GOODS",
-    "requiredBalance": 5,
-    "walletAddress": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
-    "associatedUrl": "/dashboards/uncommon-goods",
-    "createdAt": "2024-12-18T01:41:39.492Z"
-  },
-  {
-    "tokenName": "DOG•GO•TO•THE•MOON",
-    "requiredBalance": 10000,
-    "walletAddress": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
-    "associatedUrl": "/dashboards/dog-go-to-the-moon",
-    "createdAt": "2024-12-20T14:49:53.156Z"
+    "tokenName": "YOLO•MOON•RUNES",
+    "requiredBalance": 2500000,
+    "walletAddress": "bc1py8f42rhvphg7afhdthl7rpp0duy27kferyqx200w68jladvcrj5qk7yz7h",
+    "associatedUrl": "/dashboards/yolo-moon-runes",
+    "createdAt": "2025-01-14T15:29:52.067Z"
   },
   {
     "tokenName": "MAGA•FIGHT•FIGHT",
     "requiredBalance": 25000,
     "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
     "associatedUrl": "/dashboards/maga-fight-fight",
-    "createdAt": "2024-12-20T14:50:38.166Z"
+    "createdAt": "2025-01-14T16:34:41.776Z"
   },
   {
-    "tokenName": "RSIC•GENESIS•RUNE",
+    "tokenName": "DOG•GO•TO•THE•MOON",
     "requiredBalance": 10000,
-    "walletAddress": "bc1pn5dfs58jskhtswjhnfgrl8udanzcp75y07636wq55f6806gnq5ysyhfw3n",
-    "associatedUrl": "/dashboards/rsic-genesis-rune",
-    "createdAt": "2024-12-25T22:14:19.953Z"
+    "walletAddress": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
+    "associatedUrl": "/dashboards/dog-go-to-the-moon",
+    "createdAt": "2025-01-14T16:36:13.170Z"
+  },
+  {
+    "tokenName": "UNCOMMON•GOODS",
+    "requiredBalance": 5,
+    "walletAddress": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
+    "associatedUrl": "/dashboards/uncommon-goods",
+    "createdAt": "2025-01-14T16:37:15.489Z"
   },
   {
     "tokenName": "SATOSHI•NAKAMOTO",
     "requiredBalance": 10000,
     "walletAddress": "bc1phlumkse9gl6p6dja0x2j3g82cpdnrwq5j6mwd74f2ewxk85h0q3qs6rykl",
     "associatedUrl": "/dashboards/satoshi-nakamoto",
-    "createdAt": "2024-12-25T22:14:47.482Z"
+    "createdAt": "2025-01-14T16:40:25.038Z"
   },
   {
-    "tokenName": "YOLO•MOON•RUNES",
-    "requiredBalance": 2500000,
-    "walletAddress": "bc1py8f42rhvphg7afhdthl7rpp0duy27kferyqx200w68jladvcrj5qk7yz7h",
-    "associatedUrl": "/dashboards/yolo-moon-runes",
-    "createdAt": "2024-12-25T22:15:35.825Z"
-  },
-  {
-    "tokenName": "MANIA•MANIA•MANIA",
+    "tokenName": "RSIC•GENESIS•RUNE",
     "requiredBalance": 10000,
-    "walletAddress": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
-    "associatedUrl": "/dashboards/mania-mania-mania",
-    "createdAt": "2025-01-14T05:48:24.978Z"
+    "walletAddress": "bc1pn5dfs58jskhtswjhnfgrl8udanzcp75y07636wq55f6806gnq5ysyhfw3n",
+    "associatedUrl": "/dashboards/rsic-genesis-rune",
+    "createdAt": "2025-01-14T16:41:14.598Z"
   }
 ]

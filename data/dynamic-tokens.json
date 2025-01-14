@@ -1,17 +1,10 @@
 [
   {
-    "name": "UNCOMMON•GOODS",
-    "requiredBalance": 5,
-    "dashboardPath": "/dashboards/uncommon-goods",
-    "description": "Access UNCOMMON•GOODS Dashboard",
-    "externalUrl": "/dashboards/uncommon-goods"
-  },
-  {
-    "name": "DOG•GO•TO•THE•MOON",
-    "requiredBalance": 10000,
-    "dashboardPath": "/dashboards/dog-go-to-the-moon",
-    "description": "Access DOG•GO•TO•THE•MOON Dashboard",
-    "externalUrl": "/dashboards/dog-go-to-the-moon"
+    "name": "YOLO•MOON•RUNES",
+    "requiredBalance": 2500000,
+    "dashboardPath": "/dashboards/yolo-moon-runes",
+    "description": "Access YOLO•MOON•RUNES Dashboard",
+    "externalUrl": "/dashboards/yolo-moon-runes"
   },
   {
     "name": "MAGA•FIGHT•FIGHT",
@@ -21,11 +14,18 @@
     "externalUrl": "/dashboards/maga-fight-fight"
   },
   {
-    "name": "RSIC•GENESIS•RUNE",
+    "name": "DOG•GO•TO•THE•MOON",
     "requiredBalance": 10000,
-    "dashboardPath": "/dashboards/rsic-genesis-rune",
-    "description": "Access RSIC•GENESIS•RUNE Dashboard",
-    "externalUrl": "/dashboards/rsic-genesis-rune"
+    "dashboardPath": "/dashboards/dog-go-to-the-moon",
+    "description": "Access DOG•GO•TO•THE•MOON Dashboard",
+    "externalUrl": "/dashboards/dog-go-to-the-moon"
+  },
+  {
+    "name": "UNCOMMON•GOODS",
+    "requiredBalance": 5,
+    "dashboardPath": "/dashboards/uncommon-goods",
+    "description": "Access UNCOMMON•GOODS Dashboard",
+    "externalUrl": "/dashboards/uncommon-goods"
   },
   {
     "name": "SATOSHI•NAKAMOTO",
@@ -35,17 +35,10 @@
     "externalUrl": "/dashboards/satoshi-nakamoto"
   },
   {
-    "name": "YOLO•MOON•RUNES",
-    "requiredBalance": 2500000,
-    "dashboardPath": "/dashboards/yolo-moon-runes",
-    "description": "Access YOLO•MOON•RUNES Dashboard",
-    "externalUrl": "/dashboards/yolo-moon-runes"
-  },
-  {
-    "name": "MANIA•MANIA•MANIA",
+    "name": "RSIC•GENESIS•RUNE",
     "requiredBalance": 10000,
-    "dashboardPath": "/dashboards/mania-mania-mania",
-    "description": "Access MANIA•MANIA•MANIA Dashboard",
-    "externalUrl": "/dashboards/mania-mania-mania"
+    "dashboardPath": "/dashboards/rsic-genesis-rune",
+    "description": "Access RSIC•GENESIS•RUNE Dashboard",
+    "externalUrl": "/dashboards/rsic-genesis-rune"
   }
 ]

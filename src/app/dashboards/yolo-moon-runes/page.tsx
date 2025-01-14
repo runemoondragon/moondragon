@@ -675,13 +675,23 @@ export default function TokenDashboard() {
                               />
                             </div>
                             
-                            <button
-                              onClick={() => handlePollVote(poll.id, `poll${index + 1}`)}
-                              disabled={!votingPower || poll.results.voters?.includes(address || '')}
-                              className="mt-2 w-full px-4 py-2 text-left text-sm hover:bg-white/5 rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                              {votes.toLocaleString()} votes ({votes.toLocaleString()} {tokenName})
-                            </button>
+                            {/* Only show voting button if poll is active and user hasn't voted */}
+                            {poll.status === 'active' && !poll.results.voters?.includes(address || '') && (
+                              <button
+                                onClick={() => handlePollVote(poll.id, `poll${index + 1}`)}
+                                disabled={!votingPower}
+                                className="mt-2 w-full px-4 py-2 text-left text-sm hover:bg-white/5 rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                              >
+                                {votes.toLocaleString()} votes ({votes.toLocaleString()} {tokenName})
+                              </button>
+                            )}
+                            
+                            {/* Show static vote count if poll is completed or user has voted */}
+                            {(poll.status !== 'active' || poll.results.voters?.includes(address || '')) && (
+                              <div className="mt-2 w-full px-4 py-2 text-left text-sm text-gray-500">
+                                {votes.toLocaleString()} votes ({votes.toLocaleString()} {tokenName})
+                              </div>
+                            )}
                           </div>
                         </div>
                       );

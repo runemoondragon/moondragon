@@ -1,4 +1,3 @@
-
 export function generateDashboardContent(tokenName: string) {
   return `"use client";
 import { useEffect, useState } from 'react';
@@ -575,6 +574,13 @@ export default function TokenDashboard() {
                         </div>
 
                         {/* Status Messages */}
+                        <div className="text-sm text-gray-500 dark:text-gray-400 mt-4">
+                          Total votes: {session.results.totalVoters}
+                          <br />
+                          Total voting power: {session.results.totalVotingPower.toLocaleString()} {tokenName}
+                        </div>
+
+                        {/* Status Messages */}
                         {session.status === 'completed' && (
                           <div className="text-sm text-gray-400 mt-2 space-y-1">
                             <div>Voting has ended</div>
@@ -589,14 +595,6 @@ export default function TokenDashboard() {
                                     <div>
                                       Winning margin: {results.margin.toFixed(1)}%
                                     </div>
-                                    {isAdmin && (
-                                      <button
-                                        onClick={() => handleArchiveSession(session)}
-                                        className="mt-4 w-full px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
-                                      >
-                                        Archive This Session
-                                      </button>
-                                    )}
                                   </>
                                 );
                               }
@@ -604,11 +602,21 @@ export default function TokenDashboard() {
                             })()}
                           </div>
                         )}
+
+                        {/* Moved archive button outside the results calculation */}
+                        {isAdmin && session.status === 'completed' && (
+                          <button
+                            onClick={() => handleArchiveSession(session)}
+                            className="mt-4 w-full px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                          >
+                            Archive This Session
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+                  <p className="text-gray-500 dark:text-gray-400 py-8">
                     No voting sessions available
                   </p>
                 )}
@@ -677,13 +685,23 @@ export default function TokenDashboard() {
                               />
                             </div>
                             
-                            <button
-                              onClick={() => handlePollVote(poll.id, \`poll\${index + 1}\`)}
-                              disabled={!votingPower || poll.results.voters?.includes(address || '')}
-                              className="mt-2 w-full px-4 py-2 text-left text-sm hover:bg-white/5 rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                              {votes.toLocaleString()} votes ({votes.toLocaleString()} {tokenName})
-                            </button>
+                            {/* Only show voting button if poll is active and user hasn't voted */}
+                            {poll.status === 'active' && !poll.results.voters?.includes(address || '') && (
+                              <button
+                                onClick={() => handlePollVote(poll.id, \`poll\${index + 1}\`)}
+                                disabled={!votingPower}
+                                className="mt-2 w-full px-4 py-2 text-left text-sm hover:bg-white/5 rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                              >
+                                {votes.toLocaleString()} votes ({votes.toLocaleString()} {tokenName})
+                              </button>
+                            )}
+                            
+                            {/* Show static vote count if poll is completed or user has voted */}
+                            {(poll.status !== 'active' || poll.results.voters?.includes(address || '')) && (
+                              <div className="mt-2 w-full px-4 py-2 text-left text-sm text-gray-500">
+                                {votes.toLocaleString()} votes ({votes.toLocaleString()} {tokenName})
+                              </div>
+                            )}
                           </div>
                         </div>
                       );
@@ -734,7 +752,7 @@ export default function TokenDashboard() {
 
                   {poll.status === 'completed' && (
                     <div className="mt-4 text-sm text-gray-400 text-center">
-                      Voting has ended
+                      Poll has ended
                     </div>
                   )}
                 </div>
