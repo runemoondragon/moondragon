@@ -22,13 +22,12 @@ npm install
 echo "🧹 Cleaning build directory..."
 rm -rf .next
 
-# Build the application
-echo "🔨 Building application..."
-
 # Generate dashboard pages
 echo "📄 Generating dashboard pages..."
-node -r @swc-node/register src/scripts/generateDashboards.ts
+npm run generate-dashboards
 
+# Build the application
+echo "🔨 Building application..."
 npm run build
 
 # Create directory if it doesn't exist
@@ -41,18 +40,13 @@ sudo cp -r .next /var/www/bitboard/
 
 # Copy public directory contents
 echo "📋 Copying public assets..."
+sudo mkdir -p /var/www/bitboard/public
 sudo cp -r public/* /var/www/bitboard/public/
 
 # Set permissions for web server
 echo "🔒 Setting web server permissions..."
 sudo chown -R www-data:www-data /var/www/bitboard
 sudo chmod -R 755 /var/www/bitboard
-
-# Ensure public directory exists and is maintained during deployments
-echo "📁 Maintaining public directory..."
-sudo mkdir -p /var/www/bitboard/public
-sudo chown -R www-data:www-data /var/www/bitboard/public
-sudo chmod -R 755 /var/www/bitboard/public
 
 # Ensure data directory exists and copy files
 echo "📋 Setting up data files..."
