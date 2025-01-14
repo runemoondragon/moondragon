@@ -1,6 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-import { generateDashboardContent } from '../lib/templates/generateDashboard';
+const fs = require('fs');
+const path = require('path');
+const { generateDashboardContent } = require('../lib/templates/generateDashboard');
 
 async function generateDashboards() {
   try {
