@@ -22,10 +22,6 @@ npm install
 echo "🧹 Cleaning build directory..."
 rm -rf .next
 
-# Generate dashboard pages
-echo "📄 Generating dashboard pages..."
-npm run generate-dashboards
-
 # Build the application
 echo "🔨 Building application..."
 npm run build
@@ -40,7 +36,6 @@ sudo cp -r .next /var/www/bitboard/
 
 # Copy public directory contents
 echo "📋 Copying public assets..."
-sudo mkdir -p /var/www/bitboard/public
 sudo cp -r public/* /var/www/bitboard/public/
 
 # Set permissions for web server
@@ -48,12 +43,11 @@ echo "🔒 Setting web server permissions..."
 sudo chown -R www-data:www-data /var/www/bitboard
 sudo chmod -R 755 /var/www/bitboard
 
-# Ensure data directory exists and copy files
-echo "📋 Setting up data files..."
-sudo mkdir -p /var/www/bitboard/data
-sudo cp -r data/*.json /var/www/bitboard/data/
-sudo chown -R www-data:www-data /var/www/bitboard/data
-sudo chmod -R 664 /var/www/bitboard/data/*.json
+# Ensure public directory exists and is maintained during deployments
+echo "📁 Maintaining public directory..."
+sudo mkdir -p /var/www/bitboard/public
+sudo chown -R www-data:www-data /var/www/bitboard/public
+sudo chmod -R 755 /var/www/bitboard/public
 
 # Restart the application with PM2
 echo "🔄 Restarting application..."
