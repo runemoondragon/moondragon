@@ -8,7 +8,7 @@
     "export": "next export",
     "start": "next start",
     "lint": "next lint",
-    "generate-dashboards": "node -r @swc-node/register src/scripts/generateDashboards.ts",
+    "generate-dashboards": "npx ts-node src/scripts/generateDashboards.ts",
     "deploy": "next build && next export && touch out/.nojekyll && gh-pages -d out",
     "clean": "rm -rf .next out node_modules"
   },
@@ -47,6 +47,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/uuid": "^10.0.0",
+    "@swc-node/register": "^1.9.0",
     "eslint": "^8",
     "eslint-config-next": "14.2.3",
     "gh-pages": "^6.2.0",
