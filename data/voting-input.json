@@ -303,6 +303,22 @@
         "totalVotingPower": 0,
         "hasEnded": true
       }
+    },
+    {
+      "id": "q1736980255418",
+      "token": "THE•GOD•OF•BITCOIN",
+      "question": "Test yes or no question",
+      "startTime": "2025-01-15T16:31",
+      "endTime": "2025-01-15T16:35",
+      "status": "active",
+      "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+      "results": {
+        "yesVotes": 0,
+        "noVotes": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
+        "hasEnded": false
+      }
     }
   ]
 }

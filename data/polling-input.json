@@ -645,15 +645,17 @@
       ],
       "startTime": "2025-01-15T13:55:46.675Z",
       "endTime": "2025-01-15T13:59:00.000Z",
-      "status": "active",
+      "status": "archived",
       "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
       "results": {
         "poll1": 0,
         "poll2": 0,
         "totalVoters": 0,
         "totalVotingPower": 0,
-        "hasEnded": false,
-        "voters": []
+        "hasEnded": true,
+        "voters": [],
+        "winner": "op 1",
+        "winningPercentage": 0
       }
     }
   ]
