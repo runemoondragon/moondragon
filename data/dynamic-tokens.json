@@ -40,12 +40,5 @@
     "dashboardPath": "/dashboards/rsic-genesis-rune",
     "description": "Access RSIC•GENESIS•RUNE Dashboard",
     "externalUrl": "/dashboards/rsic-genesis-rune"
-  },
-  {
-    "name": "THE•GOD•OF•BITCOIN",
-    "requiredBalance": 100000,
-    "dashboardPath": "/dashboards/the-god-of-bitcoin",
-    "description": "Access THE•GOD•OF•BITCOIN Dashboard",
-    "externalUrl": "/dashboards/the-god-of-bitcoin"
   }
 ]

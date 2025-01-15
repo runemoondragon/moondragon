@@ -634,6 +634,27 @@
         "winner": "op 1",
         "winningPercentage": 0
       }
+    },
+    {
+      "id": "p1736949346675",
+      "token": "THE•GOD•OF•BITCOIN",
+      "pollQuestion": "test 1",
+      "options": [
+        "op 1",
+        "op 2"
+      ],
+      "startTime": "2025-01-15T13:55:46.675Z",
+      "endTime": "2025-01-15T13:59:00.000Z",
+      "status": "active",
+      "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+      "results": {
+        "poll1": 0,
+        "poll2": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
+        "hasEnded": false,
+        "voters": []
+      }
     }
   ]
 }
