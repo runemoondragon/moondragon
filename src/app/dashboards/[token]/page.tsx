@@ -113,6 +113,19 @@ export default function TokenDashboard({ params }: { params: { token: string } }
     }
   }, [isMounted, address, router]);
 
+  useEffect(() => {
+    // Debug API call
+    const testAPI = async () => {
+      try {
+        const response = await fetch('/api/check-connection');
+        console.log('API Response:', response.status);
+      } catch (error) {
+        console.error('API Error:', error);
+      }
+    };
+    testAPI();
+  }, []);
+
   const handleVote = async (sessionId: string, choice: 'yes' | 'no') => {
     if (!address || !votingPower) return;
     try {
@@ -192,6 +205,43 @@ export default function TokenDashboard({ params }: { params: { token: string } }
       toast.error(error instanceof Error ? error.message : 'Failed to vote');
     }
   };
+
+  const testVotingAPI = async () => {
+    try {
+      const response = await fetch('/api/voting/status', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      console.log('Voting API Response:', response.status);
+      const data = await response.json();
+      console.log('Voting API Data:', data);
+    } catch (error) {
+      console.error('Voting API Error:', error);
+    }
+  };
+
+  const testPollsAPI = async () => {
+    try {
+      const response = await fetch('/api/polls/status', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      console.log('Polls API Response:', response.status);
+      const data = await response.json();
+      console.log('Polls API Data:', data);
+    } catch (error) {
+      console.error('Polls API Error:', error);
+    }
+  };
+
+  useEffect(() => {
+    testVotingAPI();
+    testPollsAPI();
+  }, []);
 
   if (!isMounted) return null;
 
