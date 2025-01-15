@@ -26,4 +26,6 @@ export async function GET(request: Request) {
     console.error('Error fetching user token:', error);
     return NextResponse.json({ token: null }, { status: 500 });
   }
-} 
+}
+
+export const dynamic = 'force-dynamic' 

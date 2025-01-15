@@ -36,4 +36,6 @@ export async function GET(
     console.error('Error fetching results:', error);
     return NextResponse.json({ error: 'Failed to fetch results' }, { status: 500 });
   }
-} 
+}
+
+export const dynamic = 'force-dynamic' 

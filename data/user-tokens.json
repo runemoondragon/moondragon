@@ -40,5 +40,12 @@
     "walletAddress": "bc1pn5dfs58jskhtswjhnfgrl8udanzcp75y07636wq55f6806gnq5ysyhfw3n",
     "associatedUrl": "/dashboards/rsic-genesis-rune",
     "createdAt": "2025-01-14T16:41:14.598Z"
+  },
+  {
+    "tokenName": "THE•GOD•OF•BITCOIN",
+    "requiredBalance": 100000,
+    "walletAddress": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+    "associatedUrl": "/dashboards/the-god-of-bitcoin",
+    "createdAt": "2025-01-14T20:27:32.905Z"
   }
 ]

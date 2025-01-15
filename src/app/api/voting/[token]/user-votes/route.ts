@@ -30,4 +30,6 @@ export async function GET(
     console.error('Error fetching user votes:', error);
     return NextResponse.json({ error: 'Failed to fetch user votes' }, { status: 500 });
   }
-} 
+}
+
+export const dynamic = 'force-dynamic' 

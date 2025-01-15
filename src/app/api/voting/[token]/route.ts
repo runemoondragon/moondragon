@@ -26,6 +26,8 @@ interface Vote {
   timestamp: string;
 }
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(
   request: Request,
   { params }: { params: { token: string } }
