@@ -26,6 +26,11 @@ rm -rf .next
 echo "🔨 Building application..."
 npm run build
 
+# Copy data files to standalone directory
+echo "📋 Copying data files..."
+sudo mkdir -p /var/www/bitboard/.next/standalone/data
+sudo cp -r data/* /var/www/bitboard/.next/standalone/data/
+
 # Create directory if it doesn't exist
 echo "📁 Setting up directory..."
 sudo mkdir -p /var/www/bitboard

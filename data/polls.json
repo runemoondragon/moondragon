@@ -194,5 +194,26 @@
     "choice": "poll3",
     "tokenBalance": 1000000,
     "timestamp": "2024-12-24T17:47:14.262Z"
+  },
+  {
+    "pollId": "p1736867509626",
+    "walletAddress": "bc1py8f42rhvphg7afhdthl7rpp0duy27kferyqx200w68jladvcrj5qk7yz7h",
+    "choice": "poll1",
+    "tokenBalance": 135000000,
+    "timestamp": "2025-01-14T15:12:45.591Z"
+  },
+  {
+    "pollId": "p1736870546113",
+    "walletAddress": "bc1py8f42rhvphg7afhdthl7rpp0duy27kferyqx200w68jladvcrj5qk7yz7h",
+    "choice": "poll1",
+    "tokenBalance": 135000000,
+    "timestamp": "2025-01-14T16:03:10.262Z"
+  },
+  {
+    "pollId": "p1736871371619",
+    "walletAddress": "bc1py8f42rhvphg7afhdthl7rpp0duy27kferyqx200w68jladvcrj5qk7yz7h",
+    "choice": "poll3",
+    "tokenBalance": 135000000,
+    "timestamp": "2025-01-14T16:16:48.334Z"
   }
 ]

@@ -98,7 +98,7 @@
       ],
       "startTime": "2024-12-18T02:08:47.990Z",
       "endTime": "2024-12-25T02:08:00.000Z",
-      "status": "active",
+      "status": "completed",
       "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
       "results": {
         "poll1": 0,
@@ -107,7 +107,7 @@
         "poll4": 0,
         "totalVoters": 1,
         "totalVotingPower": 100000,
-        "hasEnded": false,
+        "hasEnded": true,
         "voters": [
           "bc1pqmcsatdcc52j2qrmhcm3fegwhhejxwnr743yw9knqrxqglhahr2q57jl3c"
         ]
@@ -454,6 +454,185 @@
         "totalVotingPower": 0,
         "hasEnded": false,
         "voters": []
+      }
+    },
+    {
+      "id": "p1736865685336",
+      "token": "MANIA•MANIA•MANIA",
+      "pollQuestion": "test 2 ",
+      "options": [
+        "op 1",
+        "op 2",
+        "op 3"
+      ],
+      "startTime": "2025-01-14T14:41:25.336Z",
+      "endTime": "2025-01-14T14:47:00.000Z",
+      "status": "archived",
+      "createdBy": "anonymous",
+      "results": {
+        "poll1": 135000000,
+        "poll2": 0,
+        "poll3": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 135000000,
+        "hasEnded": true,
+        "voters": [
+          "bc1py8f42rhvphg7afhdthl7rpp0duy27kferyqx200w68jladvcrj5qk7yz7h"
+        ],
+        "winner": "op 1",
+        "winningPercentage": 100
+      }
+    },
+    {
+      "id": "p1736867509626",
+      "token": "MANIA•MANIA•MANIA",
+      "pollQuestion": "test 1",
+      "options": [
+        "op 1",
+        "op 2",
+        "op 3"
+      ],
+      "startTime": "2025-01-14T15:11:49.626Z",
+      "endTime": "2025-01-14T15:16:00.000Z",
+      "status": "archived",
+      "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+      "results": {
+        "poll1": 135000000,
+        "poll2": 0,
+        "poll3": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 135000000,
+        "hasEnded": true,
+        "voters": [
+          "bc1py8f42rhvphg7afhdthl7rpp0duy27kferyqx200w68jladvcrj5qk7yz7h"
+        ],
+        "winner": "op 1",
+        "winningPercentage": 100
+      }
+    },
+    {
+      "id": "p1736867517228",
+      "token": "MANIA•MANIA•MANIA",
+      "pollQuestion": "test 2",
+      "options": [
+        "op 1",
+        "op 2",
+        "op 3"
+      ],
+      "startTime": "2025-01-14T15:11:57.228Z",
+      "endTime": "2025-01-14T15:16:00.000Z",
+      "status": "archived",
+      "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+      "results": {
+        "poll1": 0,
+        "poll2": 0,
+        "poll3": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
+        "hasEnded": true,
+        "voters": [],
+        "winner": "op 1",
+        "winningPercentage": 0
+      }
+    },
+    {
+      "id": "p1736870546113",
+      "token": "MANIA•MANIA•MANIA",
+      "pollQuestion": "test 2",
+      "options": [
+        "op 1",
+        "op 2"
+      ],
+      "startTime": "2025-01-14T16:02:26.113Z",
+      "endTime": "2025-01-14T16:05:00.000Z",
+      "status": "archived",
+      "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+      "results": {
+        "poll1": 135000000,
+        "poll2": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 135000000,
+        "hasEnded": true,
+        "voters": [
+          "bc1py8f42rhvphg7afhdthl7rpp0duy27kferyqx200w68jladvcrj5qk7yz7h"
+        ],
+        "winner": "op 1",
+        "winningPercentage": 100
+      }
+    },
+    {
+      "id": "p1736870557448",
+      "token": "MANIA•MANIA•MANIA",
+      "pollQuestion": "test 3",
+      "options": [
+        "op 1",
+        "op 2"
+      ],
+      "startTime": "2025-01-14T16:02:37.448Z",
+      "endTime": "2025-01-14T16:05:00.000Z",
+      "status": "archived",
+      "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+      "results": {
+        "poll1": 0,
+        "poll2": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
+        "hasEnded": true,
+        "voters": [],
+        "winner": "op 1",
+        "winningPercentage": 0
+      }
+    },
+    {
+      "id": "p1736871371619",
+      "token": "MANIA•MANIA•MANIA",
+      "pollQuestion": "Test 6",
+      "options": [
+        "op 1",
+        "op 2",
+        "op 3"
+      ],
+      "startTime": "2025-01-14T16:16:11.619Z",
+      "endTime": "2025-01-14T16:20:00.000Z",
+      "status": "archived",
+      "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+      "results": {
+        "poll1": 0,
+        "poll2": 0,
+        "poll3": 135000000,
+        "totalVoters": 1,
+        "totalVotingPower": 135000000,
+        "hasEnded": true,
+        "voters": [
+          "bc1py8f42rhvphg7afhdthl7rpp0duy27kferyqx200w68jladvcrj5qk7yz7h"
+        ],
+        "winner": "op 3",
+        "winningPercentage": 100
+      }
+    },
+    {
+      "id": "p1736871378519",
+      "token": "MANIA•MANIA•MANIA",
+      "pollQuestion": "Test 7",
+      "options": [
+        "op 1",
+        "op 2",
+        "op 3"
+      ],
+      "startTime": "2025-01-14T16:16:18.519Z",
+      "endTime": "2025-01-14T16:20:00.000Z",
+      "status": "archived",
+      "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+      "results": {
+        "poll1": 0,
+        "poll2": 0,
+        "poll3": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
+        "hasEnded": true,
+        "voters": [],
+        "winner": "op 1",
+        "winningPercentage": 0
       }
     }
   ]

@@ -21,4 +21,6 @@ export async function GET(
     // Return empty questions array on error
     return NextResponse.json({ questions: [] });
   }
-} 
+}
+
+export const dynamic = 'force-dynamic' 
