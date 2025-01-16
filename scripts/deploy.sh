@@ -59,4 +59,8 @@ pm2 save
 echo "🔄 Reloading Nginx..."
 sudo systemctl reload nginx
 
+mkdir -p /home/ubuntu/moondragon/data
+mkdir -p /home/ubuntu/moondragon/.next/standalone/data
+cp /home/ubuntu/moondragon/data/* /home/ubuntu/moondragon/.next/standalone/data/
+
 echo "✅ Deployment completed!"
