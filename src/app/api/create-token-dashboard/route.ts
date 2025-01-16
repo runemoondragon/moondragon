@@ -13,8 +13,8 @@ export async function POST(request: Request) {
     // Generate the dashboard content
     const dashboardContent = generateDashboardContent(tokenName);
 
-    // Specify the new location: moondragon/src/app/dashboards
-    const baseDashboardDir = path.join(process.cwd(), 'src/app/dashboards');
+    // Explicitly set the base directory to the correct source folder
+    const baseDashboardDir = path.join(process.env.APP_BASE_DIR || '/home/ubuntu/moondragon', 'src/app/dashboards');
     const dashboardDir = path.join(baseDashboardDir, dashboardName);
     const dashboardPath = path.join(dashboardDir, 'page.tsx');
 
