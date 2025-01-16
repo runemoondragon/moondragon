@@ -25,14 +25,6 @@ const nextConfig = {
       ],
     },
   ],
-  experimental: {
-    outputFileTracingIncludes: {
-      '/api/**/*': [
-        './src/app/api/**/*',
-        './data/**/*'
-      ],
-    },
-  },
 }
 
 module.exports = nextConfig 
