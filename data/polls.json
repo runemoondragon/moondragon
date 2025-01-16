@@ -215,5 +215,12 @@
     "choice": "poll3",
     "tokenBalance": 135000000,
     "timestamp": "2025-01-14T16:16:48.334Z"
+  },
+  {
+    "pollId": "p1737070643062",
+    "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+    "choice": "poll1",
+    "tokenBalance": 1000000,
+    "timestamp": "2025-01-16T23:38:02.147Z"
   }
 ]

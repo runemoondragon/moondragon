@@ -118,7 +118,7 @@
       "question": "Test vote 4",
       "startTime": "2024-12-24T11:44",
       "endTime": "2024-12-31T11:44",
-      "status": "completed",
+      "status": "archived",
       "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
       "results": {
         "yesVotes": 0,
@@ -295,6 +295,54 @@
       "startTime": "2025-01-14T10:15",
       "endTime": "2025-01-14T10:20",
       "status": "archived",
+      "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+      "results": {
+        "yesVotes": 0,
+        "noVotes": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
+        "hasEnded": true
+      }
+    },
+    {
+      "id": "q1736980255418",
+      "token": "THE•GOD•OF•BITCOIN",
+      "question": "Test yes or no question",
+      "startTime": "2025-01-15T16:31",
+      "endTime": "2025-01-15T16:35",
+      "status": "active",
+      "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+      "results": {
+        "yesVotes": 0,
+        "noVotes": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
+        "hasEnded": false
+      }
+    },
+    {
+      "id": "q1737041465628",
+      "token": "EPIC•EPIC•EPIC•EPIC",
+      "question": "test 11 pc",
+      "startTime": "2025-01-16T09:31",
+      "endTime": "2025-01-16T09:36",
+      "status": "completed",
+      "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
+      "results": {
+        "yesVotes": 0,
+        "noVotes": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
+        "hasEnded": true
+      }
+    },
+    {
+      "id": "q1737059209037",
+      "token": "EPIC•EPIC•EPIC•EPIC",
+      "question": "test 2 www",
+      "startTime": "2025-01-16T14:27",
+      "endTime": "2025-01-16T14:32",
+      "status": "completed",
       "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
       "results": {
         "yesVotes": 0,

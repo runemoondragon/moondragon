@@ -22,5 +22,3 @@ export async function GET(
     return NextResponse.json({ questions: [] });
   }
 }
-
-export const dynamic = 'force-dynamic' 

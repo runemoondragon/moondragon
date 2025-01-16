@@ -406,6 +406,7 @@ export default function TokenDashboard() {
   };
 
   const checkPollStatus = async (poll: any) => {
+    // Convert both times to UTC for comparison
     const now = new Date().getTime();
     const endTime = new Date(poll.endTime).getTime();
     
@@ -434,32 +435,39 @@ export default function TokenDashboard() {
   if (!isMounted) return null;
   
   const handleCreatePoll = async (data: PollFormData) => {
-  try {
-    const response = await fetch('/api/polls/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...data,
-        token: tokenName,
-        createdBy: address
-      }),
-    });
+    try {
+      // Use current time as start time
+      const startTimeUTC = new Date().toISOString();
+      // Convert local end time to UTC
+      const endTimeUTC = new Date(data.endTime).toISOString();
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to create poll');
+      const response = await fetch('/api/polls/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          startTime: startTimeUTC,
+          endTime: endTimeUTC,
+          token: tokenName,
+          createdBy: address
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create poll');
+      }
+
+      setShowPollForm(false);
+      toast.success('Poll created successfully!');
+      await fetchPolls();
+    } catch (error) {
+      console.error('Error creating poll:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to create poll');
     }
-
-    setShowPollForm(false);
-    toast.success('Poll created successfully!');
-    await fetchPolls();
-  } catch (error) {
-    console.error('Error creating poll:', error);
-    toast.error(error instanceof Error ? error.message : 'Failed to create poll');
-  }
-};
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 dark:from-gray-900 dark:to-black text-black dark:text-white">
