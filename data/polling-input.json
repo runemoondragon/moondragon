@@ -668,14 +668,14 @@
       ],
       "startTime": "2025-01-16T20:27:20.375Z",
       "endTime": "2025-01-16T20:33:00.000Z",
-      "status": "active",
+      "status": "completed",
       "createdBy": "bc1pdqu4m257mz5xdsl996emnc4xfdllcsfcy8643smkmpxzzshyh9hskpkgcc",
       "results": {
         "poll1": 0,
         "poll2": 0,
         "totalVoters": 0,
         "totalVotingPower": 0,
-        "hasEnded": false,
+        "hasEnded": true,
         "voters": []
       }
     }
