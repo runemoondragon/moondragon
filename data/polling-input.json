@@ -678,6 +678,31 @@
         "hasEnded": true,
         "voters": []
       }
+    },
+    {
+      "id": "p1737070643062",
+      "token": "MAGA•FIGHT•FIGHT",
+      "pollQuestion": "Test 11",
+      "options": [
+        "op 1",
+        "0p 2"
+      ],
+      "startTime": "2025-01-16T23:37:23.062Z",
+      "endTime": "2025-01-16T23:43:00.000Z",
+      "status": "archived",
+      "createdBy": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+      "results": {
+        "poll1": 1000000,
+        "poll2": 0,
+        "totalVoters": 1,
+        "totalVotingPower": 1000000,
+        "hasEnded": true,
+        "voters": [
+          "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5"
+        ],
+        "winner": "op 1",
+        "winningPercentage": 100
+      }
     }
   ]
 }
