@@ -351,6 +351,22 @@
         "totalVotingPower": 0,
         "hasEnded": true
       }
+    },
+    {
+      "id": "q1737341593611",
+      "token": "US•PRESIDENTS",
+      "question": "US•PRESIDENTS",
+      "startTime": "2025-01-19T20:53",
+      "endTime": "2025-01-19T20:59",
+      "status": "archived",
+      "createdBy": "bc1pn5dfs58jskhtswjhnfgrl8udanzcp75y07636wq55f6806gnq5ysyhfw3n",
+      "results": {
+        "yesVotes": 0,
+        "noVotes": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
+        "hasEnded": true
+      }
     }
   ]
 }

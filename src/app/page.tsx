@@ -291,9 +291,7 @@ export default function Home() {
                   key={index}
                   className="p-6 rounded-lg bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 hover:border-gray-700 transition-colors"
                   onClick={() => {
-                    if (isMobile) {
-                      window.location.href = '#';
-                    }
+                    window.open('https://luminex.io/rune/' + token.name, '_blank');
                   }}
                 >
                   <h3 className="text-xl font-semibold mb-2">{token.name}</h3>

@@ -35,10 +35,10 @@
     "externalUrl": "/dashboards/satoshi-nakamoto"
   },
   {
-    "name": "RSIC•GENESIS•RUNE",
-    "requiredBalance": 10000,
-    "dashboardPath": "/dashboards/rsic-genesis-rune",
-    "description": "Access RSIC•GENESIS•RUNE Dashboard",
-    "externalUrl": "/dashboards/rsic-genesis-rune"
+    "name": "US•PRESIDENTS",
+    "requiredBalance": 5000,
+    "dashboardPath": "/dashboards/us-presidents",
+    "description": "Access US•PRESIDENTS Dashboard",
+    "externalUrl": "/dashboards/us-presidents"
   }
 ]
