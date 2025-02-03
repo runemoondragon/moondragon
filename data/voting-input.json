@@ -367,6 +367,22 @@
         "totalVotingPower": 0,
         "hasEnded": true
       }
+    },
+    {
+      "id": "q1737577093165",
+      "token": "US•PRESIDENTS",
+      "question": "Would you like to enter the lottery drawing for a chance to win the 1-of-1 Pixar-style inscription of the 47th U.S. President?",
+      "startTime": "2025-01-22T14:18",
+      "endTime": "2025-01-30T14:18",
+      "status": "active",
+      "createdBy": "bc1pn5dfs58jskhtswjhnfgrl8udanzcp75y07636wq55f6806gnq5ysyhfw3n",
+      "results": {
+        "yesVotes": 0,
+        "noVotes": 0,
+        "totalVoters": 0,
+        "totalVotingPower": 0,
+        "hasEnded": false
+      }
     }
   ]
 }

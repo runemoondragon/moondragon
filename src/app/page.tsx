@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
-import { useLaserEyes, LaserEyesLogo } from "@omnisat/lasereyes";
+import { useLaserEyes, LaserEyesLogo, WalletIcon } from "@omnisat/lasereyes";
 import ConnectWallet from "@/components/ConnectWallet";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useState, useEffect } from "react";
@@ -27,6 +27,24 @@ const truncateAddress = (address: string) => {
   const start = address.slice(0, 6);
   const end = address.slice(-4);
   return `${start}...${end}`;
+};
+
+const SUPPORTED_WALLETS = [
+  { name: "unisat" },
+  { name: "xverse" },
+  { name: "leather" },
+  { name: "okx" },
+  { name: "oyl" },
+  { name: "magic-eden" },
+  { name: "phantom" },
+  { name: "wizz" },
+  { name: "orange" }
+] as const;
+
+const backgroundStyle = {
+  backgroundImage: `radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.8) 100%), 
+                    linear-gradient(45deg, rgba(0, 30, 60, 0.5), rgba(0, 10, 20, 0.5))`,
+  backgroundSize: 'cover'
 };
 
 export default function Home() {
@@ -246,7 +264,7 @@ export default function Home() {
     },
     'Requirements': {
       title: 'Requirements',
-      content: 'You’ll need BITBOARD•DASH tokens to add your project. Set custom token requirements for your dashboard, Only users who meet the token requirements you set can interact with the dashboards you create.'
+      content: 'You\'ll need BITBOARD•DASH tokens to add your project. Set custom token requirements for your dashboard, Only users who meet the token requirements you set can interact with the dashboards you create.'
     }
   };
 
@@ -332,7 +350,7 @@ export default function Home() {
                 </div>
 
                 {/* Centered Access Button */}
-                <div className="mt-6 flex flex-col items-center gap-3">
+                <div className="mt-10 flex flex-col items-center gap-3">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
@@ -468,6 +486,64 @@ export default function Home() {
           )}
         </div>
       </main>
+<div className="h-10"></div>
+      {/* Wallet Section */}
+      {!address && (
+        <section 
+          className="w-full max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-8 rounded-2xl"
+          style={backgroundStyle}
+        >
+          <div className="flex flex-col md:flex-row items-center justify-center max-w-[1000px] mx-auto gap-8 md:gap-16">
+            {/* Text content */}
+            <div className="w-full md:w-[400px] text-center md:text-left">
+              <h4 className="text-3xl md:text-4xl font-bold mb-4 md:mb-6 text-white">
+                Connect seamlessly with any Bitcoin Web3 wallet
+              </h4>
+              <p className="text-gray-400 leading-relaxed text-base md:text-lg mb-4 md:mb-8">
+              Bitboard lets you create a dashboard for rune token, set exclusive access for holders, manage votes, run polls, and distribute reward—all from one platform.
+              </p>
+            </div>
+
+            {/* Wallet Grid */}
+            <div className="w-full md:w-[350px]"> {/* Reduced width for better proportion */}
+              <div className="grid grid-cols-3 gap-2 md:gap-3">
+                {SUPPORTED_WALLETS.map((wallet) => (
+                  <div
+                    key={wallet.name}
+                    onClick={() => {
+                      const connectWalletButton = document.querySelector('[data-testid="connect-wallet-button"]');
+                      if (connectWalletButton instanceof HTMLElement) {
+                        connectWalletButton.click();
+                      }
+                    }}
+                    className="flex flex-col items-center justify-center p-3 md:p-4 bg-[#1B1E25]/80 backdrop-blur-sm rounded-xl cursor-pointer hover:bg-[#1B1E25] transition-all duration-200"
+                  >
+                    <div className="w-8 h-8 md:w-10 md:h-10 mb-1 md:mb-2 flex items-center justify-center">
+                      <WalletIcon
+                        size={24}
+                        walletName={wallet.name}
+                        className="!w-[24px] !h-[24px] md:!w-[32px] md:!h-[32px]"
+                      />
+                    </div>
+                    <span className="text-white text-[10px] md:text-xs font-medium text-center">
+                      {wallet.name
+                        .replace(/[-_]/g, " ")
+                        .split(" ")
+                        .map(
+                          (word) =>
+                            word.charAt(0).toUpperCase() +
+                            word.slice(1).toLowerCase()
+                        )
+                        .join(" ")}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       <Footer />
 
       {/* Modal for displaying content */}
