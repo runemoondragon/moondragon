@@ -490,23 +490,22 @@ export default function Home() {
       {/* Wallet Section */}
       {!address && (
         <section 
-          className="w-full max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-8 rounded-2xl"
-          style={backgroundStyle}
+          className="w-full max-w-7xl mx-auto px-6 md:px-8 py-8 md:py-16 rounded-2xl"
         >
           <div className="flex flex-col md:flex-row items-center justify-center max-w-[1000px] mx-auto gap-8 md:gap-16">
             {/* Text content */}
-            <div className="w-full md:w-[400px] text-center md:text-left">
-              <h4 className="text-3xl md:text-4xl font-bold mb-4 md:mb-6 text-white">
+            <div className="w-full md:w-[350px] text-center md:text-left px-4 md:px-0">
+              <h4 className="text-3xl md:text-4xl font-bold mb-3 md:mb-6">
                 Connect seamlessly with any Bitcoin Web3 wallet
               </h4>
-              <p className="text-gray-400 leading-relaxed text-base md:text-lg mb-4 md:mb-8">
-              Bitboard lets you create a dashboard for rune token, set exclusive access for holders, manage votes, run polls, and distribute reward—all from one platform.
+              <p className="leading-relaxed text-base md:text-lg mb-4 md:mb-8">
+                Bitboard lets you create a dashboard for rune token, set exclusive access for token holders, manage votes, run polls, and distribute reward—all from one platform.
               </p>
             </div>
 
             {/* Wallet Grid */}
-            <div className="w-full md:w-[350px]"> {/* Reduced width for better proportion */}
-              <div className="grid grid-cols-3 gap-2 md:gap-3">
+            <div className="w-full md:w-[350px] px-4 md:px-0">
+              <div className="grid grid-cols-3 gap-2 md:gap-2">
                 {SUPPORTED_WALLETS.map((wallet) => (
                   <div
                     key={wallet.name}
@@ -516,7 +515,7 @@ export default function Home() {
                         connectWalletButton.click();
                       }
                     }}
-                    className="flex flex-col items-center justify-center p-3 md:p-4 bg-[#1B1E25]/80 backdrop-blur-sm rounded-xl cursor-pointer hover:bg-[#1B1E25] transition-all duration-200"
+                    className="flex flex-col items-center justify-center p-2 md:p-2 bg-[#1B1E25]/80 backdrop-blur-sm rounded-xl cursor-pointer hover:bg-[#1B1E25] transition-all duration-200"
                   >
                     <div className="w-8 h-8 md:w-10 md:h-10 mb-1 md:mb-2 flex items-center justify-center">
                       <WalletIcon
@@ -543,7 +542,7 @@ export default function Home() {
           </div>
         </section>
       )}
-
+<div className="h-16"></div>
       <Footer />
 
       {/* Modal for displaying content */}
