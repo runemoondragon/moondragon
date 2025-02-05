@@ -291,7 +291,7 @@ export default function Home() {
               Unlock Access with Your Rune Tokens
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300">
-              Bitboard verifies rune wallet balance to grant exclusive access to governance, voting, and other privileges.
+              Bitboard verifies wallet to grant access to token-gated dashboards.
             </p>
           </div>
           {/* Connect Wallet Button */}
