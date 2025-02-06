@@ -930,7 +930,7 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
                   <div key={rune.name}>
                     <div
                       onClick={() => handleTokenSelect(rune)}
-                      className={`p-4 bg-black/50 rounded-lg border border-gray-700 mb-2 cursor-pointer ${
+                      className={`p-4  rounded-lg border border-gray-700 mb-2 cursor-pointer ${
                         selectedToken?.name === rune.name ? 'border-orange-500' : ''
                       }`}
                     >
@@ -1007,7 +1007,7 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
     const value = e.target.value;
     setAmount(value === '' ? 0 : Number(value)); // Allow clearing the field or setting a numeric value
   }}
-  className="w-full p-3 bg-black border border-gray-700 rounded-lg"
+  className="w-full p-3  border border-gray-700 rounded-lg"
   min="1"
   step="1"
   required
@@ -1028,7 +1028,7 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
                       </button>
                       
                       {showImportDropdown && (
-                        <div className="absolute left-0 mt-1 w-48 rounded-lg bg-gray-900 shadow-lg z-50">
+                        <div className="absolute left-0 mt-1 w-48 rounded-lg bg-gray-600 shadow-lg z-50">
                           <div className="py-1">
                             
                             <button
@@ -1083,7 +1083,7 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
                   <textarea
                     value={addresses}
                     onChange={(e) => setAddresses(e.target.value)}
-                    className="w-full h-[15vh] p-3 bg-black border border-gray-700 rounded-lg"
+                    className="w-full h-[15vh] p-3  border border-gray-700 rounded-lg"
                     placeholder="Paste addresses here"
                     required
                   />
@@ -1102,7 +1102,7 @@ const DistributeRewardsForm = ({ isOpen, onClose, onSubmit, tokenName, btcPrice 
     const value = e.target.value;
     setFeeRate(value === '' ? 0 : Number(value)); // Set feeRate to 0 if cleared, otherwise parse as a number
   }}
-  className="w-full p-3 bg-black border border-gray-700 rounded-lg"
+  className="w-full p-3  border border-gray-700 rounded-lg"
   min="1"
   required
 />

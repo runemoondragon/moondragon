@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
-import { useLaserEyes, LaserEyesLogo } from "@omnisat/lasereyes";
+import { useLaserEyes, LaserEyesLogo, WalletIcon } from "@omnisat/lasereyes";
 import ConnectWallet from "@/components/ConnectWallet";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useState, useEffect } from "react";
@@ -27,6 +27,24 @@ const truncateAddress = (address: string) => {
   const start = address.slice(0, 6);
   const end = address.slice(-4);
   return `${start}...${end}`;
+};
+
+const SUPPORTED_WALLETS = [
+  { name: "unisat" },
+  { name: "xverse" },
+  { name: "leather" },
+  { name: "okx" },
+  { name: "oyl" },
+  { name: "magic-eden" },
+  { name: "phantom" },
+  { name: "wizz" },
+  { name: "orange" }
+] as const;
+
+const backgroundStyle = {
+  backgroundImage: `radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.8) 100%), 
+                    linear-gradient(45deg, rgba(0, 30, 60, 0.5), rgba(0, 10, 20, 0.5))`,
+  backgroundSize: 'cover'
 };
 
 export default function Home() {
@@ -246,7 +264,7 @@ export default function Home() {
     },
     'Requirements': {
       title: 'Requirements',
-      content: 'You’ll need BITBOARD•DASH tokens to add your project. Set custom token requirements for your dashboard, Only users who meet the token requirements you set can interact with the dashboards you create.'
+      content: 'You\'ll need BITBOARD•DASH tokens to add your project. Set custom token requirements for your dashboard, Only users who meet the token requirements you set can interact with the dashboards you create.'
     }
   };
 
@@ -273,7 +291,7 @@ export default function Home() {
               Unlock Access with Your Rune Tokens
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300">
-              Bitboard verifies rune wallet balance to grant exclusive access to governance, voting, and other privileges.
+              Bitboard verifies wallet to grant access to token-gated dashboards.
             </p>
           </div>
           {/* Connect Wallet Button */}
@@ -286,14 +304,12 @@ export default function Home() {
           {/* Add Token Grid before wallet connection */}
           {!address && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12 w-full">
-              {dynamicTokens.slice(0, 9).map((token, index) => (
+              {dynamicTokens.slice(0, 3).map((token, index) => (
                 <div
                   key={index}
                   className="p-6 rounded-lg bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 hover:border-gray-700 transition-colors"
                   onClick={() => {
-                    if (isMobile) {
-                      window.location.href = '#';
-                    }
+                    window.open('https://luminex.io/rune/' + token.name, '_blank');
                   }}
                 >
                   <h3 className="text-xl font-semibold mb-2">{token.name}</h3>
@@ -334,7 +350,7 @@ export default function Home() {
                 </div>
 
                 {/* Centered Access Button */}
-                <div className="mt-6 flex flex-col items-center gap-3">
+                <div className="mt-10 flex flex-col items-center gap-3">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
@@ -470,6 +486,63 @@ export default function Home() {
           )}
         </div>
       </main>
+<div className="h-10"></div>
+      {/* Wallet Section */}
+      {!address && (
+        <section 
+          className="w-full max-w-7xl mx-auto px-6 md:px-8 py-8 md:py-16 rounded-2xl"
+        >
+          <div className="flex flex-col md:flex-row items-center justify-center max-w-[1000px] mx-auto gap-8 md:gap-16">
+            {/* Text content */}
+            <div className="w-full md:w-[350px] text-center md:text-left px-4 md:px-0">
+              <h4 className="text-3xl md:text-4xl font-bold mb-3 md:mb-6">
+                Connect seamlessly with any Bitcoin Web3 wallet
+              </h4>
+              <p className="leading-relaxed text-base md:text-lg mb-4 md:mb-8">
+                Bitboard lets you create a dashboard for rune token, set exclusive access for token holders, manage votes, run polls, and distribute reward—all from one platform.
+              </p>
+            </div>
+
+            {/* Wallet Grid */}
+            <div className="w-full md:w-[350px] px-4 md:px-0">
+              <div className="grid grid-cols-3 gap-2 md:gap-2">
+                {SUPPORTED_WALLETS.map((wallet) => (
+                  <div
+                    key={wallet.name}
+                    onClick={() => {
+                      const connectWalletButton = document.querySelector('[data-testid="connect-wallet-button"]');
+                      if (connectWalletButton instanceof HTMLElement) {
+                        connectWalletButton.click();
+                      }
+                    }}
+                    className="flex flex-col items-center justify-center p-2 md:p-2 bg-[#1B1E25]/80 backdrop-blur-sm rounded-xl cursor-pointer hover:bg-[#1B1E25] transition-all duration-200"
+                  >
+                    <div className="w-8 h-8 md:w-10 md:h-10 mb-1 md:mb-2 flex items-center justify-center">
+                      <WalletIcon
+                        size={24}
+                        walletName={wallet.name}
+                        className="!w-[24px] !h-[24px] md:!w-[32px] md:!h-[32px]"
+                      />
+                    </div>
+                    <span className="text-white text-[10px] md:text-xs font-medium text-center">
+                      {wallet.name
+                        .replace(/[-_]/g, " ")
+                        .split(" ")
+                        .map(
+                          (word) =>
+                            word.charAt(0).toUpperCase() +
+                            word.slice(1).toLowerCase()
+                        )
+                        .join(" ")}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+<div className="h-16"></div>
       <Footer />
 
       {/* Modal for displaying content */}

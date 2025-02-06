@@ -45,5 +45,31 @@
       "timestamp": "2024-12-20T02:48:25.699Z"
     }
   ],
-  "MANIA•MANIA•MANIA": []
+  "MANIA•MANIA•MANIA": [],
+  "US•PRESIDENTS": [
+    {
+      "id": "e81107fe-4109-41c6-912a-cebe099e0e02",
+      "title": "What is the Lottery?",
+      "message": "The Lottery is a special giveaway for holders of the U.S. President Token. One lucky participant will win the 1-of-1 Pixar-style inscription of the 47th U.S. President (Donald Trump). Eligibility: To qualify for the lottery, you must hold at least 5,000 U.S. President Tokens and participate in the Bitboard Dash. Reward: The winner will receive the exclusive 47th President Pixar-style inscription, making it the only one of its kind in existence. How to Enter: Indicate your interest in the lottery (e.g., through a Yes/No form) and ensure you meet the eligibility criteria.",
+      "token": "US•PRESIDENTS",
+      "createdBy": "bc1pn5dfs58jskhtswjhnfgrl8udanzcp75y07636wq55f6806gnq5ysyhfw3n",
+      "timestamp": "2025-01-22T20:18:50.849Z"
+    },
+    {
+      "id": "0df0e89c-eca9-467b-a5f6-91180bbe856b",
+      "title": "What is a U.S. President Token?",
+      "message": "What is a U.S. President Token? The U.S. President Token is a digital token tied to the U.S. President Inscription collection. It offers utility and perks for its holders, including access to exclusive features on platforms like Bitboard. Key Details: Total Supply: 47 million tokens will be minted. Free Minting: 1 million tokens are available for free minting, limited to 1,000 tokens per user. Access Perks: Holders of 5,000 tokens or more gain access to the U.S. Presidents Dashboard on Bitboard, where they can connect, vote, and engage with the community. Reward System: Owners of any U.S. President Inscription will receive an airdrop of 1 million tokens proportional to their holdings.",
+      "token": "US•PRESIDENTS",
+      "createdBy": "bc1pn5dfs58jskhtswjhnfgrl8udanzcp75y07636wq55f6806gnq5ysyhfw3n",
+      "timestamp": "2025-01-22T20:19:10.362Z"
+    },
+    {
+      "id": "f66ab590-b007-4fce-b94e-2cc76a1888d9",
+      "title": "What is a U.S. President Inscription?",
+      "message": "A U.S. President Inscription is a one-of-a-kind digital artwork of a U.S. President in a Pixar-style design, permanently inscribed on the Bitcoin blockchain using the Ordinals protocol. Each inscription is unique and celebrates the legacy of U.S. Presidents in a creative and innovative way. Key Features: Bitcoin-based: Inscribed directly on the Bitcoin blockchain. Artistic and Unique: Each President has their own distinct Pixar-style representation. Limited and Collectible: Only 46 inscriptions exist (one for each President), making them highly valuable for collectors.",
+      "token": "US•PRESIDENTS",
+      "createdBy": "bc1pn5dfs58jskhtswjhnfgrl8udanzcp75y07636wq55f6806gnq5ysyhfw3n",
+      "timestamp": "2025-01-22T20:19:46.089Z"
+    }
+  ]
 }
