@@ -1,12 +1,5 @@
 [
   {
-    "tokenName": "MAGA•FIGHT•FIGHT",
-    "requiredBalance": 25000,
-    "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
-    "associatedUrl": "/dashboards/maga-fight-fight",
-    "createdAt": "2025-01-14T16:34:41.776Z"
-  },
-  {
     "tokenName": "DOG•GO•TO•THE•MOON",
     "requiredBalance": 10000,
     "walletAddress": "bc1prpr63s6f4ux5kg6n49vd0q7feupmke5t2rlggmv0zqgg8nywaspsfedwfp",
@@ -19,5 +12,12 @@
     "walletAddress": "bc1prpgsy6hmr0638llq46d8v9fyy3f5msa4q2sysx007g0wtrz8s32sday5xf",
     "associatedUrl": "/dashboards/uncommon-goods",
     "createdAt": "2025-01-14T16:37:15.489Z"
+  },
+  {
+    "tokenName": "MAGA•FIGHT•FIGHT",
+    "requiredBalance": 25000,
+    "walletAddress": "bc1p4qd7pf3vd0v7c94he84pp659j9ufahrkas06hqznwatn3pr9uw0s06zyp5",
+    "associatedUrl": "/dashboards/maga-fight-fight",
+    "createdAt": "2025-02-06T14:30:50.577Z"
   }
 ]
