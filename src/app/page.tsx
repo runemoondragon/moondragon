@@ -304,7 +304,7 @@ export default function Home() {
           {/* Add Token Grid before wallet connection */}
           {!address && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12 w-full">
-              {dynamicTokens.slice(0, 9).map((token, index) => (
+              {dynamicTokens.slice(0, 3).map((token, index) => (
                 <div
                   key={index}
                   className="p-6 rounded-lg bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-gray-800 hover:border-gray-700 transition-colors"
